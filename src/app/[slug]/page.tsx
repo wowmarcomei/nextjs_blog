@@ -1,29 +1,32 @@
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { posts } from '../../data/posts';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import rehypeHighlight from 'rehype-highlight';
+import { getPostData, getSortedPostsData } from '../../utils/markdown';
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const post = posts.find((p) => p.slug === params.slug);
-
-  if (!post) {
-    notFound();
-  }
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const post = await getPostData(params.slug);
 
   return (
-    <div className="flex gap-8">
-      <article className="w-2/3 bg-white p-8 rounded-lg shadow-sm">
+    <div className="flex flex-col md:flex-row gap-8">
+      <article className="w-full md:w-2/3 bg-white p-8 rounded-lg shadow-sm">
         <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
         <div className="text-gray-600 mb-8">
           Published on {new Date(post.date).toLocaleDateString()}
         </div>
-        <div className="prose lg:prose-lg mb-8">
-          {post.content}
+        <div className="markdown-body prose lg:prose-lg mb-8">
+          <ReactMarkdown
+            rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
+          >
+            {post.content}
+          </ReactMarkdown>
         </div>
         <Link href="/" className="text-blue-600 hover:text-blue-800 font-semibold">
           ← Back to Home
         </Link>
       </article>
-      <div className="w-1/3 space-y-8">
+      <div className="w-full md:w-1/3 space-y-8">
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-xl font-bold mb-4">Search</h2>
           <input
@@ -64,6 +67,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 }
 
 export async function generateStaticParams() {
+  const posts = getSortedPostsData();
   return posts.map((post) => ({
     slug: post.slug,
   }));

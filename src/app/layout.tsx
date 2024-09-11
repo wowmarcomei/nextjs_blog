@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Link from "next/link";
 import "./globals.css";
+import "./markdown-styles.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,10 +27,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-900 min-h-screen flex flex-col`}
       >
-        <header className="bg-white shadow-sm">
+        <header className="bg-white shadow-md">
           <nav className="container mx-auto px-4 py-4">
             <ul className="flex space-x-6">
               <li><Link href="/" className="text-gray-800 hover:text-gray-600 font-semibold">Home</Link></li>
@@ -41,7 +48,7 @@ export default function RootLayout({
         <main className="flex-grow container mx-auto px-4 py-8">
           {children}
         </main>
-        <footer className="bg-white text-gray-600 py-4 text-center">
+        <footer className="bg-white text-gray-600 p-4 text-center">
           © 2024 My Blog. All rights reserved.
         </footer>
       </body>
