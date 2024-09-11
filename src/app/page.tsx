@@ -1,15 +1,35 @@
 import Link from 'next/link';
-import { getSortedPostsData } from '../utils/markdown';
+import { getSortedPostsData, getAllTags, getAllCategories, PostData } from '../utils/markdown';
 
-export default function Home() {
-  const posts = getSortedPostsData();
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const posts = await getSortedPostsData();
+  const allTags = await getAllTags();
+  const allCategories = await getAllCategories();
+
+  const selectedTag = typeof searchParams.tag === 'string' ? searchParams.tag : null;
+  const selectedCategory = typeof searchParams.category === 'string' ? searchParams.category : null;
+
+  const filteredPosts = posts.filter(post => 
+    (!selectedTag || post.tags.includes(selectedTag)) &&
+    (!selectedCategory || post.category === selectedCategory)
+  );
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <div className="w-full md:w-2/3">
         <h1 className="text-3xl font-bold mb-8">Latest Posts</h1>
+        {selectedTag && (
+          <p className="mb-4">Filtered by tag: <span className="font-semibold">{selectedTag}</span></p>
+        )}
+        {selectedCategory && (
+          <p className="mb-4">Filtered by category: <span className="font-semibold">{selectedCategory}</span></p>
+        )}
         <div className="space-y-8">
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <div key={post.slug} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <h2 className="text-2xl font-bold mb-2">
                 <Link href={`/${post.slug}`} className="text-gray-900 hover:text-gray-700">
@@ -17,9 +37,16 @@ export default function Home() {
                 </Link>
               </h2>
               <p className="text-gray-600 mb-4">{post.content.substring(0, 150)}...</p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {post.tags.map(tag => (
+                  <Link key={tag} href={`/?tag=${tag}`} className="text-sm bg-gray-200 rounded-full px-3 py-1 text-gray-700 hover:bg-gray-300">
+                    {tag}
+                  </Link>
+                ))}
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  {new Date(post.date).toLocaleDateString()}
+                  {new Date(post.date).toLocaleDateString()} | {post.category}
                 </span>
                 <Link href={`/${post.slug}`} className="text-blue-600 hover:text-blue-800 font-semibold">
                   Read more →
@@ -51,17 +78,34 @@ export default function Home() {
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-xl font-bold mb-4">Tags</h2>
           <div className="flex flex-wrap gap-2">
-            <span className="px-2 py-1 bg-gray-200 rounded-md text-sm">NextJS</span>
-            <span className="px-2 py-1 bg-gray-200 rounded-md text-sm">React</span>
-            <span className="px-2 py-1 bg-gray-200 rounded-md text-sm">JavaScript</span>
+            {allTags.map(tag => (
+              <Link
+                key={tag}
+                href={selectedTag === tag ? '/' : `/?tag=${tag}`}
+                className={`px-2 py-1 rounded-md text-sm ${
+                  selectedTag === tag ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {tag}
+              </Link>
+            ))}
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-xl font-bold mb-4">Categories</h2>
           <ul className="space-y-2">
-            <li><Link href="#" className="text-blue-600 hover:text-blue-800">Web Development</Link></li>
-            <li><Link href="#" className="text-blue-600 hover:text-blue-800">Design</Link></li>
-            <li><Link href="#" className="text-blue-600 hover:text-blue-800">Technology</Link></li>
+            {allCategories.map(category => (
+              <li key={category}>
+                <Link
+                  href={selectedCategory === category ? '/' : `/?category=${category}`}
+                  className={`text-left w-full ${
+                    selectedCategory === category ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {category}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

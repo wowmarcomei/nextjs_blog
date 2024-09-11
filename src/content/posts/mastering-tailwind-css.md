@@ -1,7 +1,11 @@
 ---
 title: 'Mastering Tailwind CSS'
 date: '2024-03-18'
+tags: ['css', 'tailwind', 'web design']
+category: 'Frontend'
 ---
+
+# Mastering Tailwind CSS
 
 Tailwind CSS is a utility-first CSS framework that allows you to rapidly build custom user interfaces.
 
@@ -11,4 +15,4 @@ Tailwind CSS is a utility-first CSS framework that allows you to rapidly build c
 2. Responsive design out of the box
 3. Reduced CSS file size in production
 
-Let's dive into how you can leverage Tailwind in your projects!
+In this post, we'll dive into how you can leverage Tailwind in your projects and create beautiful, responsive designs with minimal effort.
