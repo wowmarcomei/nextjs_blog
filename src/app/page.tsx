@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { getSortedPostsData, getAllTags, getAllCategories, PostData } from '../utils/markdown';
 
 export default async function Home({
@@ -31,29 +32,40 @@ export default async function Home({
           )}
           <div className="space-y-10">
             {filteredPosts.map((post) => (
-              <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-                <h2 className="text-3xl font-bold mb-4">
-                  <Link href={`/${post.slug}`} className="text-gray-900 hover:text-indigo-600 transition-colors duration-300">
-                    {post.title}
-                  </Link>
-                </h2>
-                <p className="text-gray-600 mb-6 text-lg">{post.content.substring(0, 150)}...</p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {post.tags.map(tag => (
-                    <Link key={tag} href={`/?tag=${tag}`} className="text-sm bg-indigo-100 text-indigo-800 rounded-full px-3 py-1 font-medium hover:bg-indigo-200 transition-colors duration-300">
-                      {tag}
-                    </Link>
-                  ))}
+              <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex">
+                <div className="flex-shrink-0 mr-6">
+                  <Image
+                    src={`/images/${post.slug}.jpg`}
+                    alt={post.title}
+                    width={200}
+                    height={150}
+                    className="rounded-lg object-cover"
+                  />
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">
-                    {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | {post.category}
-                  </span>
-                  <Link href={`/${post.slug}`} className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center">
-                    Read more <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </Link>
+                <div className="flex-grow">
+                  <h2 className="text-3xl font-bold mb-4">
+                    <Link href={`/${post.slug}`} className="text-gray-900 hover:text-indigo-600 transition-colors duration-300">
+                      {post.title}
+                    </Link>
+                  </h2>
+                  <p className="text-gray-600 mb-6 text-lg">{post.content.substring(0, 150)}...</p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {post.tags.map(tag => (
+                      <Link key={tag} href={`/?tag=${tag}`} className="text-sm bg-indigo-100 text-indigo-800 rounded-full px-3 py-1 font-medium hover:bg-indigo-200 transition-colors duration-300">
+                        {tag}
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">
+                      {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | {post.category}
+                    </span>
+                    <Link href={`/${post.slug}`} className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center">
+                      Read more <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
