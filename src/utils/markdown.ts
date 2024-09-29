@@ -30,10 +30,14 @@ export async function getSortedPostsData(): Promise<PostData[]> {
 
     const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image: string };
     
-    // Keep the image path as is, without modifying it
+    // Update the image path to use the correct directory
+    const updatedPostData = {
+      ...postData,
+      image: postData.image ? `/images/${postData.image}` : null,
+    };
     return {
       slug,
-      ...postData,
+      ...updatedPostData,
       content: matterResult.content,
     };
   }));

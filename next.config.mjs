@@ -20,4 +20,14 @@ const nextConfig = {
   },
 };
 
+// Add a custom server to serve static images
+nextConfig.rewrites = async () => {
+  return [
+    {
+      source: '/images/:path*',
+      destination: '/src/content/static/images/:path*',
+    },
+  ];
+};
+
 export default nextConfig;
