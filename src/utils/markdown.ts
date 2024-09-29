@@ -11,7 +11,7 @@ export interface PostData {
   image: string;
 }
 
-const imagePathPrefix = '/images';
+const imagePathPrefix = 'http://43.133.42.66:3000/images';
 
 let cachedPosts: PostData[] | null = null;
 
