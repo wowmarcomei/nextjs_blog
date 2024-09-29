@@ -33,8 +33,12 @@ export async function getSortedPostsData(): Promise<PostData[]> {
     const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image: string };
     
     // Update the image path
-    if (postData.image && !postData.image.startsWith('http')) {
-      postData.image = `${imagePathPrefix}${postData.image}`;
+    if (postData.image) {
+      if (postData.image.startsWith('/')) {
+        postData.image = `${imagePathPrefix}${postData.image}`;
+      } else if (!postData.image.startsWith('http')) {
+        postData.image = `${imagePathPrefix}/${postData.image}`;
+      }
     }
 
     return {
