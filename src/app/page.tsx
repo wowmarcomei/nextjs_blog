@@ -36,7 +36,7 @@ export default async function Home({
                 <div className="flex-shrink-0 mr-6">
                   {post.image ? (
                     <Image
-                      src={post.image.startsWith('http') ? post.image : `http://43.133.42.66:3000${post.image}`}
+                      src={post.image.startsWith('http') ? post.image : `/images/${post.image}`}
                       alt={post.title}
                       width={200}
                       height={150}

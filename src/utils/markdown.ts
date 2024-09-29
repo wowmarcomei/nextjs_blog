@@ -11,8 +11,6 @@ export interface PostData {
   image: string;
 }
 
-const imagePathPrefix = 'http://43.133.42.66:3000';
-
 let cachedPosts: PostData[] | null = null;
 
 export async function getSortedPostsData(): Promise<PostData[]> {
@@ -32,17 +30,7 @@ export async function getSortedPostsData(): Promise<PostData[]> {
 
     const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image: string };
     
-    // Update the image path
-    if (postData.image) {
-      if (postData.image.startsWith('/')) {
-        postData.image = `${imagePathPrefix}${postData.image}`;
-      } else if (!postData.image.startsWith('http')) {
-        postData.image = `${imagePathPrefix}/${postData.image}`;
-      }
-    } else {
-      postData.image = ''; // Set a default empty string if image is not defined
-    }
-
+    // Keep the image path as is, without modifying it
     return {
       slug,
       ...postData,
