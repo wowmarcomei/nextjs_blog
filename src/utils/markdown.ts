@@ -33,7 +33,7 @@ export async function getSortedPostsData(): Promise<PostData[]> {
     // Update the image path to use the correct directory
     const updatedPostData = {
       ...postData,
-      image: postData.image ? `/images/${postData.image}` : null,
+      image: postData.image ? `/src/content/static/images/${postData.image}` : null,
     };
     return {
       slug,

@@ -41,7 +41,7 @@ export default async function Home({
                       width={200}
                       height={150}
                       className="rounded-lg object-cover"
-                      unoptimized
+                      priority
                     />
                   ) : (
                     <div className="w-[200px] h-[150px] bg-gray-200 rounded-lg flex items-center justify-center">
