@@ -11,6 +11,8 @@ export interface PostData {
   image: string;
 }
 
+const imagePathPrefix = '/images';
+
 let cachedPosts: PostData[] | null = null;
 
 export async function getSortedPostsData(): Promise<PostData[]> {
@@ -28,9 +30,16 @@ export async function getSortedPostsData(): Promise<PostData[]> {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
+    const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image: string };
+    
+    // Update the image path
+    if (postData.image && !postData.image.startsWith('http')) {
+      postData.image = `${imagePathPrefix}${postData.image}`;
+    }
+
     return {
       slug,
-      ...(matterResult.data as { title: string; date: string; tags: string[]; category: string }),
+      ...postData,
       content: matterResult.content,
     };
   }));
