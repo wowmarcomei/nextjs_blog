@@ -40,6 +40,7 @@ export default async function Home({
                     width={200}
                     height={150}
                     className="rounded-lg object-cover"
+                    unoptimized
                   />
                 </div>
                 <div className="flex-grow">

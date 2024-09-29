@@ -2,6 +2,12 @@
 const nextConfig = {
   images: {
     domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   webpack: (config) => {
     config.module.rules.push({
