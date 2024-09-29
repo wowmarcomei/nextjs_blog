@@ -39,6 +39,8 @@ export async function getSortedPostsData(): Promise<PostData[]> {
       } else if (!postData.image.startsWith('http')) {
         postData.image = `${imagePathPrefix}/${postData.image}`;
       }
+    } else {
+      postData.image = ''; // Set a default empty string if image is not defined
     }
 
     return {

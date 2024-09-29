@@ -34,14 +34,20 @@ export default async function Home({
             {filteredPosts.map((post) => (
               <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex">
                 <div className="flex-shrink-0 mr-6">
-                  <Image
-                    src={post.image.startsWith('http') ? post.image : `http://43.133.42.66:3000${post.image}`}
-                    alt={post.title}
-                    width={200}
-                    height={150}
-                    className="rounded-lg object-cover"
-                    unoptimized
-                  />
+                  {post.image ? (
+                    <Image
+                      src={post.image.startsWith('http') ? post.image : `http://43.133.42.66:3000${post.image}`}
+                      alt={post.title}
+                      width={200}
+                      height={150}
+                      className="rounded-lg object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-[200px] h-[150px] bg-gray-200 rounded-lg flex items-center justify-center">
+                      <span className="text-gray-400">No image</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex-grow">
                   <h2 className="text-3xl font-bold mb-4">
