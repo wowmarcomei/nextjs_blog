@@ -8,6 +8,7 @@ export interface PostData {
   content: string;
   tags: string[];
   category: string;
+  image: string;
 }
 
 let cachedPosts: PostData[] | null = null;

@@ -35,7 +35,7 @@ export default async function Home({
               <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex">
                 <div className="flex-shrink-0 mr-6">
                   <Image
-                    src={`/images/${post.slug}.jpg`}
+                    src={post.image}
                     alt={post.title}
                     width={200}
                     height={150}
