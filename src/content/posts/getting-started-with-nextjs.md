@@ -3,7 +3,7 @@ title: 'Getting Started with Next.js'
 date: '2024-03-15'
 tags: ['nextjs', 'react', 'web development']
 category: 'Frontend'
-image: 'getting-started-with-nextjs.jpg'
+image: '/images/github-actions-post.png'
 ---
 
 # Getting Started with Next.js

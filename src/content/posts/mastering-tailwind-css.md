@@ -3,6 +3,7 @@ title: 'Mastering Tailwind CSS'
 date: '2024-03-18'
 tags: ['css', 'tailwind', 'web design']
 category: 'Frontend'
+image: '/images/github-actions-post.png'
 ---
 
 # Mastering Tailwind CSS

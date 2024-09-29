@@ -8,7 +8,7 @@ export interface PostData {
   content: string;
   tags: string[];
   category: string;
-  image: string;
+  image?: string | null;  // 更新为可选且可为 null
 }
 
 let cachedPosts: PostData[] | null = null;
@@ -28,18 +28,16 @@ export async function getSortedPostsData(): Promise<PostData[]> {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
-    const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image: string };
+    const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image?: string };
     
-    // Update the image path to use the correct directory
-    const updatedPostData = {
-      ...postData,
-      image: postData.image ? `/images/${postData.image}` : null,
-    };
-    return {
+    // Update the image path only if it doesn't already start with "/images/"
+    const updatedPostData: PostData = {
       slug,
-      ...updatedPostData,
+      ...postData,
+      image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
       content: matterResult.content,
     };
+    return updatedPostData;
   }));
 
   cachedPosts = allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -53,11 +51,17 @@ export async function getPostData(slug: string): Promise<PostData> {
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const matterResult = matter(fileContents);
 
-  return {
+  const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image?: string };
+  
+  // Update the image path only if it doesn't already start with "/images/"
+  const updatedPostData: PostData = {
     slug,
+    ...postData,
+    image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
     content: matterResult.content,
-    ...(matterResult.data as { title: string; date: string; tags: string[]; category: string }),
   };
+
+  return updatedPostData;
 }
 
 export async function getAllTags(): Promise<string[]> {

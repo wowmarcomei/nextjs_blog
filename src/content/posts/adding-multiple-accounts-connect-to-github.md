@@ -3,6 +3,7 @@ title: 'Adding Multiple Accounts Connect to GitHub'
 date: '2024-03-20'
 tags: ['github', 'git', 'version control', 'css', 'nextjs']
 category: 'Development Tools'
+image: '/images/github-actions-post.png'
 ---
 
 1.  在WSL2中安装git
