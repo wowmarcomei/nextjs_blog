@@ -75,7 +75,6 @@ export default function RootLayout({
               <li><Link href="/" className="text-gray-800 hover:text-gray-600 font-semibold">Home</Link></li>
               <li><Link href="/archive" className="text-gray-800 hover:text-gray-600 font-semibold">Archive</Link></li>
               <li><Link href="#" className="text-gray-800 hover:text-gray-600 font-semibold">About</Link></li>
-              <li><Link href="#" className="text-gray-800 hover:text-gray-600 font-semibold">Contact</Link></li>
             </ul>
           </nav>
         </header>
