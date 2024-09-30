@@ -32,8 +32,8 @@ export default async function Home({
           )}
           <div className="space-y-10">
             {filteredPosts.map((post) => (
-              <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex">
-                <div className="flex-shrink-0 mr-6">
+              <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center">
+                <div className="flex-shrink-0 mr-6 flex items-center">
                   {post.image ? (
                     <Image
                       src={post.image}
