@@ -36,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-100 text-gray-900 min-h-screen flex flex-col`}
       >
-        <header className="bg-white shadow-md">
+        <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-10">
           <nav className="container mx-auto px-4 py-4">
             <ul className="flex space-x-6">
               <li><Link href="/" className="text-gray-800 hover:text-gray-600 font-semibold">Home</Link></li>
@@ -45,7 +45,7 @@ export default function RootLayout({
             </ul>
           </nav>
         </header>
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow container mx-auto px-4 py-8 mt-16">
           {children}
         </main>
         <footer className="bg-white text-gray-600 p-4 text-center">
