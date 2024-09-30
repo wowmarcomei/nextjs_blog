@@ -1,7 +1,7 @@
 {
   "adding-multiple-accounts-connect-to-github-copy": 8,
-  "mastering-tailwind-css": 6,
-  "getting-started-with-nextjs": 8,
+  "mastering-tailwind-css": 8,
+  "getting-started-with-nextjs": 10,
   "mastering-tailwind-css-copy": 2,
   "use-probes-within-the-containers": 4,
   "the-numbers-in-linux-shell": 2,
@@ -10,5 +10,7 @@
   "start-a-docker-container": 2,
   "how-to-make-pod-ha-in-multipule-az": 2,
   "auto-sync-repository-to-gitee-from-github": 4,
-  "how-to-use-screen-in-linux": 2
+  "how-to-use-screen-in-linux": 2,
+  "save-sensitive-info-within-k8s-with-sealed-secret": 2,
+  "adding-multiple-accounts-connect-to-github": 2
 }
