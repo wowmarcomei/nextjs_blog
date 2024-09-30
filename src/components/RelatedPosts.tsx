@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostData } from '../utils/markdown';
+import LoadingSpinner from './LoadingSpinner';
 
 interface RelatedPostsProps {
   posts: PostData[];
@@ -43,27 +44,33 @@ const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts, initialLimit = 3 }) 
   }, [limit, loading, posts.length]);
 
   return (
-    <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-6">Related Posts</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="mt-8 lg:mt-12">
+      <h2 className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6">Related Posts</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {posts.slice(0, limit).map((post, index) => (
-          <div key={post.slug} className="bg-white rounded-lg shadow-md overflow-hidden">
-            {post.image && (
-              <Image
-                src={post.image}
-                alt={post.title}
-                width={400}
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-            )}
+          <div key={post.slug} className="bg-white rounded-lg shadow-md overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+            <div className="relative w-full h-40 lg:h-48">
+              {post.image ? (
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm">No image</span>
+                </div>
+              )}
+            </div>
             <div className="p-4">
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-lg lg:text-xl font-semibold mb-2">
                 <Link href={`/${post.slug}`} className="text-gray-900 hover:text-indigo-600 transition-colors duration-300">
                   {post.title}
                 </Link>
               </h3>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-gray-600 text-xs lg:text-sm mb-3">
                 {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -80,7 +87,7 @@ const RelatedPosts: React.FC<RelatedPostsProps> = ({ posts, initialLimit = 3 }) 
       </div>
       {loading && (
         <div className="mt-6 text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
+          <LoadingSpinner />
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { getSortedPostsData, getAllTags, getAllCategories, searchPosts } from '../utils/serverUtils';
 import BlogPosts from '../components/BlogPosts';
+import Hero from '../components/Hero';
 
 export const revalidate = 3600; // revalidate every hour
 
@@ -24,16 +25,19 @@ export default async function Home({
   const { posts, allTags, allCategories } = await getData();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Suspense fallback={<div>Loading...</div>}>
-        <BlogPosts 
-          initialPosts={posts} 
-          allTags={allTags} 
-          allCategories={allCategories} 
-          searchParams={searchParams} 
-          searchPosts={searchPostsWrapper}
-        />
-      </Suspense>
-    </div>
+    <>
+      <Hero />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Suspense fallback={<div>Loading...</div>}>
+          <BlogPosts 
+            initialPosts={posts} 
+            allTags={allTags} 
+            allCategories={allCategories} 
+            searchParams={searchParams} 
+            searchPosts={searchPostsWrapper}
+          />
+        </Suspense>
+      </div>
+    </>
   );
 }
