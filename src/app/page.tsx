@@ -98,7 +98,7 @@ export default async function Home({
             </div>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Tags</h2>
+            <Link href="/tags" className="block text-2xl font-bold mb-4 text-gray-900 hover:text-indigo-600 transition-colors duration-300">Tags</Link>
             <div className="flex flex-wrap gap-2">
               {allTags.slice(0, 10).map(tag => (
                 <Link
@@ -112,10 +112,9 @@ export default async function Home({
                 </Link>
               ))}
             </div>
-            <Link href="/tags" className="block mt-4 text-indigo-600 hover:text-indigo-800">View all tags</Link>
           </div>
           <div className="bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-2xl font-bold mb-4 text-gray-900">Categories</h2>
+            <Link href="/categories" className="block text-2xl font-bold mb-4 text-gray-900 hover:text-indigo-600 transition-colors duration-300">Categories</Link>
             <ul className="space-y-2">
               {allCategories.slice(0, 5).map(category => (
                 <li key={category}>
@@ -130,7 +129,6 @@ export default async function Home({
                 </li>
               ))}
             </ul>
-            <Link href="/categories" className="block mt-4 text-indigo-600 hover:text-indigo-800">View all categories</Link>
           </div>
         </div>
       </div>
