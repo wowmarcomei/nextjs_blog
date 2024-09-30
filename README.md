@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js 博客系统
 
-## Getting Started
+这是一个使用 Next.js 构建的功能丰富的博客系统。
 
-First, run the development server:
+[English Version](./README_EN.md)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 功能
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. **文章管理**：支持 Markdown 格式的文章创建和编辑。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. **标签和分类**：文章可以添加标签和分类，方便组织和查找。
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **相关文章推荐**：
+   - 基于文章内容相似度、标签匹配和分类匹配进行推荐。
+   - 考虑文章阅读量，热门文章更容易被推荐。
+   - 支持自定义显示数量和懒加载更多相关文章。
 
-## Learn More
+4. **文章阅读量统计**：
+   - 实时统计和显示每篇文章的阅读量。
+   - 阅读量数据用于优化相关文章推荐。
 
-To learn more about Next.js, take a look at the following resources:
+5. **搜索功能**：支持全文搜索，包括文章标题、内容、标签和分类。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+6. **响应式设计**：适配各种设备，提供良好的移动端体验。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+7. **社交分享**：支持将文章分享到各大社交媒体平台。
 
-## Deploy on Vercel
+8. **SEO 优化**：自动生成 meta 标签和 Open Graph 数据，优化搜索引擎收录。
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 开始使用
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. 克隆仓库：
+   ```
+   git clone https://github.com/yourusername/your-repo-name.git
+   ```
+
+2. 安装依赖：
+   ```
+   npm install
+   ```
+
+3. 运行开发服务器：
+   ```
+   npm run dev
+   ```
+
+4. 在浏览器中打开 `http://localhost:3000` 查看博客。
+
+## 构建和部署
+
+1. 构建项目：
+   ```
+   npm run build
+   ```
+
+2. 启动生产服务器：
+   ```
+   npm start
+   ```
+
+## 贡献
+
+欢迎提交 Pull Requests 来改进这个项目。对于重大变更，请先开 issue 讨论您想要改变的内容。
+
+## 许可证
+
+[MIT](https://choosealicense.com/licenses/mit/)

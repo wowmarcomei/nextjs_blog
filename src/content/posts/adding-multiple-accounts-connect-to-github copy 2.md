@@ -1,12 +1,12 @@
 ---
 title: 'Adding Multiple Accounts Connect to GitHub'
-date: '2024-03-20'
+date: '2023-03-20'
 tags: ['github', 'git', 'version control', 'css', 'nextjs']
 category: 'Development Tools'
 image: '/images/github-actions-post.png'
 ---
 
-1.  在WSL2中安装git
+## 在WSL2中安装git
 
 在WSL2中打开终端，运行以下命令：
 
@@ -15,7 +15,7 @@ sudo apt update
 sudo apt install git
 ```
 
-2.  创建SSH密钥对
+## 创建SSH密钥对
 
 在WSL2终端中运行以下命令创建SSH密钥对：cd 
 
@@ -29,7 +29,7 @@ ssh-keygen -t ed25519 -C "wowmarcomei@163.com"
 ssh-keygen -t ed25519 -C "laomeinote@qq.com"
 ```
 
-3.  添加SSH密钥到相应GitHub帐户
+## 添加SSH密钥到相应GitHub帐户
 
 将公钥（以`.pub`结尾）的内容复制到剪贴板：
 
@@ -41,7 +41,7 @@ cat ~/.ssh/id_ed25519_firstaccount.pub | clip.exe
 
 同样地，将第二个帐户的公钥添加到其相应的GitHub帐户中。
 
-4.  添加别名和全局设置
+## 添加别名和全局设置
 
 在WSL2终端中打开`~/.ssh/config`文件并添加类似于以下内容的内容：
 
@@ -68,7 +68,7 @@ git config --global user.name "Your Name"
 git config --global user.email "youremail@example.com"
 ```
 
-5.  克隆或创建repo
+## 克隆或创建repo
 
 在本地克隆或创建一个repo，例如：
 
@@ -82,7 +82,7 @@ git commit -m "add readme"
 
 > 这里先使用https克隆repo，git没有指定别名是无法克隆下来的。
 
-6.  添加远程存储库别名
+## 添加远程存储库别名
 
 为每个GitHub帐户创建远程别名，例如：
 
@@ -94,7 +94,7 @@ git remote add firstaccount git@github.com-firstaccount:username/repo.git
 git remote add secondaccount git@github.com-secondaccount:username/repo.git
 ```
 
-7.  推送更改
+## 推送更改
 
 确认您要将更改推送到哪个远程存储库（分支），并使用正确的远程别名进行推送：
 

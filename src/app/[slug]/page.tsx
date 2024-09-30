@@ -4,9 +4,11 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import { PostData } from '../../utils/markdown';
-import { getPostData, getSortedPostsData, getAllTags, getAllCategories } from '../../utils/serverUtils';
+import { getPostData, getSortedPostsData, getAllTags, getAllCategories, getRelatedPosts } from '../../utils/serverUtils';
 import SocialShareButtons from '../../components/SocialShareButtons';
 import SearchBar from '../../components/SearchBar';
+import RelatedPosts from '../../components/RelatedPosts';
+import ViewCounter from '../../components/ViewCounter';
 import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -57,14 +59,16 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   const post = await getPostData(params.slug);
   const allTags = await getAllTags();
   const allCategories = await getAllCategories();
+  const relatedPosts = await getRelatedPosts(post, 9);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-col lg:flex-row gap-12">
         <article className="w-full lg:w-2/3 bg-white p-8 rounded-xl shadow-md">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-6">{post.title}</h1>
-          <div className="text-gray-600 mb-6 text-lg">
-            Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          <div className="text-gray-600 mb-6 text-lg flex justify-between items-center">
+            <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <ViewCounter slug={post.slug} />
           </div>
           <div className="mb-6">
             <span className="font-semibold text-gray-700">Category: </span>
@@ -98,6 +102,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               Back to Home
             </Link>
           </div>
+          <RelatedPosts posts={relatedPosts} initialLimit={3} />
         </article>
         <div className="w-full lg:w-1/3 space-y-8">
           <div className="bg-white p-6 rounded-xl shadow-md">
