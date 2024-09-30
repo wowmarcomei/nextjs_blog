@@ -23,7 +23,7 @@ export async function getSortedPostsData(): Promise<PostData[]> {
   const fileNames = fs.readdirSync(postsDirectory);
   
   const allPostsData = await Promise.all(fileNames.map(async (fileName) => {
-    const slug = fileName.replace(/\.md$/, '');
+    const slug = fileName.replace(/\s+/g, '-').replace(/\.md$/, '');
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
@@ -46,8 +46,19 @@ export async function getSortedPostsData(): Promise<PostData[]> {
 
 export async function getPostData(slug: string): Promise<PostData> {
   const postsDirectory = path.join(process.cwd(), 'src/content/posts');
-  const fullPath = path.join(postsDirectory, `${slug}.md`);
   const fs = await import('fs');
+  
+  // Read all files in the directory
+  const files = fs.readdirSync(postsDirectory);
+  
+  // Find the file that matches the slug (ignoring spaces in the file name)
+  const matchingFile = files.find(file => file.replace(/\s+/g, '-').replace(/\.md$/, '') === slug);
+  
+  if (!matchingFile) {
+    throw new Error(`No matching file found for slug: ${slug}`);
+  }
+  
+  const fullPath = path.join(postsDirectory, matchingFile);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   const matterResult = matter(fileContents);
 
