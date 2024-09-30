@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostData } from '../utils/markdown';
 import Sidebar from './Sidebar';
 import LoadingSpinner from './LoadingSpinner';
+import ScrollToTopButton from './ScrollToTopButton';
 import { useRouter } from 'next/navigation';
 
 interface BlogPostsProps {
@@ -18,13 +19,18 @@ interface BlogPostsProps {
 
 export default function BlogPosts({ initialPosts, allTags, allCategories, searchParams, searchPosts }: BlogPostsProps) {
   const [posts, setPosts] = useState<PostData[]>(initialPosts);
+  const [displayedPosts, setDisplayedPosts] = useState<PostData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
   const router = useRouter();
+  const observerTarget = useRef(null);
 
   const selectedTag = typeof searchParams.tag === 'string' ? searchParams.tag : null;
   const selectedCategory = typeof searchParams.category === 'string' ? searchParams.category : null;
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) : 1;
   const searchQuery = typeof searchParams.search === 'string' ? searchParams.search : '';
+
+  const postsPerPage = 10;
 
   useEffect(() => {
     async function performSearch() {
@@ -33,6 +39,8 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
         try {
           const searchResults = await searchPosts(searchQuery);
           setPosts(searchResults);
+          setDisplayedPosts(searchResults.slice(0, postsPerPage));
+          setPage(1);
         } catch (error) {
           console.error('Error searching posts:', error);
         } finally {
@@ -40,6 +48,8 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
         }
       } else {
         setPosts(initialPosts);
+        setDisplayedPosts(initialPosts.slice(0, postsPerPage));
+        setPage(1);
       }
     }
     performSearch();
@@ -50,9 +60,42 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
     (!selectedCategory || post.categories.includes(selectedCategory))
   );
 
-  const postsPerPage = 10;
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-  const paginatedPosts = filteredPosts.slice((page - 1) * postsPerPage, page * postsPerPage);
+  const loadMorePosts = useCallback(async () => {
+    if (isLoadingMore) return;
+    setIsLoadingMore(true);
+    const nextPage = page + 1;
+    const startIndex = (nextPage - 1) * postsPerPage;
+    const endIndex = startIndex + postsPerPage;
+    const newPosts = filteredPosts.slice(startIndex, endIndex);
+    
+    // Simulate a delay to show loading state (remove in production)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
+    setPage(nextPage);
+    setIsLoadingMore(false);
+  }, [filteredPosts, isLoadingMore, page, postsPerPage]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && displayedPosts.length < filteredPosts.length) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [displayedPosts.length, filteredPosts.length, loadMorePosts]);
 
   const clearSearch = () => {
     router.push('/');
@@ -87,7 +130,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
           <LoadingSpinner />
         ) : (
           <div className="space-y-6 lg:space-y-10">
-            {paginatedPosts.map((post) => (
+            {displayedPosts.map((post) => (
               <div key={post.slug} className="bg-white p-4 lg:p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col lg:flex-row items-start lg:items-center">
                 <div className="w-full lg:w-[200px] h-[150px] mb-4 lg:mb-0 lg:mr-6 flex-shrink-0">
                   {post.image ? (
@@ -142,39 +185,19 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
             ))}
           </div>
         )}
-        {totalPages > 1 && (
-          <div className="mt-8 lg:mt-10 flex justify-center">
-            <nav className="inline-flex rounded-md shadow">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <Link
-                  key={pageNum}
-                  href={{
-                    pathname: '/',
-                    query: {
-                      ...(selectedTag && { tag: selectedTag }),
-                      ...(selectedCategory && { category: selectedCategory }),
-                      ...(searchQuery && { search: searchQuery }),
-                      page: pageNum,
-                    },
-                  }}
-                  className={`px-3 py-2 lg:px-4 lg:py-2 text-sm lg:text-base border ${
-                    pageNum === page
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
-                  } ${pageNum === 1 ? 'rounded-l-md' : ''} ${
-                    pageNum === totalPages ? 'rounded-r-md' : ''
-                  }`}
-                >
-                  {pageNum}
-                </Link>
-              ))}
-            </nav>
+        {isLoadingMore && (
+          <div className="mt-8 text-center">
+            <LoadingSpinner />
           </div>
+        )}
+        {displayedPosts.length < filteredPosts.length && (
+          <div ref={observerTarget} className="h-10 mt-8" />
         )}
       </div>
       <div className="w-full lg:w-1/3 mt-8 lg:mt-0">
         <Sidebar allTags={allTags} allCategories={allCategories} />
       </div>
+      <ScrollToTopButton />
     </div>
   );
 }
