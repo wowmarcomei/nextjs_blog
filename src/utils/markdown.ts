@@ -77,3 +77,23 @@ export async function getAllCategories(): Promise<string[]> {
   posts.forEach(post => post.category && categories.add(post.category));
   return Array.from(categories);
 }
+
+export async function getPostsByYear(): Promise<Record<string, PostData[]>> {
+  const posts = await getSortedPostsData();
+  const postsByYear: Record<string, PostData[]> = {};
+
+  posts.forEach(post => {
+    const year = new Date(post.date).getFullYear().toString();
+    if (!postsByYear[year]) {
+      postsByYear[year] = [];
+    }
+    postsByYear[year].push(post);
+  });
+
+  // Sort posts within each year
+  Object.values(postsByYear).forEach(yearPosts => {
+    yearPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  });
+
+  return postsByYear;
+}

@@ -40,6 +40,7 @@ export default function RootLayout({
           <nav className="container mx-auto px-4 py-4">
             <ul className="flex space-x-6">
               <li><Link href="/" className="text-gray-800 hover:text-gray-600 font-semibold">Home</Link></li>
+              <li><Link href="/archive" className="text-gray-800 hover:text-gray-600 font-semibold">Archive</Link></li>
               <li><Link href="#" className="text-gray-800 hover:text-gray-600 font-semibold">About</Link></li>
               <li><Link href="#" className="text-gray-800 hover:text-gray-600 font-semibold">Contact</Link></li>
             </ul>
