@@ -29,7 +29,6 @@ export default async function Home({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-col lg:flex-row gap-12">
         <div className="w-full lg:w-2/3">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Latest Posts</h1>
           {selectedTag && (
             <p className="mb-6 text-lg text-gray-600">Filtered by tag: <span className="font-semibold text-indigo-600">{selectedTag}</span></p>
           )}
