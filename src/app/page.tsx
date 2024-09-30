@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import { getSortedPostsData, getAllTags, getAllCategories, PostData } from '../utils/markdown';
+import { getSortedPostsData, getAllTags, getAllCategories } from '../utils/markdown';
 
 export default async function Home({
   searchParams,
