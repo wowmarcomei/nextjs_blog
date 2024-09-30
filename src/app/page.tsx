@@ -83,6 +83,34 @@ export default async function Home({
               </div>
             ))}
           </div>
+          {totalPages > 1 && (
+            <div className="mt-10 flex justify-center">
+              <nav className="inline-flex rounded-md shadow">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <Link
+                    key={pageNum}
+                    href={{
+                      pathname: '/',
+                      query: {
+                        ...(selectedTag && { tag: selectedTag }),
+                        ...(selectedCategory && { category: selectedCategory }),
+                        page: pageNum,
+                      },
+                    }}
+                    className={`px-4 py-2 border ${
+                      pageNum === page
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    } ${pageNum === 1 ? 'rounded-l-md' : ''} ${
+                      pageNum === totalPages ? 'rounded-r-md' : ''
+                    }`}
+                  >
+                    {pageNum}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          )}
         </div>
         <div className="w-full lg:w-1/3 space-y-8">
           <div className="bg-white p-6 rounded-xl shadow-md">
@@ -136,34 +164,6 @@ export default async function Home({
               ))}
             </ul>
           </div>
-          {totalPages > 1 && (
-            <div className="mt-10 flex justify-center">
-              <nav className="inline-flex rounded-md shadow">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                  <Link
-                    key={pageNum}
-                    href={{
-                      pathname: '/',
-                      query: {
-                        ...(selectedTag && { tag: selectedTag }),
-                        ...(selectedCategory && { category: selectedCategory }),
-                        page: pageNum,
-                      },
-                    }}
-                    className={`px-4 py-2 border ${
-                      pageNum === page
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50'
-                    } ${pageNum === 1 ? 'rounded-l-md' : ''} ${
-                      pageNum === totalPages ? 'rounded-r-md' : ''
-                    }`}
-                  >
-                    {pageNum}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          )}
         </div>
       </div>
     </div>
