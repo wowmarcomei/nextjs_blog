@@ -31,7 +31,7 @@ This is a feature-rich blog system built with Next.js.
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone git clone https://github.com/wowmarcomei/nextjs_blog.git
    ```
 
 2. Install dependencies:

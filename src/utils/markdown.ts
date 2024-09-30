@@ -10,6 +10,7 @@ export interface PostData {
   tags: string[];
   category: string;
   image?: string | null;
+  keywords: string; // 新添加的字段
 }
 
 export type SearchPostsFunction = (query: string) => Promise<PostData[]>;
@@ -20,6 +21,19 @@ export type GetPostsByYearFunction = () => Promise<Record<string, PostData[]>>;
 
 const postsDirectory = path.join(process.cwd(), 'src/content/posts');
 
+function generateDefaultMetadata(fileName: string): Partial<PostData> {
+  const title = fileName.replace(/\.md$/, '').replace(/-/g, ' ');
+  const date = new Date().toISOString().split('T')[0]; // 格式：YYYY-MM-DD
+  return {
+    title,
+    date,
+    tags: ['common'],
+    category: 'common',
+    image: '/images/default-og-image.jpg',
+    keywords: '',
+  };
+}
+
 export async function getSortedPostsData(): Promise<PostData[]> {
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
@@ -28,11 +42,15 @@ export async function getSortedPostsData(): Promise<PostData[]> {
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
-    return {
+    const defaultMetadata = generateDefaultMetadata(fileName);
+    const combinedData = {
+      ...defaultMetadata,
+      ...matterResult.data,
       slug,
-      ...(matterResult.data as { title: string; date: string; tags: string[]; category: string; image?: string }),
       content: matterResult.content,
     };
+
+    return combinedData as PostData;
   });
 
   return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -84,7 +102,8 @@ export async function searchPosts(query: string): Promise<PostData[]> {
     const contentMatch = post.content.toLowerCase().includes(lowercaseQuery);
     const tagMatch = post.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery));
     const categoryMatch = post.category.toLowerCase().includes(lowercaseQuery);
+    const keywordsMatch = post.keywords.toLowerCase().includes(lowercaseQuery);
 
-    return titleMatch || contentMatch || tagMatch || categoryMatch;
+    return titleMatch || contentMatch || tagMatch || categoryMatch || keywordsMatch;
   });
 }

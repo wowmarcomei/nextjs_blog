@@ -14,11 +14,12 @@ import { Metadata } from 'next';
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPostData(params.slug);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const imageUrl = post.image ? `${siteUrl}${post.image}` : `${siteUrl}/default-og-image.jpg`;
+  const imageUrl = post.image ? `${siteUrl}${post.image}` : `${siteUrl}/images/default-og-image.jpg`;
 
   return {
     title: post.title,
     description: post.content.substring(0, 200),
+    keywords: post.keywords, // 添加 keywords
     openGraph: {
       title: post.title,
       description: post.content.substring(0, 200),

@@ -26,6 +26,19 @@ async function getViews(): Promise<Record<string, number>> {
   return cachedViews || {};
 }
 
+function generateDefaultMetadata(fileName: string): Partial<PostData> {
+  const title = fileName.replace(/\.md$/, '').replace(/-/g, ' ');
+  const date = new Date().toISOString().split('T')[0]; // 格式：YYYY-MM-DD
+  return {
+    title,
+    date,
+    tags: ['common'],
+    category: 'common',
+    image: '/images/default-og-image.jpg',
+    keywords: '',
+  };
+}
+
 export const getSortedPostsData = cache(async (): Promise<PostData[]> => {
   if (cachedPosts) {
     return cachedPosts;
@@ -40,13 +53,15 @@ export const getSortedPostsData = cache(async (): Promise<PostData[]> => {
     const fileContents = await fs.readFile(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
-    const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image?: string };
+    const defaultMetadata = generateDefaultMetadata(fileName);
+    const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
     
     const updatedPostData: PostData = {
-      slug,
       ...postData,
+      slug,
       image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
       content: matterResult.content,
+      keywords: postData.keywords || '',
     };
     return updatedPostData;
   }));
@@ -70,13 +85,15 @@ export const getPostData = cache(async (slug: string): Promise<PostData> => {
   const fileContents = await fs.readFile(fullPath, 'utf8');
   const matterResult = matter(fileContents);
 
-  const postData = matterResult.data as { title: string; date: string; tags: string[]; category: string; image?: string };
+  const defaultMetadata = generateDefaultMetadata(matchingFile);
+  const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
   
   const updatedPostData: PostData = {
-    slug,
     ...postData,
+    slug,
     image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
     content: matterResult.content,
+    keywords: postData.keywords || '',
   };
 
   return updatedPostData;
@@ -123,13 +140,14 @@ export const searchPosts = cache(async (query: string): Promise<PostData[]> => {
     post.title.toLowerCase().includes(lowercaseQuery) ||
     post.content.toLowerCase().includes(lowercaseQuery) ||
     post.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
-    post.category.toLowerCase().includes(lowercaseQuery)
+    post.category.toLowerCase().includes(lowercaseQuery) ||
+    post.keywords.toLowerCase().includes(lowercaseQuery)
   );
 });
 
 function calculateSimilarity(post1: PostData, post2: PostData): number {
-  const text1 = `${post1.title} ${post1.content} ${post1.tags.join(' ')} ${post1.category}`.toLowerCase();
-  const text2 = `${post2.title} ${post2.content} ${post2.tags.join(' ')} ${post2.category}`.toLowerCase();
+  const text1 = `${post1.title} ${post1.content} ${post1.tags.join(' ')} ${post1.category} ${post1.keywords}`.toLowerCase();
+  const text2 = `${post2.title} ${post2.content} ${post2.tags.join(' ')} ${post2.category} ${post2.keywords}`.toLowerCase();
 
   const words1 = text1.split(/\s+/);
   const words2 = text2.split(/\s+/);
