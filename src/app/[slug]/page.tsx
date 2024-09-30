@@ -3,7 +3,9 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
-import { getPostData, getSortedPostsData, getAllTags, getAllCategories } from '../../utils/markdown';
+import { PostData } from '../../utils/markdown';
+import { getPostData, getSortedPostsData, getAllTags, getAllCategories } from '../../utils/serverUtils';
+import SocialShareButtons from '../../components/SocialShareButtons';
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const post = await getPostData(params.slug);
@@ -24,7 +26,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           </div>
           <div className="mb-8">
             <span className="font-semibold text-gray-700">Tags: </span>
-            {post.tags.map(tag => (
+            {post.tags.map((tag: string) => (
               <span key={tag} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700 mr-2 mb-2">
                 {tag}
               </span>
@@ -37,12 +39,18 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               {post.content}
             </ReactMarkdown>
           </div>
-          <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-            </svg>
-            Back to Home
-          </Link>
+          <SocialShareButtons 
+            url={`${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`} 
+            title={post.title} 
+          />
+          <div className="mt-8">
+            <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
         </article>
         <div className="w-full lg:w-1/3 space-y-8">
           <div className="bg-white p-6 rounded-xl shadow-md">
@@ -66,7 +74,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-gray-900">Tags</h2>
             <div className="flex flex-wrap gap-2">
-              {allTags.map(tag => (
+              {allTags.map((tag: string) => (
                 <Link key={tag} href={`/?tag=${tag}`} className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium hover:bg-indigo-200 transition-colors duration-300">
                   {tag}
                 </Link>
@@ -76,7 +84,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-gray-900">Categories</h2>
             <ul className="space-y-2">
-              {allCategories.map(category => (
+              {allCategories.map((category: string) => (
                 <li key={category}>
                   <Link href={`/?category=${category}`} className="block py-2 px-3 rounded-md text-gray-600 hover:bg-gray-100 transition-colors duration-300">
                     {category}
@@ -93,7 +101,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
 export async function generateStaticParams() {
   const posts = await getSortedPostsData();
-  return posts.map((post) => ({
+  return posts.map((post: PostData) => ({
     slug: post.slug,
   }));
 }
