@@ -6,15 +6,17 @@ import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
 interface SocialShareButtonsProps {
   url: string;
   title: string;
+  tags?: string[];
 }
 
-const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ url, title }) => {
+const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ url, title, tags = [] }) => {
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
+  const hashtags = tags.map(tag => tag.replace(/\s+/g, '')).join(',');
 
   const shareLinks = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+    twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}&via=YourTwitterHandle&hashtags=${hashtags}`,
     linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`,
     whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`
   };

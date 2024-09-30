@@ -6,6 +6,51 @@ import rehypeHighlight from 'rehype-highlight';
 import { PostData } from '../../utils/markdown';
 import { getPostData, getSortedPostsData, getAllTags, getAllCategories } from '../../utils/serverUtils';
 import SocialShareButtons from '../../components/SocialShareButtons';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPostData(params.slug);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const imageUrl = post.image ? `${siteUrl}${post.image}` : `${siteUrl}/default-og-image.jpg`;
+
+  return {
+    title: post.title,
+    description: post.content.substring(0, 200),
+    openGraph: {
+      title: post.title,
+      description: post.content.substring(0, 200),
+      url: `${siteUrl}/blog/${post.slug}`,
+      siteName: 'Your Blog Name',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      locale: 'en_US',
+      type: 'article',
+      publishedTime: post.date,
+      authors: ['Your Name'],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.content.substring(0, 200),
+      images: [imageUrl],
+      creator: '@YourTwitterHandle',
+      site: '@YourSiteTwitterHandle',
+    },
+    other: {
+      'twitter:label1': 'Written by',
+      'twitter:data1': 'Your Name',
+      'twitter:label2': 'Category',
+      'twitter:data2': post.category,
+    }
+  };
+}
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const post = await getPostData(params.slug);
@@ -41,7 +86,8 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           </div>
           <SocialShareButtons 
             url={`${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`} 
-            title={post.title} 
+            title={post.title}
+            tags={post.tags}
           />
           <div className="mt-8">
             <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-300">
