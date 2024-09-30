@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostData } from '../utils/markdown';
+import SearchBar from './SearchBar';
+import { useRouter } from 'next/navigation';
 
 interface BlogPostsProps {
   initialPosts: PostData[];
@@ -15,11 +17,12 @@ interface BlogPostsProps {
 
 export default function BlogPosts({ initialPosts, allTags, allCategories, searchParams, searchPosts }: BlogPostsProps) {
   const [posts, setPosts] = useState<PostData[]>(initialPosts);
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   const selectedTag = typeof searchParams.tag === 'string' ? searchParams.tag : null;
   const selectedCategory = typeof searchParams.category === 'string' ? searchParams.category : null;
   const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) : 1;
+  const searchQuery = typeof searchParams.search === 'string' ? searchParams.search : '';
 
   useEffect(() => {
     async function performSearch() {
@@ -109,6 +112,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
                     query: {
                       ...(selectedTag && { tag: selectedTag }),
                       ...(selectedCategory && { category: selectedCategory }),
+                      ...(searchQuery && { search: searchQuery }),
                       page: pageNum,
                     },
                   }}
@@ -130,13 +134,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
       <div className="w-full lg:w-1/3 space-y-8 lg:sticky lg:top-4 lg:self-start">
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">Search</h2>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          />
+          <SearchBar />
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-2xl font-bold mb-4 text-gray-900">Profile</h2>

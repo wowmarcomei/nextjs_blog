@@ -6,6 +6,7 @@ import rehypeHighlight from 'rehype-highlight';
 import { PostData } from '../../utils/markdown';
 import { getPostData, getSortedPostsData, getAllTags, getAllCategories } from '../../utils/serverUtils';
 import SocialShareButtons from '../../components/SocialShareButtons';
+import SearchBar from '../../components/SearchBar';
 import { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -101,11 +102,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
         <div className="w-full lg:w-1/3 space-y-8">
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-gray-900">Search</h2>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            />
+            <SearchBar />
           </div>
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-gray-900">Profile</h2>
