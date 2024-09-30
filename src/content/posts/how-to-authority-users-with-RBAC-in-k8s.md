@@ -1,3 +1,19 @@
+---
+title: 05-通过RBAC授权API对象的操作
+date: 2022-02-09 20:18:16
+updated: 2022-02-09 20:18:16
+description: Kubernetes 所有资源对象都是模型化的 API 对象，允许执行CRUD(Create、Read、Update、Delete)操作，通过RBAC可以设置基于角色控制CRUD操作。
+categories: 
+  - 技术笔记
+
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+
+keywords: kubernetes,k8s,RBAC,role,CRUD,API,
+---
 RBAC：即role-based access control，基于角色的访问控制。RBAC 鉴权机制使用 `rbac.authorization.k8s.io` [API 组](https://kubernetes.io/zh/docs/concepts/overview/kubernetes-api/#api-groups-and-versioning) 来驱动鉴权，通过 Kubernetes API 动态配置策略。
 
 ## RBAC的几个关键概念
@@ -50,13 +66,13 @@ e is 65537 (0x10001)
 
 ```
 
-使用刚刚创建的私钥创建一个**证书签名请求文件**：`laomei.csr`，要注意需要确保在`-subj`参数中指定用户名和组(CN表示用户名，O表示组)：
+使用刚刚创建的私钥创建一个**证书签名请求文件**：`laomei.csr`，要注意需要确保在 `-subj`参数中指定用户名和组(CN表示用户名，O表示组)：
 
 ```shell
 ➜ openssl req -new -key laomei.key -out laomei.csr -subj "/CN=laomei /O=laomeigroup"
 ```
 
-然后找到 Kubernetes 集群的 `CA` 证书，如果使用kubeadm 安装的集群，CA 相关证书位于 `/etc/kubernetes/pki/` 目录下面，如果是二进制方式搭建的，在最开始搭建集群的时候就已经指定好了 CA 的目录。利用该目录下面的 `ca.crt` 和 `ca.key`两个文件来批准上面的证书请求，生成最终的证书文件`laomei.crt`，我们这里设置证书的有效期为 500 天：
+然后找到 Kubernetes 集群的 `CA` 证书，如果使用kubeadm 安装的集群，CA 相关证书位于 `/etc/kubernetes/pki/` 目录下面，如果是二进制方式搭建的，在最开始搭建集群的时候就已经指定好了 CA 的目录。利用该目录下面的 `ca.crt` 和 `ca.key`两个文件来批准上面的证书请求，生成最终的证书文件 `laomei.crt`，我们这里设置证书的有效期为 500 天：
 
 ```shell
 ➜ openssl x509 -req -in laomei.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out laomei.crt -days 500
@@ -111,9 +127,9 @@ rules:
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"] # 也可以使用['*']  
 ```
 
-其中apiGroups包含两个，一个`core` API Group（在YAML中用空字符可表示核心组），POD属于`core` API组，Deployment 和 ReplicaSet 都属于 `apps` 这个 API Group，所以 `rules` 下面的 `apiGroups` 就综合了这几个资源的 API Group：["", "apps"]。
+其中apiGroups包含两个，一个 `core` API Group（在YAML中用空字符可表示核心组），POD属于 `core` API组，Deployment 和 ReplicaSet 都属于 `apps` 这个 API Group，所以 `rules` 下面的 `apiGroups` 就综合了这几个资源的 API Group：["", "apps"]。
 
-API资源对象包括我们希望限制的几个`deployments`,`replicasets`和`pods`。其中`verbs` 就是上面提到的可以对这些资源对象执行的操作，我们这里需要所有的操作方法，所以我们也可以使用['*']来代替。然后直接创建这个 Role：
+API资源对象包括我们希望限制的几个 `deployments`,`replicasets`和 `pods`。其中 `verbs` 就是上面提到的可以对这些资源对象执行的操作，我们这里需要所有的操作方法，所以我们也可以使用['*']来代替。然后直接创建这个 Role：
 
 ```bash
 ➜ kubectl apply -f laomei-role.yaml
@@ -140,7 +156,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-其中`subjects` 字段就是User资源对象，这里对应上面的 `User` 帐号 `laomei`，`roleRef`字段将上面的subject与角色Role或者clusterrole进行绑定。使用kubectl 创建上面的资源对象：
+其中 `subjects` 字段就是User资源对象，这里对应上面的 `User` 帐号 `laomei`，`roleRef`字段将上面的subject与角色Role或者clusterrole进行绑定。使用kubectl 创建上面的资源对象：
 
 ```bash
 ➜ kubectl apply -f laomei-rolebinding.yaml
@@ -149,7 +165,7 @@ rolebinding.rbac.authorization.k8s.io/laomei-rolebinding created
 
 ### 4. 测试
 
-使用上下文`laomei-context`操作集群。
+使用上下文 `laomei-context`操作集群。
 
 ```bash
 ➜ kubectl get pods --context=laomei-context
@@ -236,7 +252,7 @@ rules:
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ```
 
-这里定义的角色操作Pod 的权限只有`get`,`watch`,`list`权限，没有`create、delete、update` ，稍后可重点测试。
+这里定义的角色操作Pod 的权限只有 `get`,`watch`,`list`权限，没有 `create、delete、update` ，稍后可重点测试。
 
 创建该 Role 对象：
 
@@ -272,7 +288,7 @@ roleRef:
 rolebinding.rbac.authorization.k8s.io/laomei-sa-rolebinding created
 ```
 
-这里就将laomei-sa这个subject与laomei-sa-role完成了绑定，laomei-sa这个账号对Pod 有`get`,`watch`,`list`权限，对deployments有`get`, `list`, `watch`, `create`, `update`, `patch`, `delete`权限。
+这里就将laomei-sa这个subject与laomei-sa-role完成了绑定，laomei-sa这个账号对Pod 有 `get`,`watch`,`list`权限，对deployments有 `get`, `list`, `watch`, `create`, `update`, `patch`, `delete`权限。
 
 ### 4. 验证
 
@@ -297,6 +313,6 @@ laomei-sa-token-695h2                            kubernetes.io/service-account-t
 
 `events is forbidden: User "system:serviceaccount:kube-system:laomei-sa" cannot list events in the namespace "kube-system"`，这是因为当前登录用只被授权了访问 pod 和 deployment 的权限。
 
---------
+---
 
 全文完。

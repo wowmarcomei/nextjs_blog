@@ -1,3 +1,19 @@
+---
+title: 01-以Kubeadm上部署K8s集群
+date: 2021-12-26 22:31:41
+description: 使用Kubeadm快速在华为云上搭建最新V1.23.1版本Kubenetes,使用Flannel作为网络插件,使用Rook搭建存储。
+author: Laomei
+pinned: false
+categories: 
+  - 技术笔记
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+keywords: Kubeadm,kubernetes,k8s,华为云,1.23.1
+---
+
 ## 1.环境准备
 
 在华为云上申请3台ECS虚机服务器，临时测试使用，建议按需付费申请。选择VPC为*192.168.0.0/16*网段，将在这三个节点部署v1.23.1最新版本Kubernetes集群。为何要选三个节点？是因为准备实验ceph作为后端分布式存储，至少需要三个节点起，且需要一个裸盘作为ceph存储数据盘，所以在华为云上给每个ECS配置一个额外的100G空EVS块存储，具体信息如下表；选择flannel作为底层网络插件。

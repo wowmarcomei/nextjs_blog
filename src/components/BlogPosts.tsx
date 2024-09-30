@@ -36,7 +36,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
 
   const filteredPosts = posts.filter(post => 
     (!selectedTag || post.tags.includes(selectedTag)) &&
-    (!selectedCategory || post.category === selectedCategory)
+    (!selectedCategory || post.categories.includes(selectedCategory))
   );
 
   const postsPerPage = 10;
@@ -77,17 +77,25 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
                     {post.title}
                   </Link>
                 </h2>
-                <p className="text-gray-600 mb-6 text-lg">{post.content.substring(0, 150)}...</p>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <p className="text-gray-600 mb-6 text-lg">{post.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
                   {post.tags.map(tag => (
                     <Link key={tag} href={`/?tag=${tag}`} className="text-sm bg-indigo-100 text-indigo-800 rounded-full px-3 py-1 font-medium hover:bg-indigo-200 transition-colors duration-300">
                       {tag}
                     </Link>
                   ))}
                 </div>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {post.categories.map(category => (
+                    <Link key={category} href={`/?category=${category}`} className="text-sm bg-green-100 text-green-800 rounded-full px-3 py-1 font-medium hover:bg-green-200 transition-colors duration-300">
+                      {category}
+                    </Link>
+                  ))}
+                </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">
-                    {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | {post.category}
+                    {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {post.author && ` | By ${post.author}`}
                   </span>
                   <Link href={`/${post.slug}`} className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center">
                     Read more <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">

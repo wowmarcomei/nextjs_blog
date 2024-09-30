@@ -11,8 +11,8 @@ tags:
   - Centos
 
 keywords: 依赖包，本地仓库，repository,linux,centos,
-image: images/posts/Linux_logo.png
-meta_image: images/posts/Linux_logo.png
+
+image: Linux_logo.png
 ---
 
 公司内网安全区无法通互联网，原本可以通过yum命令直接下载安装的软件包没法用了，那有没有一种快捷的方法把这些软件包与对应的依赖包一起打包下来导入到内网呢？本文将简述方案。

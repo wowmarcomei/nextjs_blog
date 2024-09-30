@@ -1,3 +1,17 @@
+---
+title: 03-K8s从私有仓库中拉取镜像
+date: 2021-12-29 18:49:16
+updated: 2021-12-29 18:49:16
+description: 本文介绍如何使用 Secret从私有镜像仓库或代码仓库拉取镜像来创建负载。
+categories: 
+  - 技术笔记
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+keywords: kubernetes,k8s,private repository,image,docker,secret
+---
 本文介绍如何使用 [Secret](https://kubernetes.io/zh/docs/concepts/configuration/secret/) 从私有镜像仓库或代码仓库拉取镜像来创建 Pod。
 
 ## 准备工作
@@ -134,7 +148,7 @@ spec:
   - name: myregcred
 ```
 
-在`my-private-reg-pod.yaml` 文件中，使用私有仓库的镜像路径替换 `<your-private-image>`，例如：
+在 `my-private-reg-pod.yaml` 文件中，使用私有仓库的镜像路径替换 `<your-private-image>`，例如：
 
 ```
 janedoe/jdoe-private:v1
@@ -148,6 +162,7 @@ janedoe/jdoe-private:v1
 kubectl apply -f my-private-reg-pod.yaml
 kubectl get pod private-reg
 ```
---------
+
+---
 
 全文完。

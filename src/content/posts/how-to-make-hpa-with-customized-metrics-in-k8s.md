@@ -1,21 +1,34 @@
+---
+title: 08-基于自定义指标实现HPA弹性
+date: 2022-02-18 19:01:16
+updated: 2022-02-18 19:01:16
+description: 除了基于 CPU 和内存来进行自动扩缩容之外，有些业务需要基于自定义指标进行HPA弹性伸缩，通用做法是结合prometheus能力。
+categories: 
+  - 技术笔记
+pinned: false
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+
+keywords: kubernetes,k8s,HPA,metrics,prometheus,customized metrics
+image: kubernetes.png
+---
 除了基于 CPU 和内存来进行自动扩缩容之外，有些业务需要基于自定义指标进行HPA弹性伸缩，通用做法是结合prometheus能力。
 
 ![prometheus-hpa-service-metrics-1](https://laomeinote.com/images/posts/prometheus-hpa-service-metrics-1.png)
 
 如上图示，基于自定义指标进行HPA弹性的核心原理为：
 
-1.  业务能够暴露指标，注意是prometheus格式的指标，即能被prometheus识别，一般是暴露到prometheus的`/metrics`下。
-2.  Kubernetes并不能识别Prometheus格式指标，所以这时需要通过Prometheus Adapter将其进行转换，转换为Kubernetes metrics API.
-3.  Kubernetes的HPA控制器通过Kubernetes metrics API识别到业务指标变化，根据HPA策略来发起POD的弹性伸缩。
+1. 业务能够暴露指标，注意是prometheus格式的指标，即能被prometheus识别，一般是暴露到prometheus的 `/metrics`下。
+2. Kubernetes并不能识别Prometheus格式指标，所以这时需要通过Prometheus Adapter将其进行转换，转换为Kubernetes metrics API.
+3. Kubernetes的HPA控制器通过Kubernetes metrics API识别到业务指标变化，根据HPA策略来发起POD的弹性伸缩。
 
 ## 1\. 准备工作
 
 - 集群完成安装prometheus插件
-  
 - prometheus插件已经安装完成prometheus-adapter
-  
 - 业务定义暴露的指标
-  
 
 ## 2\. 验证步骤
 
@@ -246,7 +259,7 @@ Hello World!
 
 ![prometheus-hpa-service](https://laomeinote.com/images/posts/prometheus-hpa-service.png)
 
-通过`/metrics`来查看业务指标：
+通过 `/metrics`来查看业务指标：
 
 ![prometheus-hpa-service-metrics](https://laomeinote.com/images/posts/prometheus-hpa-service-metrics.png)
 
@@ -293,7 +306,7 @@ configmap/adapter-config edited
 
 ```
 
-修改`adapter-config`，在`rule`中增加如下内容：
+修改 `adapter-config`，在 `rule`中增加如下内容：
 
 ```yaml
     - seriesQuery: '{__name__=~"^http_requests.*_total$",kubernetes_namespace!="",kubernetes_pod!=""}'
@@ -427,7 +440,7 @@ sample-httpserver   Deployment/sample-httpserver   66m/500m         1         10
 ➜  echo "GET http://xxxx:30826" | vegeta attack -duration 60s -connections 10 -rate 40 | vegeta report
 ```
 
-对应在prometheus使用PromQL语句`sum(rate(http_requests_total[30s])) by (pod)`上可观测到业务指标变化：
+对应在prometheus使用PromQL语句 `sum(rate(http_requests_total[30s])) by (pod)`上可观测到业务指标变化：
 
 ![prometheus-hpa-service-test](https://laomeinote.com/images/posts/prometheus-hpa-service-test.png)
 
@@ -537,7 +550,6 @@ sample-httpserver-6784dcf77c-df4cd   0/1     Terminating         0          92s
 sample-httpserver-6784dcf77c-w9blj   0/1     Terminating         0          77s
 sample-httpserver-6784dcf77c-w9blj   0/1     Terminating         0          77s
 ```
-
 
 参考文章：
 

@@ -1,9 +1,23 @@
-![sealed_secret](/images/posts/sealed_secret.png)
+---
+title: "安全无小事：如何将容器秘钥等信息安全地存放在Git仓库？"
+date: 2024-06-28T18:28:17+08:00
+description: 在 Kubernetes 中，我们使用 Secrets 来保存敏感数据，例如密码、 API 密钥和证书等等，但Secret本身只做base64编码并不安全，为此我们可以基于SealedSecret自定义一个新的CRD对象进行加密再存储能。
+categories: 
+  - 技术笔记
+tags: 
+  - Kubernetes
+  - K8s
+  - Secret
+  - 安全
+image: sealed_secret.png
 
+keywords: GitOps,容器,秘钥,SealedSecret,Secret
+---
+![sealed_secret](/images/posts/sealed_secret.png)
 
 在 Kubernetes 中，我们使用 Secrets 来保存敏感数据，例如密码、 API 密钥和证书等等。想象一下，Secrets 就像保险箱，用来存放业务不想公开的信息。开发者可以在代码中轻松引用这些 Secrets，而无需直接暴露敏感信息。
 
-然而，这些“保险箱”的安全性并没有想象中那么高。实际上，它们只是对这些信息进行了一层简单的 base64 编码，任何人都可以轻松解密。因此，直接将 Secrets 文件存放在像 Git 这样的代码仓库中是不安全的。但这同时也带来了另一个问题：如果每次部署都需要手动创建 Secrets，那么就会影响到 GitOps 的流畅性。 
+然而，这些“保险箱”的安全性并没有想象中那么高。实际上，它们只是对这些信息进行了一层简单的 base64 编码，任何人都可以轻松解密。因此，直接将 Secrets 文件存放在像 Git 这样的代码仓库中是不安全的。但这同时也带来了另一个问题：如果每次部署都需要手动创建 Secrets，那么就会影响到 GitOps 的流畅性。
 
 如何解决这个问题呢？ Bitnami 实验室针对这个问题提供了一个名为 [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) 的开源工具来解决这个问题。
 
@@ -17,57 +31,32 @@
    **Sealed Secrets主要架构**：
 
    ![sealed secret](/images/posts/sealed-secret-arch.png)
-
-
 2. 工作流程:
 
    - 使用 kubeseal 加密普通的 Kubernetes Secret
-
    - 生成加密后的 SealedSecret 自定义资源
-
    - **将 SealedSecret 提交到Git版本控制系统， Secret不提交到Git版本控制系统**
-
    - 部署到集群后,控制器会自动解密 SealedSecret 并创建对应的 Secret
-
    - 应用最终使用解密之后的Secret
-
-     
-
 3. 安全性:
 
    - 使用RSA 非对称加密算法，使用2048位的RSA密钥对，公钥用于加密,私钥用于解密。
    - 公钥存储在集群中，而私钥只存在于控制器中不会暴露给外部。
    - 即使获得 SealedSecret，没有私钥也无法解密。
-
-
-
 4. 加密过程:
 
    - 用户使用kubeseal工具加密Secret。
-
    - kubeseal使用公钥对Secret数据进行加密。
-
    - 生成的SealedSecret对象包含加密后的数据。
-
-     
-
 5. 解密过程:
 
    - Sealed Secrets控制器在集群中运行。
-   
    - 控制器使用私钥解密SealedSecret。
-   
    - 解密后的Secret被应用到集群中。
-   
-     
-
-
 6. 潜在风险:
 
    - 如果控制器被攻破,私钥可能泄露。
    - 如果公钥被替换,可能导致错误的加密。
-
-
 
 ## 使用Sealed Secret
 
@@ -82,8 +71,6 @@ $ wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.0/
 $ tar xzvf kubeseal-0.27.0-linux-amd64.tar.gz
 $ sudo install -m 755 kubeseal /usr/local/bin/kubeseal
 ```
-
-
 
 ### 步骤2：在K8s集群部署 SealedSecret 控制器
 
@@ -118,8 +105,6 @@ NAME                                         READY   STATUS    RESTARTS   AGE
 sealed-secrets-controller-685cdb9dcd-8qks9   1/1     Running   0          91s
 ```
 
-
-
 ### 步骤3：创建一个普通Secret对象
 
 创建一个名为 `mysecret.yaml` 的文件，在里面定义用户名密码等信息，内容如下：
@@ -136,8 +121,6 @@ stringData:
 ```
 
 显然这里的用户名密码都是显性的，即使是做了base64编码之后也可以轻易解码，都不能直接上传到Git仓库。
-
-
 
 ## 步骤 4: 使用 kubeseal 加密 Secret
 
@@ -171,8 +154,6 @@ spec:
       namespace: default
     type: Opaque
 ```
-
-
 
 ## 步骤 5: 创建SealedSecret对象
 
@@ -218,10 +199,10 @@ metadata:
 type: Opaque
 ```
 
-可以看到base64编码的`username`与`password`。
+可以看到base64编码的 `username`与 `password`。
 
-- `username`值为`YWRtaW4=`
-- `password`值为`c3VwZXJzZWNyZXQ=`
+- `username`值为 `YWRtaW4=`
+- `password`值为 `c3VwZXJzZWNyZXQ=`
 
 解码后查看内容如下：
 
@@ -234,8 +215,6 @@ supersecret
 ```
 
 意味着我们创建SealedSecret对象时，经过controller处理后，最终生产了可用的secret对象。
-
-
 
 ## 步骤 6: pod引用secret对象
 

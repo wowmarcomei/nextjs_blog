@@ -11,10 +11,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-series:
-  - K8s
-image: images/posts/kubernetes.png
-meta_image: images/posts/kubernetes.png
+image:  kubernetes.png
 keywords: kubernetes,k8s,ConfigMap,
 ---
 

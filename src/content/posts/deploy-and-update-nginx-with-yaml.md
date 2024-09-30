@@ -10,11 +10,8 @@ tags:
   - Kubernetes
   - CloudNative
 
-series:
-  - K8s
-image: images/posts/kubernetes.png
-meta_image: images/posts/kubernetes.png
-keywords: kubernetes,k8s,nginx,yaml,
+image: kubernetes.png
+keywords: kubernetes,k8s,nginx,yaml
 ---
 
 通过YAML基于kubectl使用原生方式跟API-Server快速交互，创建对应的API对象。

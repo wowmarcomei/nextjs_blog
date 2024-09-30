@@ -1,8 +1,22 @@
+---
+title: 06-容器编排之Docker-Compose
+date: 2021-12-25 22:01:41
+updated: 2021-12-25 22:01:41
+description: Docker Compose是Docker的编排开源组件，Docker的三架马车之一，主要用来编排docker容器。本文将简述Docker compose的使用。
+categories: 
+  - 技术笔记
+tags: 
+  - Docker
+  - Docker-Compose
+image: docker-logo.png
+
+keywords: Docker,Docker-Compose
+---
 Docker Compose是什么？它是Docker的编排开源组件，后被Docker收购，是当年社区内火爆程度仅次于Docker的开源项目，Docker的三架马车之一，主要用来编排docker容器。本文将简述Docker compose的使用。
 
 ## 1.Docker Compose组件
 
-*Compose* 组件是Docker官方基于Python开发的Docker编排的组件。之前我们启动多个容器的时候，需要为每个容器编写`dockerfile`，分别使用`docker run`或者`docker exec`启动它们。通过*Compose*咱们就可以一次性在定义好多个容器，一次性启动，实现编排功能。它的两个重点内容：
+*Compose* 组件是Docker官方基于Python开发的Docker编排的组件。之前我们启动多个容器的时候，需要为每个容器编写 `dockerfile`，分别使用 `docker run`或者 `docker exec`启动它们。通过*Compose*咱们就可以一次性在定义好多个容器，一次性启动，实现编排功能。它的两个重点内容：
 
 - `docker-compose.yml`： *Compose*的配置文件
 - `docker-compose`： *Compose*的命令行工具
@@ -27,7 +41,7 @@ $ sudo rm /usr/local/bin/docker-compose
 
 ### 1.2 使用Compose编排flask实例
 
-这个实例中，我们使用使用创建一个`flask demo`应用，使用`dockerfile`编写`flask`应用镜像，使用*Compose*基于`dockerfile`创建的`flask`镜像拉取一个`flask`容器和其依赖的`redis`容器。
+这个实例中，我们使用使用创建一个 `flask demo`应用，使用 `dockerfile`编写 `flask`应用镜像，使用*Compose*基于 `dockerfile`创建的 `flask`镜像拉取一个 `flask`容器和其依赖的 `redis`容器。
 
 来看下这个测试目录结构：
 
@@ -45,20 +59,20 @@ $ sudo rm /usr/local/bin/docker-compose
 0 directories, 4 files
 ```
 
-在`root/flask-demo`下新建了4个文件，分别是`app.py`-flask源程序，`requirements.txt`-flask程序安装的依赖程序，`dockerfile`-构建flask镜像的dockerfile文件，`docker-compose.yml`-编排flask和redis容器的compose文件。
+在 `root/flask-demo`下新建了4个文件，分别是 `app.py`-flask源程序，`requirements.txt`-flask程序安装的依赖程序，`dockerfile`-构建flask镜像的dockerfile文件，`docker-compose.yml`-编排flask和redis容器的compose文件。
 
 - `app.py` - flask源程序
 
   ```python
   import time
-  
+
   import redis
   from flask import Flask
-  
+
   app = Flask(__name__)
   cache = redis.Redis(host='redis', port=6379)
-  
-  
+
+
   def get_hit_count():
       retries = 5
       while True:
@@ -69,56 +83,52 @@ $ sudo rm /usr/local/bin/docker-compose
                   raise exc
               retries -= 1
               time.sleep(0.5)
-  
-  
+
+
   @app.route('/')
   def hello():
       count = get_hit_count()
       return 'Hello World! I have been seen {} times.\n'.format(count)
   ```
-
 - `requirements.txt`-flask程序安装的依赖程序
 
   ```js
   flask
   redis
   ```
-
 - `dockerfile`-构建flask镜像的dockerfile文件
 
   ```dockerfile
   #设置base镜像
   FROM python:3.7-alpine
-  
+
   #设置容器的工作目录
   WORKDIR /code
-  
+
   #设置环境变量
   ENV FLASK_APP app.py
   ENV FLASK_RUN_HOST 0.0.0.0
-  
+
   #将当期目录下的python依赖文件copy至容器文件系统中
   COPY requirements.txt requirements.txt
   COPY . .
-  
+
   #设置镜像源，安装gcc,musl-dev和linux-headers
   RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
     && apk add --no-cache gcc musl-dev linux-headers\
     && pip install -r requirements.txt
-  
+
   CMD ["flask", "run"]
   ```
 
   > - 从Python 3.7的alpine映像开始构建flask映像
-  > - 将容器的工作目录设置为`/code`
+  > - 将容器的工作目录设置为 `/code`
   > - 设置flask命令使用的环境变量
   > - 复制requirements.txt并
-  > - 将`.`项目中的当前目录复制到`.`映像中的工作目录`/code`
+  > - 将 `.`项目中的当前目录复制到 `.`映像中的工作目录 `/code`
   > - 修改源以便快速下载安装gcc， musl-dev，linux-headers与Python依赖项
   > - 将容器的默认命令设置为flask run。
-
-  
-
+  >
 - `docker-compose.yml`-编排flask和redis容器的compose文件
 
   ```yaml
@@ -132,9 +142,10 @@ $ sudo rm /usr/local/bin/docker-compose
       image: "redis:latest" #引用官网的redis镜像
   ```
 
-  > 在这里，通过`docker-compose.yml`文件，编排了两个容器，其中第一个`web`容器通过`build`命令对`dockerfile`文件进行构建生成`flask`镜像后启动容器；第二个`redis`容器通过官方redis镜像构建。
+  > 在这里，通过 `docker-compose.yml`文件，编排了两个容器，其中第一个 `web`容器通过 `build`命令对 `dockerfile`文件进行构建生成 `flask`镜像后启动容器；第二个 `redis`容器通过官方redis镜像构建。
+  >
 
-  通过`docker-compose up`启动两个容器即可。
+  通过 `docker-compose up`启动两个容器即可。
 
   ```shell
   [root@VM-95-141-centos flask-demo]# docker-compose up
@@ -158,7 +169,7 @@ $ sudo rm /usr/local/bin/docker-compose
   Removing intermediate container d3b237395dea
   Step 7/8 : RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories   && apk add --no-cache gcc musl-dev linux-headers  && pip install -r requirements.txt
    ---> Running in 0e6c2354c9d2
-  
+
   fetch https://mirrors.ustc.edu.cn/alpine/v3.14/main/x86_64/APKINDEX.tar.gz
   fetch https://mirrors.ustc.edu.cn/alpine/v3.14/community/x86_64/APKINDEX.tar.gz
   (1/13) Installing libgcc (10.3.1_git20210424-r2)
@@ -242,6 +253,7 @@ $ sudo rm /usr/local/bin/docker-compose
   Hello World! I have been seen 3 times.
   [root@VM-95-141-centos flask-demo]#
   ```
---------
+
+---
 
 全文完。

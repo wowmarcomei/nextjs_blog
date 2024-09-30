@@ -1,3 +1,21 @@
+---
+title: 07-基于CPU和内存指标实现HPA弹性
+date: 2022-02-15 20:12:21
+updated: 2022-02-15 20:12:21
+description: Kubernetes中弹性伸缩最主要的就是使用HPA（Horizontal Pod Autoscaling）和CA（Cluster AutoScaling）两种弹性伸缩策略，HPA负责工作负载弹性伸缩，也就是应用层面的弹性伸缩。
+categories: 
+  - 技术笔记
+
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+
+keywords: kubernetes,k8s,HPA,metrics
+series:
+  - K8s
+image: kubernetes.png
+---
 Kubernetes中弹性伸缩最主要的就是使用HPA（Horizontal Pod Autoscaling）和CA（Cluster AutoScaling）两种弹性伸缩策略，HPA负责工作负载弹性伸缩，也就是应用层面的弹性伸缩，CA负责节点弹性伸缩，也就是资源层面的弹性伸缩。
 
 通常情况下，两者需要配合使用，因为HPA需要集群有足够的资源才能扩容成功，当集群资源不够时需要CA扩容节点，使得集群有足够资源；而当HPA缩容后集群会有大量空余资源，这时需要CA缩容节点释放资源，才不至于造成浪费。
@@ -10,22 +28,18 @@ Kubernetes中弹性伸缩最主要的就是使用HPA（Horizontal Pod Autoscalin
 
 ## 2\. 工作原理
 
-1.  在负载中指定多个POD副本，metrics-server可收集到这些POD使用的CPU与内存度量数据；
-2.  创建一个HorizontalPodAutoscaler对象，在对象的定义中指定CPU与内存策略，比如超过CPU 50%时扩容POD；
-3.  模拟CPU和内存增加场景，使得POD加大CPU和内存使用量，触发HPA策略生效。
+1. 在负载中指定多个POD副本，metrics-server可收集到这些POD使用的CPU与内存度量数据；
+2. 创建一个HorizontalPodAutoscaler对象，在对象的定义中指定CPU与内存策略，比如超过CPU 50%时扩容POD；
+3. 模拟CPU和内存增加场景，使得POD加大CPU和内存使用量，触发HPA策略生效。
 
 **扩缩容决策算法：**HPA controller根据当前指标和期望指标来计算缩放比例，计算公式如下：
 
 **desiredReplicas = ceil\[currentReplicas * ( currentMetricValue / desiredMetricValue )\]**
 
 - 参数1：currentMetricValue 表示当前的值
-  
 - 参数2：desiredMetricValue 表示期望的值
-  
 - 参数3：currentReplicas 表示当前的POD副本数
-  
 - 参数4：desiredReplicas 表示希望扩容后的POD副本数
-  
 
 比如：有一个负载，创建了一个POD，它当前CPU利用率是20%，我们期望它的利用率不要超过30%，即desiredMetricValue = 30%；当它业务激增到60%的时候，currentMetricValue = 60%；
 
@@ -33,12 +47,10 @@ Kubernetes中弹性伸缩最主要的就是使用HPA（Horizontal Pod Autoscalin
 
 在实际过程中，可能会遇到实例数值反复伸缩，导致集群震荡。为了保证稳定性，HPA controller从以下几个方面进行优化：：
 
-- 冷却时间：在1.11版本以及之前的版本，社区引入了horizontal-pod-autoscaler-downscale-stabilization-window和horizontal-pod-autoScaler-upscale-stabilization-window这两个启动参数代表缩容冷却时间和扩容冷却时间，这样保证在冷却时间内，跳过扩缩容。1.14版本之后引入延迟队列，保存一段时间内每一次检测的决策建议，然后根据当前所有有效的决策建议来进行决策，从而保证期望的副本数尽量小的发生变更，保证稳定性。如，设置`downscaleWindow`的值为1m表示1分钟内不缩容,`upscaleWindow`的值为1m表示1分钟内不扩容。
-  
+- 冷却时间：在1.11版本以及之前的版本，社区引入了horizontal-pod-autoscaler-downscale-stabilization-window和horizontal-pod-autoScaler-upscale-stabilization-window这两个启动参数代表缩容冷却时间和扩容冷却时间，这样保证在冷却时间内，跳过扩缩容。1.14版本之后引入延迟队列，保存一段时间内每一次检测的决策建议，然后根据当前所有有效的决策建议来进行决策，从而保证期望的副本数尽量小的发生变更，保证稳定性。如，设置 `downscaleWindow`的值为1m表示1分钟内不缩容,`upscaleWindow`的值为1m表示1分钟内不扩容。
 - 忍受度：可以看成一个缓冲区，当实例变化范围在忍受范围之内的话，保持原有的实例数不变。
-  
-    比如：CPU缓冲区为30%-50%，表示当前CPU利用率在30%~50%之间时不会扩容缩容，只有低于30%时才会缩容，高于50%时才会扩容。
-    
+
+  比如：CPU缓冲区为30%-50%，表示当前CPU利用率在30%~50%之间时不会扩容缩容，只有低于30%时才会缩容，高于50%时才会扩容。
 
 ## 3\. 测试验证
 
@@ -46,7 +58,7 @@ Kubernetes中弹性伸缩最主要的就是使用HPA（Horizontal Pod Autoscalin
 
 ### 3.1 创建工作负载
 
-基于Nginx镜像创建无状态工作负载，副本数为1。负载`01-nginx-demo.yaml`内容如下：
+基于Nginx镜像创建无状态工作负载，副本数为1。负载 `01-nginx-demo.yaml`内容如下：
 
 ```yaml
 kind: Deployment
@@ -88,7 +100,7 @@ NAME                     READY   STATUS    RESTARTS   AGE    IP           NODE  
 nginx-5dbc9b8ddc-7wbc7   1/1     Running   0          2m6s   12.11.0.52   10.247.154.39   <none>           <none>
 ```
 
-这里可见一个名为`nginx-5dbc9b8ddc-7wbc7`的POD已经在`running`了，其获取到一个集群内部IP`12.11.0.52`。接下来创建一个HPA策略，并逐步增加该POD的CPU负载触发HPA弹性。
+这里可见一个名为 `nginx-5dbc9b8ddc-7wbc7`的POD已经在 `running`了，其获取到一个集群内部IP `12.11.0.52`。接下来创建一个HPA策略，并逐步增加该POD的CPU负载触发HPA弹性。
 
 ### 3.2 创建CPU相关HPA策略
 
@@ -120,9 +132,9 @@ spec:
         targetAverageUtilization: 50
 ```
 
-该策略关联了名为`nginx`的Deployment，期望CPU使用率为`50%`： targetAverageUtilization 为50。指明了最大副本数`maxReplicas`为100，最小副本数为`minReplicas`为1。
+该策略关联了名为 `nginx`的Deployment，期望CPU使用率为 `50%`： targetAverageUtilization 为50。指明了最大副本数 `maxReplicas`为100，最小副本数为 `minReplicas`为1。
 
-另外有两条注解`annotations`，一条是CPU的阈值范围，最低40，最高55，表示CPU使用率在40%到55%之间时，不会扩缩容，防止小幅度波动造成影响。另一条是扩缩容时间窗，表示策略成功触发后，在缩容/扩容冷却时间内，不会再次触发缩容/扩容，以防止短期波动造成影响。
+另外有两条注解 `annotations`，一条是CPU的阈值范围，最低40，最高55，表示CPU使用率在40%到55%之间时，不会扩缩容，防止小幅度波动造成影响。另一条是扩缩容时间窗，表示策略成功触发后，在缩容/扩容冷却时间内，不会再次触发缩容/扩容，以防止短期波动造成影响。
 
 如果这条HPA策略生效了，那什么时候扩容缩容呢？根据上面的公式：**desiredReplicas = ceil\[currentReplicas * ( currentMetricValue / desiredMetricValue )\]**
 
@@ -147,7 +159,7 @@ NAME          REFERENCE                TARGETS   MINPODS   MAXPODS   REPLICAS   
 hpa-example   Deployment/hpa-example   0%/50%    1         100       1          44s
 ```
 
-HPA策略创建成功后，短暂时刻内获取不到指标，显示的TARGETS为`unknown`，片刻后数字变为`0`。 也可通过`kubectl top`命令检查Node与POD指标是否能正常获取：
+HPA策略创建成功后，短暂时刻内获取不到指标，显示的TARGETS为 `unknown`，片刻后数字变为 `0`。 也可通过 `kubectl top`命令检查Node与POD指标是否能正常获取：
 
 ```bash
 ➜  kubectl top node #检查Node节点指标
@@ -274,7 +286,7 @@ mount -t ramfs ramfs z/
 dd if=/dev/zero of=z/file bs=1M count=128 #使用 dd 在该目录下创建一个 128M 的文件
 ```
 
-2）通过`stress` 工具和 [`lookbusy`](http://www.devin.com/lookbusy/) 工具实现精准、可控和易用的控制。
+2）通过 `stress` 工具和 [`lookbusy`](http://www.devin.com/lookbusy/) 工具实现精准、可控和易用的控制。
 
 如：
 
@@ -292,7 +304,7 @@ lookbusy -c 0 -d 1GB -b 1MB -D 10 # 每 10 毫秒，循环进行 1MB 磁盘写�
 #以上命令的参数均可结合使用，同时对系统多个维度施加压力。
 ```
 
-这两种方法都可以单纯模拟内存增加，但是方法1需要在容器内部mount volume，需修改docker启动方式时加上`--privileged`，方法2又需要在容器镜像中安装stress和lookbusy工具，比较麻烦不单独演示。
+这两种方法都可以单纯模拟内存增加，但是方法1需要在容器内部mount volume，需修改docker启动方式时加上 `--privileged`，方法2又需要在容器镜像中安装stress和lookbusy工具，比较麻烦不单独演示。
 
 ### 3.5 暴露服务并循环访问服务触发HPA
 
@@ -400,4 +412,5 @@ hpa-example   Deployment/nginx   1%/49%, 0%/25%          1         100       1  
 最后一条log显示已经POD数已经将为1了。
 
 ---
+
 全文完。

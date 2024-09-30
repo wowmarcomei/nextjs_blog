@@ -2,10 +2,12 @@
 title: 'Getting Started with Next.js'
 date: '2024-03-15'
 tags: ['nextjs', 'react', 'web development']
-category: 'Frontend'
-image: '/images/github-actions-post.png'
+categories: 
+     - Frontend
+image:  github-actions-post.png 
+keywords: nextjs
+description: Next.js is a powerful React framework that makes it easy to build server-side rendered and statically generated web applications.
 ---
-
 # Getting Started with Next.js
 
 Next.js is a powerful React framework that makes it easy to build server-side rendered and statically generated web applications.

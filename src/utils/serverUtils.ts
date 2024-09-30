@@ -26,16 +26,18 @@ async function getViews(): Promise<Record<string, number>> {
   return cachedViews || {};
 }
 
-function generateDefaultMetadata(fileName: string): Partial<PostData> {
+function generateDefaultMetadata(fileName: string, content: string): Partial<PostData> {
   const title = fileName.replace(/\.md$/, '').replace(/-/g, ' ');
   const date = new Date().toISOString().split('T')[0]; // 格式：YYYY-MM-DD
   return {
     title,
     date,
     tags: ['common'],
-    category: 'common',
+    categories: ['Uncategorized'],
     image: '/images/default-og-image.jpg',
     keywords: '',
+    description: content.substring(0, 25),
+    pinned: false,
   };
 }
 
@@ -53,7 +55,7 @@ export const getSortedPostsData = cache(async (): Promise<PostData[]> => {
     const fileContents = await fs.readFile(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
-    const defaultMetadata = generateDefaultMetadata(fileName);
+    const defaultMetadata = generateDefaultMetadata(fileName, matterResult.content);
     const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
     
     const updatedPostData: PostData = {
@@ -62,6 +64,10 @@ export const getSortedPostsData = cache(async (): Promise<PostData[]> => {
       image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
       content: matterResult.content,
       keywords: postData.keywords || '',
+      categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
+      tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
+      description: postData.description || matterResult.content.substring(0, 25),
+      pinned: postData.pinned || false,
     };
     return updatedPostData;
   }));
@@ -85,7 +91,7 @@ export const getPostData = cache(async (slug: string): Promise<PostData> => {
   const fileContents = await fs.readFile(fullPath, 'utf8');
   const matterResult = matter(fileContents);
 
-  const defaultMetadata = generateDefaultMetadata(matchingFile);
+  const defaultMetadata = generateDefaultMetadata(matchingFile, matterResult.content);
   const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
   
   const updatedPostData: PostData = {
@@ -94,6 +100,10 @@ export const getPostData = cache(async (slug: string): Promise<PostData> => {
     image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
     content: matterResult.content,
     keywords: postData.keywords || '',
+    categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
+    tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
+    description: postData.description || matterResult.content.substring(0, 25),
+    pinned: postData.pinned || false,
   };
 
   return updatedPostData;
@@ -109,7 +119,7 @@ export const getAllTags = cache(async (): Promise<string[]> => {
 export const getAllCategories = cache(async (): Promise<string[]> => {
   const posts = await getSortedPostsData();
   const categories = new Set<string>();
-  posts.forEach(post => post.category && categories.add(post.category));
+  posts.forEach(post => post.categories?.forEach(category => categories.add(category)));
   return Array.from(categories);
 });
 
@@ -140,14 +150,16 @@ export const searchPosts = cache(async (query: string): Promise<PostData[]> => {
     post.title.toLowerCase().includes(lowercaseQuery) ||
     post.content.toLowerCase().includes(lowercaseQuery) ||
     post.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
-    post.category.toLowerCase().includes(lowercaseQuery) ||
-    post.keywords.toLowerCase().includes(lowercaseQuery)
+    post.categories.some(category => category.toLowerCase().includes(lowercaseQuery)) ||
+    post.keywords.toLowerCase().includes(lowercaseQuery) ||
+    post.description.toLowerCase().includes(lowercaseQuery) ||
+    (post.author && post.author.toLowerCase().includes(lowercaseQuery))
   );
 });
 
 function calculateSimilarity(post1: PostData, post2: PostData): number {
-  const text1 = `${post1.title} ${post1.content} ${post1.tags.join(' ')} ${post1.category} ${post1.keywords}`.toLowerCase();
-  const text2 = `${post2.title} ${post2.content} ${post2.tags.join(' ')} ${post2.category} ${post2.keywords}`.toLowerCase();
+  const text1 = `${post1.title} ${post1.content} ${post1.tags.join(' ')} ${post1.categories.join(' ')} ${post1.keywords} ${post1.description}`.toLowerCase();
+  const text2 = `${post2.title} ${post2.content} ${post2.tags.join(' ')} ${post2.categories.join(' ')} ${post2.keywords} ${post2.description}`.toLowerCase();
 
   const words1 = text1.split(/\s+/);
   const words2 = text2.split(/\s+/);
@@ -181,10 +193,12 @@ export const getRelatedPosts = cache(async (currentPost: PostData, limit: number
       }
     });
     
-    // Check for matching category
-    if (post.category === currentPost.category) {
-      score += 3;
-    }
+    // Check for matching categories
+    currentPost.categories.forEach(category => {
+      if (post.categories.includes(category)) {
+        score += 3;
+      }
+    });
 
     // Calculate content similarity
     const similarity = calculateSimilarity(currentPost, post);

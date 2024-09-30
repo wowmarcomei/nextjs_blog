@@ -1,3 +1,22 @@
+---
+title: 04-POD初始化与滚动更新
+date: 2022-01-13 19:51:16
+updated: 2022-01-13 19:51:16
+description: 本文介绍POD的生命周期与使用滚动更新避免应用宕机。
+categories: 
+  - 技术笔记
+
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+
+image: kubernetes.png
+
+keywords: kubernetes,k8s,pod,生命周期,rolling update
+---
+
+
 ## 1\. POD的生命周期
 
 一个 Pod 的完整生命周期过程包含 `Init Container`、`Pod Hook`、`健康检查` 三个主要部分，如下图所示。

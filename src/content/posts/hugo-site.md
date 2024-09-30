@@ -1,4 +1,20 @@
+---
+title: "使用Hugo快速建站"
+date: 2023-04-22T18:28:17+08:00
+description: 使用hugo构建静态网站，github action上传到腾讯云cos对象存储中，并自动更新触发CDN更新。
+categories: 
+  - 建站笔记
+tags: 
+  - hugo
+  - 腾讯云
+  - cdn
+  - github action
+image: hugo.png
+
+keywords: hugo,腾讯云,cdn, github action, serverless
+---
 ![qclouod-ssl](/images/posts/hugo.png)
+
 ## 1.整体思路
 
 之前一直在使用Hexo与webify托管站点，hexo的主题丰富、seo友好、webify静态托管也很省钱，小站点的成本几乎是免费的；吸引我改用hugo的原因主要是因为两点：
@@ -10,7 +26,7 @@
 
 ![build_hugo](/images/posts/build_site_with_hugo.png)
 
->注意： 使用腾讯CDN在国内进行CDN加速时，需要到工信部备案域名，海外加速时无需备案。
+> 注意： 使用腾讯CDN在国内进行CDN加速时，需要到工信部备案域名，海外加速时无需备案。
 
 ## 2.构建本地Hugo站点
 
@@ -19,6 +35,7 @@
 ### 2.1 安装Hugo
 
 参考[官网指导文档](https://gohugo.io/installation/)安装对应版本Hugo Extended，安装完成后可查看hugo版本,如：
+
 ```bash
 $ hugo version
 hugo v0.111.0-3fa8bb8318114cd69315eadd35bda169e6a8ca4b+extended linux/amd64 BuildDate=2023-03-01T20:57:44Z VendorInfo=gohugoio
@@ -26,47 +43,56 @@ hugo v0.111.0-3fa8bb8318114cd69315eadd35bda169e6a8ca4b+extended linux/amd64 Buil
 
 ### 2.2 创建站点
 
-通过`hugo new site quickstart`一键创建站点。
+通过 `hugo new site quickstart`一键创建站点。
 
 ### 2.3 选择主题
 
 给站点选择一个默认主题并编辑设置主题内容，如选择[hugo-theme-zzo](https://github.com/zzossig/hugo-theme-zzo)主题。
+
 ```bash
 $ cd quickstart
 $ git init
 $ git submodule add https://github.com/zzossig/hugo-theme-zzo.git themes/zzo
 $ cp -fr themes/zzo/exampleSite/* ./ 
 ```
-选择`hugo-theme-zzo`主题并将其演示站点的配置与内容拷贝至hugo根目录。其他配置可参考[主题官网指导](https://zzo-docs.vercel.app/zzo/configuration/configfiles/) 。
+
+选择 `hugo-theme-zzo`主题并将其演示站点的配置与内容拷贝至hugo根目录。其他配置可参考[主题官网指导](https://zzo-docs.vercel.app/zzo/configuration/configfiles/) 。
 
 ### 2.4 创建内容
 
 可使用hugo命令生成页面。
+
 ```bash
 $ hugo new posts/my-first-post.md
 ```
-这将会在`content/posts`目录生成`my-first-post.md`文件，按照markdown格式编辑文件内容即可。后续也可直接在该目录添加文件，而不用通过命令方式创建。
+
+这将会在 `content/posts`目录生成 `my-first-post.md`文件，按照markdown格式编辑文件内容即可。后续也可直接在该目录添加文件，而不用通过命令方式创建。
 
 ### 2.5 生成网站
 
 hugo编译创建静态网站，如果是需要将文件部署到服务器并通过Nginx进行代理提供服务，则需要生成最终的静态文件：
+
 ```bash
 $ hugo build #在根目录下生成public目录，即为静态内容站点
 ```
+
 public目录即为静态内容站点的所有内容，可将其打包至服务器上。如果需要在本地预览，则可启动本地服务器：
+
 ```bash
 $ hugo server
 ```
 
 ## 3.托管至腾讯COS
+
 如果不想通过服务器部署站点，则可以托管到对象存储中，设置桶属性为**静态网站托管**。腾讯云COS的配置使用步骤大致如下：
 
-1. 选择region创建COS桶，设置访问权限为`公有读私有写`。
-2. 在基础配置中启用静态网站，指定`索引文档`为`index.html`，即hugo生成的`public`目录下的`index`文件。
-3. 可将本地生成的`public`目录下所有文件上传至bucket桶中，即可通过桶对外访问域名直接访问到`index.html`了。
+1. 选择region创建COS桶，设置访问权限为 `公有读私有写`。
+2. 在基础配置中启用静态网站，指定 `索引文档`为 `index.html`，即hugo生成的 `public`目录下的 `index`文件。
+3. 可将本地生成的 `public`目录下所有文件上传至bucket桶中，即可通过桶对外访问域名直接访问到 `index.html`了。
 
 当然，这种手工方式肯定不完美，我们可使用github action来协助完成自动推动到腾讯云COS中。在根目录下添加github workflow目录，设置action定义即可完成该需求。
-4. 添加`github action`设置。
+4. 添加 `github action`设置。
+
 ```bash
 
 $ mkdir -p .github/workflows
@@ -88,10 +114,10 @@ jobs:
       uses: peaceiris/actions-hugo@v2
       with:
         hugo-version: '0.110.0'
-      
+    
     - name: Build
       run: hugo --minify
-    
+  
     - name: Install coscmd
       run: sudo pip install coscmd
     - name: Configure coscmd
@@ -107,14 +133,14 @@ jobs:
 EOL
 
 ```
-推送到github仓库中即可，另外，上面的github action中定义了四个环境变量：`SecretId`, `SecretKey`, `Bucket`和`Region`，需要在仓库中添加这些变量的定义，匹配上腾讯COS中创建的bucket桶信息。
 
-这样在每次推送更新文章或者代码时，github均会使用hugo进行编译，并将`public`目录下的文件上传到COS桶。
+推送到github仓库中即可，另外，上面的github action中定义了四个环境变量：`SecretId`, `SecretKey`, `Bucket`和 `Region`，需要在仓库中添加这些变量的定义，匹配上腾讯COS中创建的bucket桶信息。
 
+这样在每次推送更新文章或者代码时，github均会使用hugo进行编译，并将 `public`目录下的文件上传到COS桶。
 
 ## 4.CDN域名加速
 
-COS开启静态网站后，默认会有一个cos的域名访问，但该域名比较长，而且COS访问成本相对CDN而言会贵一些，开启CDN不仅可在各地加速，整体成本也相对更低，何乐而不为？给腾讯云COS开启CDN很方便，在COS桶列表中选择`域名与传输管理`，选择`自定义CDN加速域名`，添加对应的域名。
+COS开启静态网站后，默认会有一个cos的域名访问，但该域名比较长，而且COS访问成本相对CDN而言会贵一些，开启CDN不仅可在各地加速，整体成本也相对更低，何乐而不为？给腾讯云COS开启CDN很方便，在COS桶列表中选择 `域名与传输管理`，选择 `自定义CDN加速域名`，添加对应的域名。
 
 ![cdn_domain](/images/posts/cdn_domain.png)
 
@@ -128,4 +154,5 @@ COS开启静态网站后，默认会有一个cos的域名访问，但该域名�
 完成这项配置后正常访问**http**域名即可正常访问上述配置的hugo站点，如果想要为托管在COS上的hugo静态网站加上https证书该如何处理呢？查看[为Hugo配置https证书](/posts/add-https-for-hugo).
 
 ---
+
 全文完。

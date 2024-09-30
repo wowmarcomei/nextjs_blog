@@ -18,11 +18,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   return {
     title: post.title,
-    description: post.content.substring(0, 200),
-    keywords: post.keywords, // 添加 keywords
+    description: post.description,
+    keywords: post.keywords,
     openGraph: {
       title: post.title,
-      description: post.content.substring(0, 200),
+      description: post.description,
       url: `${siteUrl}/blog/${post.slug}`,
       siteName: 'Your Blog Name',
       images: [
@@ -36,22 +36,22 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       locale: 'en_US',
       type: 'article',
       publishedTime: post.date,
-      authors: ['Your Name'],
+      authors: [post.author || 'Your Name'],
       tags: post.tags,
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
-      description: post.content.substring(0, 200),
+      description: post.description,
       images: [imageUrl],
       creator: '@YourTwitterHandle',
       site: '@YourSiteTwitterHandle',
     },
     other: {
       'twitter:label1': 'Written by',
-      'twitter:data1': 'Your Name',
-      'twitter:label2': 'Category',
-      'twitter:data2': post.category,
+      'twitter:data1': post.author || 'Your Name',
+      'twitter:label2': 'Categories',
+      'twitter:data2': post.categories.join(', '),
     }
   };
 }
@@ -71,9 +71,19 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
             <ViewCounter slug={post.slug} />
           </div>
+          {post.author && (
+            <div className="mb-6">
+              <span className="font-semibold text-gray-700">Author: </span>
+              <span className="text-gray-600">{post.author}</span>
+            </div>
+          )}
           <div className="mb-6">
-            <span className="font-semibold text-gray-700">Category: </span>
-            <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">{post.category}</span>
+            <span className="font-semibold text-gray-700">Categories: </span>
+            {post.categories.map((category: string) => (
+              <span key={category} className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium mr-2">
+                {category}
+              </span>
+            ))}
           </div>
           <div className="mb-8">
             <span className="font-semibold text-gray-700">Tags: </span>

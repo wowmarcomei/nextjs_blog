@@ -1,3 +1,18 @@
+---
+title: 11-通过VPA实现资源灵活调度
+date: 2022-03-31 20:13:17
+updated: 2022-03-31 20:13:17
+description: 相对于HPA横向弹性伸缩POD数量，VPA垂直弹性既可以缩小过度请求资源的容器，也可以根据其使用情况随时提升资源不足的容量。
+categories: 
+  - 技术笔记
+
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+keywords: kubernetes,k8s,VHA,metrics
+---
 相对于HPA横向弹性伸缩POD数量，VPA垂直弹性会在现有POD基础上对POD的CPU与内存进行弹性，它根据容器资源使用率自动设置 CPU 和 内存 的requests，从而允许在节点上进行适当的调度，以便为每个 Pod 提供适当的资源。VPA既可以缩小过度请求资源的容器，也可以根据其使用情况随时提升资源不足的容量。
 
 > 说明：VPA与HPA不能同时工作，二者只能选其一，且VPA目前还未大规模推广商用，仅供测试。
@@ -101,7 +116,7 @@ NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 nginx           ClusterIP   10.1.41.177    <none>        80/TCP         4s
 ```
 
-可在集群节点上直接测试`curl -I 10.1.41.177:80`。
+可在集群节点上直接测试 `curl -I 10.1.41.177:80`。
 
 ```bash
 [lm@node2 ~]$ curl -I 10.1.41.177:80
@@ -116,8 +131,6 @@ Connection: keep-alive
 ETag: "61cb2d26-267"
 Accept-Ranges: bytes
 ```
-
-
 
 ## 3. 部署VPA策略
 
@@ -182,11 +195,8 @@ Events:          <none>
 从策略里看有几个关键点：
 
 - Lower Bound：下限值
-
-- Target:  推荐值 
-
-- Upper Bound:上限值 
-
+- Target:  推荐值
+- Upper Bound:上限值
 - Uncapped Target:   如果没有为VPA提供最小或最大边界，则表示目标利用率 。
 
 上述结果表明，推荐的 Pod 的 CPU 请求为 250m，推荐的内存请求为 262144k 字节。
@@ -241,7 +251,7 @@ $  kubectl  describe  vpa nginx-vpa  |tail -n 20
 Events:          <none>
 ```
 
-这里Target为`Cpu: 250m ，Memory: 262144k`，继续查看event事件。
+这里Target为 `Cpu: 250m ，Memory: 262144k`，继续查看event事件。
 
 ```bash
 $ kubectl  get event
@@ -263,7 +273,7 @@ LAST SEEN   TYPE      REASON             OBJECT                                M
 11m         Normal    SuccessfulCreate   replicaset/nginx-79c77f8bc7           Created pod: nginx-79c77f8bc7-vtknc
 ```
 
-从事件里可以看出，vpa执行了`EvictedByVPA`，自动停掉了老的POD，`pod/nginx-79c77f8bc7-fn574`与`pod/nginx-79c77f8bc7-g8jzx`，然后使用 VPA推荐的资源启动了新的nginx : ` pod/nginx-79c77f8bc7-g68rc`与`pod/nginx-79c77f8bc7-vtknc `。分别查看这两个POD的资源requests情况：
+从事件里可以看出，vpa执行了 `EvictedByVPA`，自动停掉了老的POD，`pod/nginx-79c77f8bc7-fn574`与 `pod/nginx-79c77f8bc7-g8jzx`，然后使用 VPA推荐的资源启动了新的nginx : ` pod/nginx-79c77f8bc7-g68rc`与 `pod/nginx-79c77f8bc7-vtknc `。分别查看这两个POD的资源requests情况：
 
 ```bash
 $ kubectl describe pod nginx-79c77f8bc7-g68rc
@@ -305,9 +315,7 @@ Containers:
 ## 5.总结
 
 - VPA垂直弹性可对POD进行CPU与内存requests修改，kill掉老POD，生成新POD。
-
 - VPA与HPA不能同时使用，从上面的event事件中可看出VPA测试过程中确实影响了HPA弹性。
-
 - VPA压测很久之后POD还没有垂直缩回去，功能应该还不成熟。
 
 ---

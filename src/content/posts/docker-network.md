@@ -1,3 +1,16 @@
+---
+title: 05-Docker网络
+date: 2021-12-24 22:31:41
+updated: 2021-12-24 22:31:41
+description: 目前主流的容器网络方案是以VXLAN为主的Overlay方案，本文简单描述单Host下与多跨Host场景的容器网络架构与通信方式。
+categories: 
+  - 技术笔记
+tags: 
+  - Docker
+  - VXLAN
+image: docker-logo.png
+keywords: Docker,Docker网络,Flannel,桥接,VXLAN
+---
 容器网络比较复杂，目前主流的网络方案是以VXLAN为主的Overlay方案，关于VXLAN的理解，可以参考这篇文章《[什么是VXLAN](https://support.huawei.com/enterprise/zh/doc/EDOC1100087027#EN-US_TOPIC_0259820545)》。
 
 这篇文章里，我们将容器网络分为单节点上的容器网络通信和跨节点网络通信两部分内容。
@@ -6,13 +19,11 @@
 
 在单个host主机上Docker的网络模型有四种：**None网络**、**Host网络**、**Bridge网络**和**User-defined网络**。
 
-- None网络：单机版容器，没有网络，适用场景为无需联网的业务，比如生成随机码业务，用法为指定参数`--network=none`。
-
-- Host网络：连接到Host主机上，完全与主机共享网络，用法为指定参数`--network=host`，由于直接共享主机网络无需转发，所以性能比桥接网络性能要好，但是要考虑到不能与主机端口冲突。
-
+- None网络：单机版容器，没有网络，适用场景为无需联网的业务，比如生成随机码业务，用法为指定参数 `--network=none`。
+- Host网络：连接到Host主机上，完全与主机共享网络，用法为指定参数 `--network=host`，由于直接共享主机网络无需转发，所以性能比桥接网络性能要好，但是要考虑到不能与主机端口冲突。
 - Bridge网络：桥接网络，Docker的默认网络模型，通过**桥**转发网络流量，无需指定参数默认使用桥接网络。
 
-  Docker默认会生成一个`docker0`的网桥，可看成一个*交换机*。
+  Docker默认会生成一个 `docker0`的网桥，可看成一个*交换机*。
 
   ```shell
   [root@ecs_lm_test ~]# brctl show
@@ -20,7 +31,7 @@
   docker0         8000.024250df460d       no
   ```
 
-  在主机上查看`linux bridge`桥信息，可见默认有一个`docker0`的桥，在没有容器启动的时候这个桥（**理解成一个主机上的软交换机**）上`interfaces`为空。启动一个busybox容器，不指定网络则默认使用网桥网络：
+  在主机上查看 `linux bridge`桥信息，可见默认有一个 `docker0`的桥，在没有容器启动的时候这个桥（**理解成一个主机上的软交换机**）上 `interfaces`为空。启动一个busybox容器，不指定网络则默认使用网桥网络：
 
   ```shell
   [root@ecs_lm_test ~]# docker run -it busybox:v1.0   #启动一个busybox容器
@@ -38,7 +49,7 @@
       inet6 fe80::42:acff:fe11:2/64 scope link
          valid_lft forever preferred_lft forever
   / #
-  
+
   [root@ecs_lm_test ~]# brctl show   #在主机上查看linux网桥
   bridge name     bridge id               STP enabled     interfaces
   docker0         8000.024250df460d       no              vetha2b8732
@@ -51,18 +62,15 @@
           RX errors 0  dropped 0  overruns 0  frame 0
           TX packets 8  bytes 656 (656.0 B)
           TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-  [root@ecs_lm_test ~]#         
+  [root@ecs_lm_test ~]#       
   ```
 
-  此时，网桥（**Host主机上的一个软交换机**）上生成一个接口`vetha2b8732`，网桥的地址为`172.17.0.1/16`，容器内生成一个接口` eth0@if22`，地址为` 172.17.0.2/16`。其详细拓扑类似于下图示。
+  此时，网桥（**Host主机上的一个软交换机**）上生成一个接口 `vetha2b8732`，网桥的地址为 `172.17.0.1/16`，容器内生成一个接口 ` eth0@if22`，地址为 ` 172.17.0.2/16`。其详细拓扑类似于下图示。
 
   ![Docker_Network_br1](https://laomeinote.com/images/posts/Docker_Network_br1.png)
 
-  `docker0`网桥是在Docker安装完成后已经生成的，其默认地址为`172.17.0.1/16`。启动bubybox容器且默认使用桥接网络时，docker会给这个容器生成一个端口`eth0`，如上图中的`eth0@if22`,容器默认从`172.17.0.0/16`网段里分配一个IP给该端口，如本示例中分配的`172.17.0.2/16`;同时生成一个`veth`，如上图中的`vetha2b8732`。`veth`是一个键值对，连接网桥与容器端口。**容器的网络流量均将通过这个网桥转给Host主机**。
-
-  
-
-- User-defined网络：用户自定义网络，也是桥接网络的一种，通过桥转发。用法分两步：1）创建一个桥接网络network，如my_net；2）指定网络为自定义的桥接网络`--network=my_net`。如下示例：
+  `docker0`网桥是在Docker安装完成后已经生成的，其默认地址为 `172.17.0.1/16`。启动bubybox容器且默认使用桥接网络时，docker会给这个容器生成一个端口 `eth0`，如上图中的 `eth0@if22`,容器默认从 `172.17.0.0/16`网段里分配一个IP给该端口，如本示例中分配的 `172.17.0.2/16`;同时生成一个 `veth`，如上图中的 `vetha2b8732`。`veth`是一个键值对，连接网桥与容器端口。**容器的网络流量均将通过这个网桥转给Host主机**。
+- User-defined网络：用户自定义网络，也是桥接网络的一种，通过桥转发。用法分两步：1）创建一个桥接网络network，如my_net；2）指定网络为自定义的桥接网络 `--network=my_net`。如下示例：
 
   ```shell
   $sudo docker network create --driver bridge my_net  #创建自定义桥接网络my_net
@@ -70,7 +78,7 @@
   ```
 
   创建完网络以后可以查看一下自定义网络信息：
-  
+
   ```shell
   [root@ecs_lm_test ~]# brctl show
   bridge name     bridge id               STP enabled     interfaces
@@ -116,7 +124,7 @@
           RX errors 0  dropped 0  overruns 0  frame 0
           TX packets 0  bytes 0 (0.0 B)
           TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-          
+
   [root@ecs_lm_test ~]# docker exec -it busybox_2 /bin/sh
   / # ip a
   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
@@ -132,17 +140,15 @@
       inet6 fe80::42:acff:fe12:2/64 scope link
          valid_lft forever preferred_lft forever
   / #
-       
+
   ```
-  
-  可见创建了一个名为`br-af0983622432`的、`network`名为`my_net`的桥接网络，其子网IP为`172.18.0.0/16`，网关IP为`172.18.0.1/16`，网关在网桥自身上。且Docker为容器`busybox_2`分配了一个接口`eth0@if27`对应IP为`172.18.0.2/16`;键值对为`veth9c4e5f0`，连接容器与网桥，其网络架构如下图示。
-  
+
+  可见创建了一个名为 `br-af0983622432`的、`network`名为 `my_net`的桥接网络，其子网IP为 `172.18.0.0/16`，网关IP为 `172.18.0.1/16`，网关在网桥自身上。且Docker为容器 `busybox_2`分配了一个接口 `eth0@if27`对应IP为 `172.18.0.2/16`;键值对为 `veth9c4e5f0`，连接容器与网桥，其网络架构如下图示。
+
   ![Docker_Network_br_user-defined_1](https://laomeinote.com/images/posts/Docker_Network_br_user-defined_1.png)
-  
-  
-  
-  上面的示例中自定义网桥没有指定网段，默认使用`172.18.0.0/16`网段，也可指定特定网段如`172.19.0.0/16`.
-  
+
+  上面的示例中自定义网桥没有指定网段，默认使用 `172.18.0.0/16`网段，也可指定特定网段如 `172.19.0.0/16`.
+
   ```shell
   [root@ecs_lm_test ~]# docker network create --driver bridge --subnet 172.19.0.0/16 --gateway 172.19.0.1 my_net2
   3182a1c4c328ae30c6a98cbb1148924585f6975531bc3a56718d9fcb8250f3b9
@@ -208,13 +214,13 @@
       }
   ]
   ```
-  
-  可见在主机上创建了一个`my_net2`的自定义网络，网桥名为`my_net2`，指定容器以该网桥启动后，Docker生成了一个键值对`veth9d6f750`，整个网络的地址段为`172.19.0.0/16`，整体网络架构如下图示。
-  
+
+  可见在主机上创建了一个 `my_net2`的自定义网络，网桥名为 `my_net2`，指定容器以该网桥启动后，Docker生成了一个键值对 `veth9d6f750`，整个网络的地址段为 `172.19.0.0/16`，整体网络架构如下图示。
+
   ![Docker_Network_br_user-defined_2](https://laomeinote.com/images/posts/Docker_Network_br_user-defined_2.png)
-  
-  显然这三个容器不在同一个网桥上是互相隔离，无法互通的，如果需要互通怎么办，比如讲容器2与容器3打通网络？可为容器`busybox_2`再加一个`my_net2`的网卡即可，可使用命令`docker network connect [network]  [container name/id] `将容器2连接到网桥2上来。
-  
+
+  显然这三个容器不在同一个网桥上是互相隔离，无法互通的，如果需要互通怎么办，比如讲容器2与容器3打通网络？可为容器 `busybox_2`再加一个 `my_net2`的网卡即可，可使用命令 `docker network connect [network]  [container name/id] `将容器2连接到网桥2上来。
+
   ```shell
   [root@ecs_lm_test ~]# docker network connect my_net2 busybox_2
   [root@ecs_lm_test ~]# docker exec -it busybox_2 /bin/sh
@@ -237,7 +243,7 @@
          valid_lft forever preferred_lft forever
       inet6 fe80::42:acff:fe13:3/64 scope link
          valid_lft forever preferred_lft forever
-         
+
   [root@ecs_lm_test ~]# brctl show
   bridge name     bridge id               STP enabled     interfaces
   br-3182a1c4c328         8000.02421bd7d910       no              veth6f2fed5
@@ -245,23 +251,21 @@
   br-81a7cff59d14         8000.0242576559e7       no              vethecf3979
   docker0                        8000.024250df460d       no              vetha2b8732
   ```
-  
-  这里可见已经新生产一个veth键值对，容器端的端口为`eth1@if36`，地址为`172.19.0.3/16`。此时的网络架构如下：
-  
+
+  这里可见已经新生产一个veth键值对，容器端的端口为 `eth1@if36`，地址为 `172.19.0.3/16`。此时的网络架构如下：
+
   ![Docker_Network_br_user-defined_3](https://laomeinote.com/images/posts/Docker_Network_br_user-defined_3.png)
-  
-  从容器`busybox_2`中往容器`busybox_3`做ping测：
-  
+
+  从容器 `busybox_2`中往容器 `busybox_3`做ping测：
+
   ![docker_network_br_userdefine_ping_test](https://laomeinote.com/images/posts/docker_network_br_userdefine_ping_test.png)
-  
 
 ## 2.容器通信
 
 容器可通过*IP,DNS,Joined容器*三种方式进行通信。
 
 1. IP通信：IP只要能够互通即可，如上面busybox_2与busybox_3之间使用IP进行通信。
-
-2. DNS：在使用了`user-defined`的桥接网络的容器，可以直接使用*容器名*进行通信。
+2. DNS：在使用了 `user-defined`的桥接网络的容器，可以直接使用*容器名*进行通信。
 
    ```shell
    [root@ecs_lm_test ~]# docker exec -it busybox_2 sh
@@ -271,9 +275,8 @@
    64 bytes from 172.19.0.2: seq=1 ttl=64 time=0.097 ms
    ```
 
-   需要注意的是，这里只适用于`user-defined`的桥接网络，默认桥接网络不行。
-
-3. Joined容器：即多个容器共享一个网络栈，共享MAC，IP等。可使用`--network=container:[已有容器name/ID]`来指定新容器，如：
+   需要注意的是，这里只适用于 `user-defined`的桥接网络，默认桥接网络不行。
+3. Joined容器：即多个容器共享一个网络栈，共享MAC，IP等。可使用 `--network=container:[已有容器name/ID]`来指定新容器，如：
 
    ```shell
    [root@ecs_lm_test ~]#docker run -it --name=busybox_4 --network=container:busybox_3 busybox:v1.0
@@ -293,8 +296,7 @@
    / #
    ```
 
-   可见容器`busybox_4`与容器`busybox_3`的网络是完全一致的。
-
+   可见容器 `busybox_4`与容器 `busybox_3`的网络是完全一致的。
 
 ## 3.容器与外部网络互通
 
@@ -323,23 +325,21 @@ Docker跨Host有包括原生的**overlay**和**macvlan**方案和多种第三方
 
 ![docker_multi_host_network](https://laomeinote.com/images/posts/docker_multi_host_network.png)
 
-其中原生方案中用的较多的是**overlay**方案，其基本原理是在本端隧道起点`VTEP 1`将二层网络数据封装在三层UDP数据中通过隧道技术传输，在对端隧道终点`VTEP 2`上解封装，通过三层路由来打通二层网络，与GRE隧道类似，形成大二层网络。
+其中原生方案中用的较多的是**overlay**方案，其基本原理是在本端隧道起点 `VTEP 1`将二层网络数据封装在三层UDP数据中通过隧道技术传输，在对端隧道终点 `VTEP 2`上解封装，通过三层路由来打通二层网络，与GRE隧道类似，形成大二层网络。
 
 原生**MACVLAN**方案本质就是传统三层网络互通方案，性能比**overlay**要好，但是局限于二层网络VLAN的规模。
 
-除Docker原生网络方案以外，还有三个常见的第三方网络方案`flannel`、`weave`和`calico`。这里重点记录一下前两种`flannel`和`weave`方案。
+除Docker原生网络方案以外，还有三个常见的第三方网络方案 `flannel`、`weave`和 `calico`。这里重点记录一下前两种 `flannel`和 `weave`方案。
 
 ### 4.1 flannel方案
 
-**flannel**是CoreOS公司开发的跨主机通信网络解决方案，它会为每个host分配一个`subnet`，容器从这个`subnet`中获取`IP`地址，这个`IP`地址在各个host主机组成的集群中是**全局唯一**的，其框架如下：
+**flannel**是CoreOS公司开发的跨主机通信网络解决方案，它会为每个host分配一个 `subnet`，容器从这个 `subnet`中获取 `IP`地址，这个 `IP`地址在各个host主机组成的集群中是**全局唯一**的，其框架如下：
 
 ![docker_flannel_network_1](https://laomeinote.com/images/posts/docker_flannel_network_1.png)
 
-
-
-- 每个节点上有一个叫`flanneld`的agent，负责为每个主机分配和管理子网；
-- 全局的网络配置存储`etcd`负责存储主机容器子网的映射关系；
-- 数据包在主机之间发展是由`backend`来实现的，常见的`backend`有`VXLAN`和`host-gw`两种模式。
+- 每个节点上有一个叫 `flanneld`的agent，负责为每个主机分配和管理子网；
+- 全局的网络配置存储 `etcd`负责存储主机容器子网的映射关系；
+- 数据包在主机之间发展是由 `backend`来实现的，常见的 `backend`有 `VXLAN`和 `host-gw`两种模式。
 
 #### 4.1.1 flannel数据转发VXLAN模式
 
@@ -347,13 +347,11 @@ Docker跨Host有包括原生的**overlay**和**macvlan**方案和多种第三方
 >
 > 下面转自水立方在掘金博文：《[Flannel的两种模式解析（VXLAN、host-gw)](https://juejin.cn/post/6994825163757846565)》
 
-VXLAN模式是Flannel默认和推荐的模式，使用VXLAN模式时，它会为每个节点分配一个24位子网 。`flanneld`会在宿主机host上创建一个 VTEP 设备（`flannel.1`）和一个网桥`cni0`。（`flannel.1`）就是VXLAN隧道的起/始点，`VNI=1`，实现对VXLAN报文的解封装。
+VXLAN模式是Flannel默认和推荐的模式，使用VXLAN模式时，它会为每个节点分配一个24位子网 。`flanneld`会在宿主机host上创建一个 VTEP 设备（`flannel.1`）和一个网桥 `cni0`。（`flannel.1`）就是VXLAN隧道的起/始点，`VNI=1`，实现对VXLAN报文的解封装。
 
 来看看跨节点Node1和Node2之间的容器互通式如何通信的？
 
 ![docker_flannel_network_vxlan_2](https://laomeinote.com/images/posts/docker_flannel_network_vxlan_2.png)
-
-
 
 - 发送端Node1：在Node1的PodA（假设含一个容器）中发起对Node2的PodB（假设含一个容器）的ping测 `ping 10.244.1.21` ，`ICMP` 报文经过 `cni0` 网桥后交由 `flannel.1` 设备处理。 `flannel.1` 设备是一个VXLAN类型的设备，负责VXLAN封包解包。 因此，在发送端，`flannel.1` 将原始L2报文封装成VXLAN UDP报文，然后从 `eth0` 发送。
 - 接收端：Node2收到UDP报文，发现是一个VXLAN类型报文，交由 `flannel.1` 进行解包。根据解包后得到的原始报文中的目的IP，将原始报文经由 `cni0` 网桥发送给PodB。
@@ -370,7 +368,7 @@ VXLAN模式是Flannel默认和推荐的模式，使用VXLAN模式时，它会为
 ...
 ```
 
-如果节点信息有变化， `flanneld` 也会从`etcd`中同步更新路由信息。
+如果节点信息有变化， `flanneld` 也会从 `etcd`中同步更新路由信息。
 
 2. **`flannel.1`的封包过程**
 
@@ -381,7 +379,6 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
   要生成原始的L2帧， `flannel.1` 需要得知：
 
   - 内层源/目的IP地址
-
   - 内层源/目的MAC地址
 
   内层的源/目的IP地址是已知的，即为PodA/PodB的PodIP，在图例中，分别为**10.224.0.20**和**10.224.1.20**。 内层源/目的MAC地址要结合路由表和ARP表来获取。根据路由表①得知：
@@ -390,6 +387,7 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
   - 2)报文要从 `flannel.1` 虚拟网卡发出，因此源MAC地址为 `flannel.1` 的MAC地址。
 
   > 要注意的是，这里ARP表的表项②并不是通过ARP学习得到的，而是 `flanneld` 预先为每个节点设置好的，由 `flanneld`负责维护，没有过期时间。
+  >
 
   ```shell
   # 查看ARP表
@@ -406,6 +404,7 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
   要将原始L2帧封装成VXLAN UDP报文， `flannel.1` 还需要填充源/目的IP地址。我们知道VTEP是VXLAN隧道的起点或终点。因此，目的IP地址即为对端VTEP的IP地址，通过FDB表获取。在FDB表③中，dst字段表示的即为VXLAN隧道目的端点（对端VTEP）的IP地址，也就是VXLAN DUP报文的目的IP地址。FDB表也是由 `flanneld` 在每个节点上预设并负责维护的。
 
   > FDB表（Forwarding database）用于保存二层设备中**MAC地址和端口的关联关系**，就像交换机中的MAC地址表一样。在二层设备转发二层以太网帧时，根据FDB表项来找到对应的端口。例如cni0网桥上连接了很多veth pair网卡，当网桥要将以太网帧转发给Pod时，FDB表根据Pod网卡的MAC地址查询FDB表，就能找到其对应的veth网卡，从而实现联通。
+  >
 
   可以使用 `bridge fdb show` 查看FDB表：
 
@@ -451,13 +450,13 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
  ...
 ```
 
-如果是docker直接使用Flannel，也需要修改类似的配置，不过是在文件`flannel-config.json`中直接修改，然后更新etcd数据库。
+如果是docker直接使用Flannel，也需要修改类似的配置，不过是在文件 `flannel-config.json`中直接修改，然后更新etcd数据库。
 
 host-gw模式下的通信过程如下图所示：
 
 ![docker_flannel_network_host-gw](https://laomeinote.com/images/posts/docker_flannel_network_host-gw.png)
 
-在host-gw模式下，由于不涉及VXLAN的封包解包，不再需要`flannel.1`虚机网卡。 `flanneld` 负责为各节点设置路由 ，将对应节点Pod子网的下一跳地址指向对应的节点的IP，如图中路由表①所示。
+在host-gw模式下，由于不涉及VXLAN的封包解包，不再需要 `flannel.1`虚机网卡。 `flanneld` 负责为各节点设置路由 ，将对应节点Pod子网的下一跳地址指向对应的节点的IP，如图中路由表①所示。
 
 ```bash
 [root@Node1 ~]# ip r
@@ -468,8 +467,6 @@ host-gw模式下的通信过程如下图所示：
 ```
 
 由于没有封包解包带来的消耗，host-gw是性能最好的。不过一般在云环境下，都不支持使用host-gw的模式，在私有化部署的场景下，可以考虑。
-
-
 
 ### 4.2 weave方案
 
@@ -487,7 +484,7 @@ $sudo eval $(weave env)
 $sudo docker run --name busybox_weave -it -d busybox:v1.0
 ```
 
-执行 `eval $(weave env)` 的作用是将后续的 docker 命令发给 weave proxy 处理，在此基础上的容器使用的网络模型就是`weave`。如果要恢复之前的环境，可执行 `eval $(weave env --restore)`。查看一下当前容器网络环境：
+执行 `eval $(weave env)` 的作用是将后续的 docker 命令发给 weave proxy 处理，在此基础上的容器使用的网络模型就是 `weave`。如果要恢复之前的环境，可执行 `eval $(weave env --restore)`。查看一下当前容器网络环境：
 
 ```shell
 [root@ecs_lm_test ~]# docker exec -it busybox_weave ip a
@@ -522,20 +519,16 @@ weave          		      8000.5e0a88e58f54        no                              
 [root@ecs_lm_test ~]# ip -d link |grep vxlan
 44: vxlan-6784: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 65535 qdisc noqueue master datapath state UNKNOWN mode DEFAULT group default qlen 1000
     vxlan id 0 srcport 0 0 dstport 6784 nolearning ageing 300 udpcsum noudp6zerocsumtx udp6zerocsumrx external
-                                                                                                                                
+                                                                                                                              
 ```
 
-可见容器生成了，`eth0@if46`和`ethwe@if48`，且除了默认docker0网桥以外，多出了`weave`网桥。其网络模型如下截图示：
+可见容器生成了，`eth0@if46`和 `ethwe@if48`，且除了默认docker0网桥以外，多出了 `weave`网桥。其网络模型如下截图示：
 
 ![docker_network_weave_1](https://laomeinote.com/images/posts/docker_network_weave_1.png)
-
-
 
 weave 网络包含两个虚拟交换机：Linux bridge `weave` 和 Open vSwitch `datapath`，veth pair `vethwe-bridge` 和 `vethwe-datapath` 将二者连接在一起。
 
 `weave` 和 `datapath` 分工不同，`weave` 负责将容器接入 weave 网络，`datapath` 负责在主机间 VxLAN 隧道中并收发数据。
-
-
 
 ① `vethwe-bridge` 与 `vethwe-datapath` 是 veth pair，连接weave网络与datapath网络。
 
@@ -545,7 +538,7 @@ weave 网络包含两个虚拟交换机：Linux bridge `weave` 和 Open vSwitch 
 
 ④ `vxlan-6784` 是 vxlan interface，其 master 也是 `datapath`，weave 主机间是通过 VxLAN 通信的，就是VTEP起始端点，通过主机eth0转发流量。
 
-再新增一个容器`busybox_weave2`：
+再新增一个容器 `busybox_weave2`：
 
 ```shell
 [root@ecs_lm_test tools]# docker run --name busybox_weave2 -it -d busybox:v1.0
@@ -586,13 +579,11 @@ weave                           8000.5e0a88e58f54        no                   ve
 [root@ecs_lm_test tools]#
 ```
 
-可见`docker0`网桥上新生成了接口`veth265cf07`,`weave`网桥上新生成了`vethwepl12236`，对应组br网架构如下图：
+可见 `docker0`网桥上新生成了接口 `veth265cf07`,`weave`网桥上新生成了 `vethwepl12236`，对应组br网架构如下图：
 
 ![docker_network_weave_2](https://laomeinote.com/images/posts/docker_network_weave_2.png)
 
-
-
-从容器`bubybox_weave`往容器`bubybox_weave2`和Host主机端口`eth0`做ping测试试：
+从容器 `bubybox_weave`往容器 `bubybox_weave2`和Host主机端口 `eth0`做ping测试试：
 
 ```shell
 [root@ecs_lm_test tools]# docker exec -it 55281c9e3e78 sh  #进入容器bubybox_weave
@@ -641,15 +632,15 @@ round-trip min/avg/max = 0.070/0.093/0.116 ms
 / #
 ```
 
-从容器1分别去对容器2和主机端口做ping测，结果都能ping通，因为`weave`和`datapath`已经将这部分网络打通。
+从容器1分别去对容器2和主机端口做ping测，结果都能ping通，因为 `weave`和 `datapath`已经将这部分网络打通。
 
 上面的用例是在同一个主机上的多个容器，如果是跨Host主机之间的容器，weave是如何处理的呢？
 
 **多Host主机之间通过Weave通信**
 
-weave在多主机之间通过vxlan传输数据，VTEP起始点分别由主机的`datapath`这个`openVSwith`生成，对应`vxlan-xxx`端口，通过一个实例理解一下。
+weave在多主机之间通过vxlan传输数据，VTEP起始点分别由主机的 `datapath`这个 `openVSwith`生成，对应 `vxlan-xxx`端口，通过一个实例理解一下。
 
-加入weave网络的主机必须是同一个二层互通的网络，上面的主机是在云上建立的，第一个host主机VPC子网是`192.168.32.0/19`，再新建一个主机加入到相同子网中。两个主机的IP地址分别为`192.168.54.150/19`和`192.168.54.21/19`。
+加入weave网络的主机必须是同一个二层互通的网络，上面的主机是在云上建立的，第一个host主机VPC子网是 `192.168.32.0/19`，再新建一个主机加入到相同子网中。两个主机的IP地址分别为 `192.168.54.150/19`和 `192.168.54.21/19`。
 
 1. host2必须指定host1的IP 192.168.54.150，这样host1和host2才能加入到同一个weave网络。
 
@@ -665,8 +656,7 @@ weave在多主机之间通过vxlan传输数据，VTEP起始点分别由主机的
    weave           8000.625ddc22c535       no              vethwe-bridge
    ```
 
-   可见主机已经生成一个weave网桥，和一个接口`vethwe-bridge`。
-
+   可见主机已经生成一个weave网桥，和一个接口 `vethwe-bridge`。
 2. 创建一个容器加入weave网络。
 
    ```shell
@@ -725,13 +715,13 @@ weave在多主机之间通过vxlan传输数据，VTEP起始点分别由主机的
    [root@ecs_lm_test2 ~]#
    ```
 
-   主机2容器`busybox_weave_host2_1`分配到的地址为`10.44.0.0/12`，跟主机1的容器地址`10.32.0.1/12`同属于同一个子网段`10.32.0.1/12-10.47.255.255/12`,通过host1与host2直接的vxlan隧道，三个容器逻辑上在同一个大二层网络中，所以能够互通，对应网络架构图如下。
+   主机2容器 `busybox_weave_host2_1`分配到的地址为 `10.44.0.0/12`，跟主机1的容器地址 `10.32.0.1/12`同属于同一个子网段 `10.32.0.1/12-10.47.255.255/12`,通过host1与host2直接的vxlan隧道，三个容器逻辑上在同一个大二层网络中，所以能够互通，对应网络架构图如下。
 
    ![docker_network_weave_3](https://laomeinote.com/images/posts/docker_network_weave_3.png)
 
 **Weave网络隔离**
 
-从上面的几个例子中可见加入到同一个weave网络的所有容器默认可以互通，如果想要进行网络隔离呢？只需在启动容器时通过命令`-e WEAVE_CIDR=net:[ip-subnet]`指定非默认subnet即可，这样的话容器不会从默认的`10.32.0.1/12`中分配地址，如`10.32.2.0/24`子网不跟`10.32.0.1/12`一个网段，给容器指定子subnet：
+从上面的几个例子中可见加入到同一个weave网络的所有容器默认可以互通，如果想要进行网络隔离呢？只需在启动容器时通过命令 `-e WEAVE_CIDR=net:[ip-subnet]`指定非默认subnet即可，这样的话容器不会从默认的 `10.32.0.1/12`中分配地址，如 `10.32.2.0/24`子网不跟 `10.32.0.1/12`一个网段，给容器指定子subnet：
 
 ```shell
 [root@ecs_lm_test2 ~]# docker run -e WEAVE_CIDR=net:10.32.2.0/24 -it -d busybox:v1.0
@@ -785,6 +775,6 @@ PING 10.32.0.1 (10.32.0.1): 56 data bytes
 
 《[Flannel的两种模式解析（VXLAN、host-gw)](https://juejin.cn/post/6994825163757846565)》
 
---------
+---
 
 全文完。

@@ -1,3 +1,17 @@
+---
+title: 13-容器数据持久化存储
+date: 2022-04-08 20:19:21
+updated: 2022-04-08 20:19:21
+categories: 
+  - 技术笔记
+description: 通常容器的生命周期是不固定的、甚至是比较短的，但是它生成的数据可能是有价值的需要长期保存的，即持久化存储。在Kubernetes中持久化存储主要通过PV与PVC来实现。
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+keywords: kubernetes,k8s,持久化,存储,数据
+---
 通常容器的生命周期是不固定的、甚至是比较短的，但是它生成的数据可能是有价值的需要长期保存的，即持久化存储。在Kubernetes中持久化存储主要通过PV与PVC来实现。
 
 - PV：`PersistentVolume`（持久化卷）。
@@ -5,23 +19,22 @@
 
 PVC与PV的关系类似于POD与节点的关系，**PVC消耗的是PV资源，POD消耗的是节点资源**。一般来讲，是资源管理员或者SRE运维团队提前创建好PV存储资源，然后开发团队通过PVC来声明使用PV资源（是有点麻烦了）。
 
-除了上面的两个基本资源对象以外，Kubernetes还引入了一个`StorageClass`对象，这样就可以对存储进行分类，比如是快存储还是慢存储，是块存储、文件存储还是对象存储，是AWS的还是其他厂家的存储；同时通过`StorageClass`对象，Kubernetes就可以自动创建PV了，不需要管理员提前创建好PV再给开发成员通过PVC声明使用。
+除了上面的两个基本资源对象以外，Kubernetes还引入了一个 `StorageClass`对象，这样就可以对存储进行分类，比如是快存储还是慢存储，是块存储、文件存储还是对象存储，是AWS的还是其他厂家的存储；同时通过 `StorageClass`对象，Kubernetes就可以自动创建PV了，不需要管理员提前创建好PV再给开发成员通过PVC声明使用。
 
 也即是说持久化存储最终是通过PV来实现的，但是细化到具体存储资源，其实是多样化的，可以是Kubernetes主机本身的节点上挂载的磁盘，也可以是外部各类存储（块存储、文件存储、对象存储）。
 
 来看看几种场景：
 
-1. 场景1 -- 容器生成可读写的数据，但无需持久化存储场景：Kubernetes提供的方案是`emptyDir`，POD或Deployment的声明中不需要指定具体节点路径，在POD创建的那一刻起，kubernetes自动在POD调度的节点上创建一个目录给POD使用，当POD注销的时候该目录也会被kubernetes清除掉，这显然没有达到持久化存储的目的，因为`emptyDir`的生命周期与POD一样长，POD很可能多次重启，那么相应的`emptyDir`里的数据也会被多次清除。
+1. 场景1 -- 容器生成可读写的数据，但无需持久化存储场景：Kubernetes提供的方案是 `emptyDir`，POD或Deployment的声明中不需要指定具体节点路径，在POD创建的那一刻起，kubernetes自动在POD调度的节点上创建一个目录给POD使用，当POD注销的时候该目录也会被kubernetes清除掉，这显然没有达到持久化存储的目的，因为 `emptyDir`的生命周期与POD一样长，POD很可能多次重启，那么相应的 `emptyDir`里的数据也会被多次清除。
 
-   > 注：`emptyDir`的生命周期与POD一致，但是POD里的容器与`emptyDir`不一致，因为POD里可能有多个容器。
-
-2. 场景2 -- 容器生成可读写的数据，需要持久化保存，但是需要最佳的读写速度：虽然外挂存储也可满足要求，但是性能肯定比不上节点本身的磁盘，这种场景下，Kubernetes提供的是`hostpath`资源对象，POD或Deployment的声明中指明节点的具体路径为POD存放数据的地方，它的生命周期跟POD本身无关，即使POD挂了重启了hostpath数据也不会丢的。
+   > 注：`emptyDir`的生命周期与POD一致，但是POD里的容器与 `emptyDir`不一致，因为POD里可能有多个容器。
+   >
+2. 场景2 -- 容器生成可读写的数据，需要持久化保存，但是需要最佳的读写速度：虽然外挂存储也可满足要求，但是性能肯定比不上节点本身的磁盘，这种场景下，Kubernetes提供的是 `hostpath`资源对象，POD或Deployment的声明中指明节点的具体路径为POD存放数据的地方，它的生命周期跟POD本身无关，即使POD挂了重启了hostpath数据也不会丢的。
 
    > 显然，hostpath其实也有局限，POD重启后可能会被调度到其他节点上去，之前存在当前节点上的数据，无法被重启后的POD读取到。
-
-3. 场景3 -- 容器生成可读写的数据，需要持久化保存与最佳的读写速度，同时POD重启后依然能正常读写： 针对上面的场景2，Kubernetes提供的解决方案是`local PV`，其实原理也很简单，就是`hostpath + nodeaffinity`，就是告诉POD在重启后亲和到跟local PV的节点上去。
-
-4. 场景4 -- 无需资源管理员提前创建PV，应用方（开发成员)可直接使用持久化存储的场景： 这种场景下使用`StorageClass`即可。
+   >
+3. 场景3 -- 容器生成可读写的数据，需要持久化保存与最佳的读写速度，同时POD重启后依然能正常读写： 针对上面的场景2，Kubernetes提供的解决方案是 `local PV`，其实原理也很简单，就是 `hostpath + nodeaffinity`，就是告诉POD在重启后亲和到跟local PV的节点上去。
+4. 场景4 -- 无需资源管理员提前创建PV，应用方（开发成员)可直接使用持久化存储的场景： 这种场景下使用 `StorageClass`即可。
 
 下面针对这几种场景做下测试：
 
@@ -62,7 +75,7 @@ spec:
 
 > 说明：之所以加了secret对象，是因为上面的镜像在我的私仓里，需要secret访问才行。
 
-这个pod中创建了一个名为`cache-volume`的**emptyDir**，这个volume被挂载到两个容器中。apply生成pod：
+这个pod中创建了一个名为 `cache-volume`的**emptyDir**，这个volume被挂载到两个容器中。apply生成pod：
 
 ```bash
 # 创建pod
@@ -135,15 +148,17 @@ ls: cannot access '/mnt/paas/kubernetes/kubelet/pods/1759becf-5396-4e4c-828f-d25
 
 - Capacity（存储能力）：一般来说，一个 PV 对象都要指定一个存储能力，通过 PV 的 `capacity` 属性来设置的，目前只支持存储空间的设置，就是我们这里的 `storage=10Gi`，不过未来可能会加入 `IOPS`、吞吐量等指标的配置。
 - AccessModes（访问模式）：用来对 PV 进行访问模式的设置，用于描述用户应用对存储资源的访问权限，访问权限包括下面几种方式：
+
   - ReadWriteOnce（RWO）：读写权限，但是只能被单个节点挂载
   - ReadOnlyMany（ROX）：只读权限，可以被多个节点挂载
   - ReadWriteMany（RWX）：读写权限，可以被多个节点挂载
-
 - RECLAIM POLICY（回收策略）：是指PV删除后的数据是清除，还是保留等，主要有以下三种：
+
   - Retain（保留）：保留数据，需要管理员手工清理数据
   - Recycle（回收）：清除 PV 中的数据，效果相当于执行 `rm -rf /thevolume/*`
   - Delete（删除）：与 PV 相连的后端存储完成 volume 的删除操作，当然这常见于云服务商的存储服务
 - STATUS（状态）：指的是PV的生命周期，可能会处于4种不同的阶段：
+
   - Available（可用）：表示可用状态，还未被任何 PVC 绑定
   - Bound（已绑定）：表示 PVC 已经被 PVC 绑定
   - Released（已释放）：PVC 被删除，但是资源还未被集群重新声明
@@ -169,7 +184,7 @@ spec:
   hostPath:
     path: "/data/k8s/test/hostpath"
 
----    
+---  
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -256,7 +271,7 @@ total 4
 -rw------- 1 root root 10 Apr  2 10:53 test.txt
 ```
 
-可见PV是10Gi大小，虽然声明了3Gi容量，但是比它大的PV也可满足要求，PVC与PV完成了Bound绑定。节点的volume被mount的目录为`/usr/share/nginx/html`。这个目录下有一个test.txt文件，是提前在节点创建目录写下的。查看节点文件：
+可见PV是10Gi大小，虽然声明了3Gi容量，但是比它大的PV也可满足要求，PVC与PV完成了Bound绑定。节点的volume被mount的目录为 `/usr/share/nginx/html`。这个目录下有一个test.txt文件，是提前在节点创建目录写下的。查看节点文件：
 
 ```bash
 # ll /data/k8s/test/hostpath
@@ -317,7 +332,7 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  storageClassName: local-storage     
+  storageClassName: local-storage   
 
 ---
 apiVersion: v1
@@ -365,7 +380,7 @@ pv-local-pod                         1/1     Running   0          43s
 
 ```
 
-从上面的打印中可以看出local-pv跟hostpath的类型还是有区别的，在pod的定义中引入pvc即可使用底层存储，其中引入storageclass指定`volumeBindingMode: WaitForFirstConsumer`，等待POD被调度后才对PVC绑定PV动作。
+从上面的打印中可以看出local-pv跟hostpath的类型还是有区别的，在pod的定义中引入pvc即可使用底层存储，其中引入storageclass指定 `volumeBindingMode: WaitForFirstConsumer`，等待POD被调度后才对PVC绑定PV动作。
 
 将POD删除之后，重启拉取POD，由于设置了NodeAffinity亲和性，下次还是会被部署到同一个节点上来，这样就能使用这个节点上的PV存储资源了。
 

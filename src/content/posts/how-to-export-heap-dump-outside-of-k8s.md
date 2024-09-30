@@ -1,6 +1,20 @@
+---
+title: 15-在K8s中导出Heap dump信息
+date: 2022-04-13 20:19:21
+updated: 2022-04-13 20:19:21
+categories: 
+  - 技术笔记
+description: Kubernetes集群管理员在提供集群给开发者使用，出于安全考虑一般节点不会开放给开发者直接使用，导致开发者的heap dump数据无法直接获取到，本文描述这种场景的解决方案。
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+keywords: kubernetes,k8s,heap dump,java,jvm
+---
 > 场景：应用基于Kubernetes部署，应用开发者受限登陆集群节点下载文件。当Java（或者其他）应用出现OOM异常需要生成heap dump二进制文件。
 
-Kubernetes部署负载时，如果不指定POD的重启策略（**RestartPolicy**），则默认为`Always`策略。也即意味着，如果这个容器主进程出现故障，Kubelet会自动将这个容器重启。
+Kubernetes部署负载时，如果不指定POD的重启策略（**RestartPolicy**），则默认为 `Always`策略。也即意味着，如果这个容器主进程出现故障，Kubelet会自动将这个容器重启。
 
 遗憾的是，容器故障时，由于Kubelet会很快自动重启容器，所以我们没法人工进入做java的heap dump这个动作。那是不是就没法获取到应用的heap dump信息呢？当然不是，需要注意的是，容器重启但是POD并没有重启，也就是说POD被调度的节点没有变化，也就意味着，我们可以将容器生成的文件直接存放到节点中，集群管理员可以协助去下载heap dump文件。
 
@@ -37,7 +51,7 @@ spec:
         emptyDir: {}
 ```
 
-这里，设置lifecycle的preStop阶段执行heap dump动作，并将其写入容器的`/dumps`目录，主机上有一个目录会被kubelet自动挂载到容器的`dumps`目录下面，这样的话，即使容器重启了，POD没有重启，该目录依然存在，集群管理员依然可以到主机上下载该文件。
+这里，设置lifecycle的preStop阶段执行heap dump动作，并将其写入容器的 `/dumps`目录，主机上有一个目录会被kubelet自动挂载到容器的 `dumps`目录下面，这样的话，即使容器重启了，POD没有重启，该目录依然存在，集群管理员依然可以到主机上下载该文件。
 
 但这显然不是一个好的运维方式，如果应用开发者能够自助获取到文件就好了。其实，应用可以启一个Sidecar容器来做采集就好了，没有权限登陆节点，那我们把应用采集到OBS对象存储里就好了呀。
 
@@ -45,8 +59,8 @@ spec:
 
 顺着上面的思路，可以准备如下：
 
-1.  准备一个镜像，里面包含脚本能够上传文件到OBS存储。
-2.  业务部署的Deployment里加上一个Sidecar，使用上面的镜像，采集应用的文件到OBS存储。
+1. 准备一个镜像，里面包含脚本能够上传文件到OBS存储。
+2. 业务部署的Deployment里加上一个Sidecar，使用上面的镜像，采集应用的文件到OBS存储。
 
 这里，我们使用的是华为云OBS存储，基于python sdk写一个s3存储客户端，编写Dockerfile制作镜像。
 
@@ -74,7 +88,7 @@ ADD s3_client.py /usr/local
 ENTRYPOINT ["/bin/bash"]
 ```
 
-在这个镜像中装了inotify和python，其中python用于跑OBS客户端脚本，inotify用于检测jump dump文件变化。将OBS客户端到`easy_s3_2.1.py`复制到与dockerfile所在目录，build镜像：
+在这个镜像中装了inotify和python，其中python用于跑OBS客户端脚本，inotify用于检测jump dump文件变化。将OBS客户端到 `easy_s3_2.1.py`复制到与dockerfile所在目录，build镜像：
 
 ```bash
 docker build -f dockerfile -t myalpine:v1.1 .
@@ -128,7 +142,7 @@ spec:
           inotifywait -m /dumps -e close_write | while read path action file; python s3_client.py -s s3-hc-dgg.xxx.xxx.com put /lmbucket/oom.bin -f /dumps/oom.bin ; done;
 ```
 
-其中`inotifywait`这个sidecar容器中的应用，主要是检测`/dumps`目录，检测内容包括`read / path / action 和file`, 检测方法是`close_write` ，即当`dumps/`目录下的文件关闭了不再写入，就将文件通过s3客户端上传到sc桶`s3-hc-dgg.xxx.xxx.com`中的`/lmbucket`目录下并命名为`oom.bin`。
+其中 `inotifywait`这个sidecar容器中的应用，主要是检测 `/dumps`目录，检测内容包括 `read / path / action 和file`, 检测方法是 `close_write` ，即当 `dumps/`目录下的文件关闭了不再写入，就将文件通过s3客户端上传到sc桶 `s3-hc-dgg.xxx.xxx.com`中的 `/lmbucket`目录下并命名为 `oom.bin`。
 
 这样，应用开发者即可自助到s3中下载heap dump文件了。
 

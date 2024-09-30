@@ -10,8 +10,7 @@ tags:
   - cdn
   - github action
   - ssl
-image: images/posts/qcloud-ssl.png
-meta_image: images/posts/qcloud-ssl.png
+image: qcloud-ssl.png
 
 keywords: hugo,腾讯云,cdn, github action, serverless, let's encrypt
 ---

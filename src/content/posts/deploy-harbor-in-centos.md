@@ -9,10 +9,7 @@ tags:
   - Docker
   - Harbor
   - K8s
-series:
-  - Docker
-image: images/posts/harbor-logo.png  
-meta_image: images/posts/harbor-logo.png  
+image: harbor-logo.png  
 keywords: harbor,docker,
 ---
 

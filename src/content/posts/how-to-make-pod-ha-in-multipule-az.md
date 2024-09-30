@@ -1,4 +1,18 @@
+---
+title: 06-POD在多AZ之间高可用的实现
+date: 2022-02-12 18:18:21
+updated: 2022-02-12 18:18:21
+description: 基于云架构平台，基本都是多AZ保障高可用，那么如何设置POD在多AZ之间调度呢？
+categories: 
+  - 技术笔记
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
 
+keywords: kubernetes,k8s,多AZ,高可用,亲和,反亲和,
+---
 ## 1、原理
 
 通过K8s的亲和性和反亲和性设置，可以将POD在节点间调度。
@@ -13,9 +27,9 @@
 
 除此之外，还有几个关键概念：
 
-● 拓扑域： 即`topologyKey`，拓扑域通过设置工作节点的标签，包含默认和自定义标签，用于指定调度时作用域。比如`topologyKey: failure-domain.beta.kubernetes.io/zone`指的拓扑域是AZ域，`topologyKey: kubernetes.io/hostname`指的拓扑域是主机。
+● 拓扑域： 即 `topologyKey`，拓扑域通过设置工作节点的标签，包含默认和自定义标签，用于指定调度时作用域。比如 `topologyKey: failure-domain.beta.kubernetes.io/zone`指的拓扑域是AZ域，`topologyKey: kubernetes.io/hostname`指的拓扑域是主机。
 
-● 选择器： 对应于`matchExpressions`，可以添加多条选择器，多条选择器之间是一种“与”的关系，即需要满足全部选择器才能依据此条规则进行调度。
+● 选择器： 对应于 `matchExpressions`，可以添加多条选择器，多条选择器之间是一种“与”的关系，即需要满足全部选择器才能依据此条规则进行调度。
 
 ● 标签名： 对应应用组件的标签，您可以使用默认标签app或者使用自定义标签。
 
@@ -72,13 +86,11 @@ Labels:             beta.kubernetes.io/arch=amd64
 
 ![pod-antiaffinity-1](https://laomeinote.com/images/posts/pod-antiaffinity-1.png)
 
-
-
 创建成功后可见7个实例能分在两个AZ的4个节点上。
 
 ![pod-antiaffinity-instance](https://laomeinote.com/images/posts/pod-antiaffinity-instance.png)
 
-尝试将节点之间的调度用硬约束，AZ之间的约束用软约束，通过定义yaml来实现，定义一个`pod-antiaffinity.yaml`:
+尝试将节点之间的调度用硬约束，AZ之间的约束用软约束，通过定义yaml来实现，定义一个 `pod-antiaffinity.yaml`:
 
 ```yaml
 apiVersion: apps/v1
@@ -268,12 +280,13 @@ nginx-pod-affinity-test-8545c897c6-wtvvx   1/1     Running   0          50s     
 
 四个节点上的POD分布如下：
 
-| AZ   | 节点IP | POD个数 |
-| ---- | ------ | ------- |
-| AZ1  |   10.x.154.147     |   3      |
-| AZ1  |   10.x.154.106     |   2      |
-| AZ2  |   10.x.154.161     |   4     |
-| AZ2  |   10.x.154.39     |    3     |
+| AZ  | 节点IP       | POD个数 |
+| --- | ------------ | ------- |
+| AZ1 | 10.x.154.147 | 3       |
+| AZ1 | 10.x.154.106 | 2       |
+| AZ2 | 10.x.154.161 | 4       |
+| AZ2 | 10.x.154.39  | 3       |
 
 ---
+
 全文完。

@@ -1,11 +1,28 @@
+---
+title: Linux Shell之sed
+date: 2021-12-16 22:15:01
+updated: 2021-12-16 22:15:01
+description: grep、sed、awk并称为linux文本处理器三剑客，本文主要总结sed的基础使用方法。
+categories: 
+  - 技术笔记
+
+tags: 
+  - Linux
+  - Shell
+
+keywords: linux,sed,shell,
+image: Linux_logo.png
+
+---
 sed（stream editor）流编辑器也是linux中的一条命令，通过sed可在shell中实现非交互式修改文件内容。sed处理文本是按行处理，也就是读一行处理一行。
 sed命令基本格式是：
 **sed [选项] '编辑指令' 文件路径 **
-也可以通过管道`|`传输参数给sed处理 **前置命令 | sed 选项 '编辑指令'**
+也可以通过管道 `|`传输参数给sed处理 **前置命令 | sed 选项 '编辑指令'**
 
 ---
 
 ## sed选项常用参数
+
 - *-n*: 寂静模式，抑制来自sed命令执行过程中的冗余输出信息，比如只显示那些被改变的行；如果不加-n选项会全部输出文本满足条件的行再重复输出；
 - *-r*: 如果使用扩展正则，则需要添加-r选项，默认不支持扩展正则，只支持标准正则
 - *-i*: 直接修改源文件；**不加-i只会在屏幕临时输出不会修改源文件**，一般测试过命令无误才会在脚本中使用-i选项
@@ -18,40 +35,40 @@ $ sed -n '2p'/etc/passwd 打印出第2行
 
 ### s 替换
 
-| 命令                                                         | 完整示例                  | 说明                                                         |
-| ------------------------------------------------------------ | ------------------------- | ------------------------------------------------------------ |
-| s/old/new/                                                   | sed 's/old/new/' reg.txt | 删除reg.txt中每行的第一个old都替换成new                 |
-| s/old/new/2                                                  | sed 's/old/new/' reg.txt | 删除reg.txt中每行的第二个old都替换成new                 |
-| s/old/new/g                                                  | sed 's/old/new/g' reg.txt | 删除reg.txt中每行的每一个old都替换成new                 |
-| s/old//                                                      | sed 's/old//' reg.txt | 删除reg.txt中每行的第一个old都替换成空也就是把old删除   |
-| s/old/&s/                                                    | sed 's/old/&s/' reg.txt | 删除reg.txt中每行的第一个old都替换成olds &代表前面查找的字符串 |
-| 4,7s/^/#/                                                   | sed '4,7s/^/#/' reg.txt | 删除reg.txt中4-7行开头加上# 也就是批量添加注释              |
-| 4,7s/^#an/an/                                               | sed '4,7s/^#an/an/' reg.txt | 删除reg.txt中4-7行以#an开头的行去掉#                        |
+| 命令          | 完整示例                    | 说明                                                           |
+| ------------- | --------------------------- | -------------------------------------------------------------- |
+| s/old/new/    | sed 's/old/new/' reg.txt    | 删除reg.txt中每行的第一个old都替换成new                        |
+| s/old/new/2   | sed 's/old/new/' reg.txt    | 删除reg.txt中每行的第二个old都替换成new                        |
+| s/old/new/g   | sed 's/old/new/g' reg.txt   | 删除reg.txt中每行的每一个old都替换成new                        |
+| s/old//       | sed 's/old//' reg.txt       | 删除reg.txt中每行的第一个old都替换成空也就是把old删除          |
+| s/old/&s/     | sed 's/old/&s/' reg.txt     | 删除reg.txt中每行的第一个old都替换成olds &代表前面查找的字符串 |
+| 4,7s/^/#/     | sed '4,7s/^/#/' reg.txt     | 删除reg.txt中4-7行开头加上# 也就是批量添加注释                 |
+| 4,7s/^#an/an/ | sed '4,7s/^#an/an/' reg.txt | 删除reg.txt中4-7行以#an开头的行去掉#                           |
 
 ### p 输出
 
-| 命令    | 完整示例                   | 说明                                             |
-| ------- | -------------------------- | ------------------------------------------------ |
-| p       | sed -n 'p' reg.txt         | 输出reg.txt的所有行                              |
-| 2p      | sed -n '2p' reg.txt        | 输出reg.txt的第二行                              |
-| 2,5p    | sed -n '2,5p' reg.txt      | 输出reg.txt的第二行到第五行                      |
-| 2,+5p   | sed -n '2,+5p' reg.txt     | 输出reg.txt的第二行和第二行以后的5行             |
-| 1~2p    | sed -n '1~2p' reg.txt      | 输出第一行，每隔两行输出一行，也就是输出奇数行   |
-| 2~2p    | sed -n '2~2p' reg.txt      | 输出第二行，每隔两行输出一行，也就是输出偶数数行 |
-| /正则/p | sed -n '/[0-9]]/p' reg.txt | 输出reg.txt以数字开头的行                        |
-| $=      | sed -n '$=' reg.txt        | 输出reg.txt的行数                                |
+| 命令                            | 完整示例                   | 说明                                             |
+| ------------------------------- | -------------------------- | ------------------------------------------------ |
+| p                               | sed -n 'p' reg.txt         | 输出reg.txt的所有行                              |
+| 2p                              | sed -n '2p' reg.txt        | 输出reg.txt的第二行                              |
+| 2,5p                            | sed -n '2,5p' reg.txt      | 输出reg.txt的第二行到第五行                      |
+| 2,+5p                           | sed -n '2,+5p' reg.txt     | 输出reg.txt的第二行和第二行以后的5行             |
+| 1~2p                            | sed -n '1~2p' reg.txt      | 输出第一行，每隔两行输出一行，也就是输出奇数行   |
+| 2~2p                            | sed -n '2~2p' reg.txt      | 输出第二行，每隔两行输出一行，也就是输出偶数数行 |
+| /正则/p                         | sed -n '/[0-9]]/p' reg.txt | 输出reg.txt以数字开头的行                        |
+| $=      | sed -n '$=' reg.txt | 输出reg.txt的行数          |                                                  |
 
 ### d 删除
 
-| 命令   | 完整示例                | 说明                                 |
-| ------ | ----------------------- | ------------------------------------ |
-| 2d     | sed '2d' reg.txt        | 删除reg.txt的第二行                  |
-| 2,5d   | sed '2,5d' reg.txt      | 删除reg.txt的第二行到第五行          |
-| 2,+5d  | sed '2,+5d' reg.txt     | 删除reg.txt的第二行和第二行以后的5行 |
-| $d     | sed '$d' reg.txt        | 删除reg.txt的最后一行                |
-| /正则/ | sed '/[0-9]/d' reg.txt  | 删除以数字开始的行                   |
-| ！     | sed '/[0-9]/!d' reg.txt | 删除不是以数字开头的行               |
-| ^$     | sed '^$' reg.txt        | 删除reg.txt的空行                    |
+| 命令                        | 完整示例                | 说明                                 |
+| --------------------------- | ----------------------- | ------------------------------------ |
+| 2d                          | sed '2d' reg.txt        | 删除reg.txt的第二行                  |
+| 2,5d                        | sed '2,5d' reg.txt      | 删除reg.txt的第二行到第五行          |
+| 2,+5d                       | sed '2,+5d' reg.txt     | 删除reg.txt的第二行和第二行以后的5行 |
+| $d     | sed '$d' reg.txt | 删除reg.txt的最后一行   |                                      |
+| /正则/                      | sed '/[0-9]/d' reg.txt  | 删除以数字开始的行                   |
+| ！                          | sed '/[0-9]/!d' reg.txt | 删除不是以数字开头的行               |
+| ^$     | sed '^$' reg.txt | 删除reg.txt的空行       |                                      |
 
 ### i/a/c插入
 
@@ -72,6 +89,6 @@ $ sed -n '2p'/etc/passwd 打印出第2行
 | w           | sed  '2w 3.txt' 1.txt            | 在1.txt中第二行导出为3.txt的内容                   |
 | w           | sed  '2,5w 3.txt' 1.txt          | 在1.txt中第二行到第五行导出3.txt的内容             |
 
---------
+---
 
 全文完。

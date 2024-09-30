@@ -1,11 +1,23 @@
-
-
+---
+title: 10-向容器中注入加密信息
+date: 2022-03-31 18:36:40
+updated: 2022-03-31 18:36:40
+description: 一般ConfigMap用于保存通用配置信息，属于明文信息，不能保存密钥，如果要保存密钥等加密信息，Kubernetes提供Secret对象进行Base64转码。
+categories: 
+  - 技术笔记
+tags: 
+  - K8s
+  - Kubernetes
+  - CloudNative
+image: kubernetes.png
+keywords: kubernetes,k8s,Secret,
+---
 一般ConfigMap用于保存通用配置信息，属于明文信息，不能保存密钥，如果要保存密钥等加密信息，Kubernetes提供Secret对象进行Base64转码。
 
 `Secret` 主要使用的有以下三种类型：
 
-- `Opaque`：base64 编码格式的 Secret，用来存储密码、密钥等；但数据也可以通过`base64 –decode`解码得到原始数据，所以加密性很弱。
-- `kubernetes.io/dockerconfigjson`：用来存储私有`docker registry`的认证信息。
+- `Opaque`：base64 编码格式的 Secret，用来存储密码、密钥等；但数据也可以通过 `base64 –decode`解码得到原始数据，所以加密性很弱。
+- `kubernetes.io/dockerconfigjson`：用来存储私有 `docker registry`的认证信息。
 - `kubernetes.io/service-account-token`：用于被 `ServiceAccount` ServiceAccount 创建时 Kubernetes 会默认创建一个对应的 Secret 对象。Pod 如果使用了 ServiceAccount，对应的 Secret 会自动挂载到 Pod 目录 `/run/secrets/kubernetes.io/serviceaccount` 中。
 
 如下在集群中查询secret信息：
@@ -18,7 +30,7 @@ mxhregcred            kubernetes.io/dockerconfigjson        1      91d
 mysecret              Opaque                                2      11s
 ```
 
-其中第一个`default-token-g4ktr`是创建service account时默认创建的secret，内容为加密的token信息，第二个`mxhregcred`是创建docker 私仓的密钥时生成的，也是加密的token信息，第三个是创建的Opaque类型的secret。下面以Opaque类型secret为例，演示向容器中注入secret方法。
+其中第一个 `default-token-g4ktr`是创建service account时默认创建的secret，内容为加密的token信息，第二个 `mxhregcred`是创建docker 私仓的密钥时生成的，也是加密的token信息，第三个是创建的Opaque类型的secret。下面以Opaque类型secret为例，演示向容器中注入secret方法。
 
 ## 1. 创建Secret对象
 
@@ -103,8 +115,6 @@ metadata:
 type: Opaque
 ```
 
-
-
 ## 2. 使用Secret对象
 
 创建好 `Secret`对象后，有两种方式来使用：
@@ -188,6 +198,6 @@ username
 
 可见volume方式也成功注入到容器中。
 
---- 
+---
 
 全文完。

@@ -14,11 +14,7 @@ tags:
   - Gitee
   - Sync
 
-series:
-  - Github
-
-meta_image: images/posts/github-actions-post.png
-image: images/posts/github-actions-post.png
+image: github-actions-post.png
 keywords: Github Actions, Github, Gitee, Sync
 ---
 
