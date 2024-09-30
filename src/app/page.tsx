@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { getSortedPostsData, getAllTags, getAllCategories, PostData } from '../utils/markdown';
 
 export default async function Home({
@@ -13,11 +14,16 @@ export default async function Home({
 
   const selectedTag = typeof searchParams.tag === 'string' ? searchParams.tag : null;
   const selectedCategory = typeof searchParams.category === 'string' ? searchParams.category : null;
+  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) : 1;
 
   const filteredPosts = posts.filter(post => 
     (!selectedTag || post.tags.includes(selectedTag)) &&
     (!selectedCategory || post.category === selectedCategory)
   );
+
+  const postsPerPage = 10;
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const paginatedPosts = filteredPosts.slice((page - 1) * postsPerPage, page * postsPerPage);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -31,7 +37,7 @@ export default async function Home({
             <p className="mb-6 text-lg text-gray-600">Filtered by category: <span className="font-semibold text-indigo-600">{selectedCategory}</span></p>
           )}
           <div className="space-y-10">
-            {filteredPosts.map((post) => (
+            {paginatedPosts.map((post) => (
               <div key={post.slug} className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center">
                 <div className="flex-shrink-0 mr-6 flex items-center">
                   {post.image ? (
@@ -130,6 +136,34 @@ export default async function Home({
               ))}
             </ul>
           </div>
+          {totalPages > 1 && (
+            <div className="mt-10 flex justify-center">
+              <nav className="inline-flex rounded-md shadow">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <Link
+                    key={pageNum}
+                    href={{
+                      pathname: '/',
+                      query: {
+                        ...(selectedTag && { tag: selectedTag }),
+                        ...(selectedCategory && { category: selectedCategory }),
+                        page: pageNum,
+                      },
+                    }}
+                    className={`px-4 py-2 border ${
+                      pageNum === page
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
+                    } ${pageNum === 1 ? 'rounded-l-md' : ''} ${
+                      pageNum === totalPages ? 'rounded-r-md' : ''
+                    }`}
+                  >
+                    {pageNum}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          )}
         </div>
       </div>
     </div>
