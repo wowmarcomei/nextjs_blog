@@ -6,7 +6,7 @@ export default async function Categories() {
   const posts = await getSortedPostsData();
 
   const categoryCounts = categories.reduce((acc, category) => {
-    acc[category] = posts.filter(post => post.category === category).length;
+    acc[category] = posts.filter(post => post.categories.includes(category)).length;
     return acc;
   }, {} as Record<string, number>);
 

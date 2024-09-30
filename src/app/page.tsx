@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { PostData } from '../utils/markdown';
 import { getSortedPostsData, getAllTags, getAllCategories, searchPosts } from '../utils/serverUtils';
 import BlogPosts from '../components/BlogPosts';
 
