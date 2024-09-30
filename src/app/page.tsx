@@ -112,7 +112,7 @@ export default async function Home({
             </div>
           )}
         </div>
-        <div className="w-full lg:w-1/3 space-y-8">
+        <div className="w-full lg:w-1/3 space-y-8 lg:sticky lg:top-4 lg:self-start">
           <div className="bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold mb-4 text-gray-900">Search</h2>
             <input
