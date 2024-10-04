@@ -107,7 +107,9 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <RelatedPosts posts={relatedPosts} initialLimit={3} />
         </article>
         <div className="w-full lg:w-1/3">
-          <Sidebar allTags={allTags} allCategories={allCategories} />
+          <div className="sticky top-4">
+            <Sidebar allTags={allTags} allCategories={allCategories} />
+          </div>
         </div>
       </div>
     </div>

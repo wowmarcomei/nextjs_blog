@@ -195,7 +195,9 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
         )}
       </div>
       <div className="w-full lg:w-1/3">
-        <Sidebar allTags={allTags} allCategories={allCategories} />
+        <div className="sticky top-4">
+          <Sidebar allTags={allTags} allCategories={allCategories} />
+        </div>
       </div>
       <ScrollToTopButton />
     </div>
