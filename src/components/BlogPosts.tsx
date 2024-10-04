@@ -102,7 +102,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+    <div className="flex flex-col lg:flex-row gap-8">
       <div className="w-full lg:w-2/3">
         {searchQuery && (
           <div className="mb-6">
@@ -194,7 +194,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
           <div ref={observerTarget} className="h-10 mt-8" />
         )}
       </div>
-      <div className="w-full lg:w-1/3 mt-8 lg:mt-0">
+      <div className="w-full lg:w-1/3">
         <Sidebar allTags={allTags} allCategories={allCategories} />
       </div>
       <ScrollToTopButton />

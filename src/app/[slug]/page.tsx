@@ -35,9 +35,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       ],
       locale: 'en_US',
       type: 'article',
-      publishedTime: post.date,
-      authors: [post.author || 'Your Name'],
-      tags: post.tags,
     },
     twitter: {
       card: 'summary_large_image',
@@ -47,12 +44,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       creator: '@YourTwitterHandle',
       site: '@YourSiteTwitterHandle',
     },
-    other: {
-      'twitter:label1': 'Written by',
-      'twitter:data1': post.author || 'Your Name',
-      'twitter:label2': 'Categories',
-      'twitter:data2': post.categories.join(', '),
-    }
   };
 }
 
@@ -65,7 +56,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex flex-col lg:flex-row gap-8">
-        <article className="w-full lg:w-3/4 xl:w-4/5 bg-white p-6 lg:p-8 rounded-xl shadow-md">
+        <article className="w-full lg:w-2/3 bg-white p-6 lg:p-8 rounded-xl shadow-md">
           <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
           <div className="text-gray-600 mb-4 lg:mb-6 text-base lg:text-lg flex justify-between items-center">
             <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -115,7 +106,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           </div>
           <RelatedPosts posts={relatedPosts} initialLimit={3} />
         </article>
-        <div className="w-full lg:w-1/4 xl:w-1/5">
+        <div className="w-full lg:w-1/3">
           <Sidebar allTags={allTags} allCategories={allCategories} />
         </div>
       </div>
