@@ -64,36 +64,36 @@ export default async function ArticlePage({ params }: { params: { slug: string }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col lg:flex-row gap-12">
-        <article className="w-full lg:w-2/3 bg-white p-8 rounded-xl shadow-md">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-6">{post.title}</h1>
-          <div className="text-gray-600 mb-6 text-lg flex justify-between items-center">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <article className="w-full lg:w-3/4 xl:w-4/5 bg-white p-6 lg:p-8 rounded-xl shadow-md">
+          <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
+          <div className="text-gray-600 mb-4 lg:mb-6 text-base lg:text-lg flex justify-between items-center">
             <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
             <ViewCounter slug={post.slug} />
           </div>
           {post.author && (
-            <div className="mb-6">
+            <div className="mb-4 lg:mb-6">
               <span className="font-semibold text-gray-700">Author: </span>
               <span className="text-gray-600">{post.author}</span>
             </div>
           )}
-          <div className="mb-6">
+          <div className="mb-4 lg:mb-6">
             <span className="font-semibold text-gray-700">Categories: </span>
             {post.categories.map((category: string) => (
-              <span key={category} className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium mr-2">
+              <span key={category} className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm font-medium mr-2">
                 {category}
               </span>
             ))}
           </div>
-          <div className="mb-8">
+          <div className="mb-6 lg:mb-8">
             <span className="font-semibold text-gray-700">Tags: </span>
             {post.tags.map((tag: string) => (
-              <span key={tag} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-medium text-gray-700 mr-2 mb-2">
+              <span key={tag} className="inline-block bg-gray-200 rounded-full px-2 py-1 text-sm font-medium text-gray-700 mr-2 mb-2">
                 {tag}
               </span>
             ))}
           </div>
-          <div className="markdown-body prose lg:prose-lg xl:prose-xl mb-8">
+          <div className="markdown-body prose lg:prose-lg xl:prose-xl mb-6 lg:mb-8">
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
             >
@@ -105,7 +105,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             title={post.title}
             tags={post.tags}
           />
-          <div className="mt-8">
+          <div className="mt-6 lg:mt-8">
             <Link href="/" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-300">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -115,7 +115,9 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           </div>
           <RelatedPosts posts={relatedPosts} initialLimit={3} />
         </article>
-        <Sidebar allTags={allTags} allCategories={allCategories} />
+        <div className="w-full lg:w-1/4 xl:w-1/5">
+          <Sidebar allTags={allTags} allCategories={allCategories} />
+        </div>
       </div>
     </div>
   );

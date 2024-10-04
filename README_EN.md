@@ -25,8 +25,11 @@ This is a feature-rich blog system built with Next.js.
    - Real-time search results display with clear search query indication.
 
 6. **Responsive Design**: 
-   - Adapts to various devices, providing a good mobile experience.
+   - Adapts to various devices, providing excellent mobile and desktop experiences.
    - Optimized components (Hero, BlogPosts, RelatedPosts, Sidebar) for different screen sizes.
+   - Implemented fluid layouts to ensure proper content display across all devices.
+   - Improved width ratios for article lists and sidebar, providing a better reading experience.
+   - Optimized article page layout, offering wider content area and narrower sidebar on desktop.
 
 7. **Social Sharing**: Support for sharing articles to major social media platforms.
 
@@ -38,14 +41,29 @@ This is a feature-rich blog system built with Next.js.
    - Implemented a ScrollToTopButton for easy navigation on long pages.
    - Added a LoadingSpinner component for better visual feedback during content loading.
    - Improved pagination system with responsive design.
+   - Optimized sidebar layout for better reading experience across different screen sizes.
+   - Implemented infinite scrolling for smooth article browsing experience.
 
 10. **Performance Optimization**:
-    - Optimized image rendering to resolve size warnings and improve page load performance.
+    - Optimized image rendering using fixed aspect ratio containers and object-fit property, resolving size warnings and improving page load performance.
     - Implemented efficient lazy loading for related posts.
+    - Enhanced component rendering for faster page load times.
+    - Improved infinite scrolling implementation, reducing layout shifts when loading new content.
 
 11. **Enhanced Layout and Styling**:
     - Added a Hero component to the homepage for a more engaging user interface.
     - Updated Tailwind configuration to support custom animations.
+    - Improved article list and sidebar layout for a better reading experience.
+    - Optimized tag and category display for better presentation on smaller screens.
+    - Adjusted article page layout ratios for wider content display on desktop, enhancing readability.
+
+## To Be Done
+
+1. Abstract configuration to config.yaml
+2. Fixed sidebar
+3. Menu optimization
+4. Add table of contents to article pages
+5. Add Project page with card layout
 
 ## Getting Started
 

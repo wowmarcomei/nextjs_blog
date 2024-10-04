@@ -1,6 +1,9 @@
 {
-  "mastering-tailwind-css": 4,
+  "mastering-tailwind-css": 16,
   "how-to-inject-host-info-to-container": 2,
   "add-https-for-hugo": 4,
-  "how-to-export-heap-dump-outside-of-k8s": 2
+  "how-to-export-heap-dump-outside-of-k8s": 2,
+  "save-sensitive-info-within-k8s-with-sealed-secret": 4,
+  "adding-multiple-accounts-connect-to-github": 2,
+  "deploy-k8s-cluster": 2
 }
