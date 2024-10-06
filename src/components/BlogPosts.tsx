@@ -79,30 +79,20 @@ export default function BlogPosts({
     [posts, selectedTag, selectedCategory]
   );
 
-  useEffect(() => {
-    setDisplayedPosts(filteredPosts.slice(0, page * postsPerPage));
-  }, [filteredPosts, page]);
-
   const loadMorePosts = useCallback(() => {
-    console.log('Loading more posts...');
-    console.log('Current displayed posts:', displayedPosts.length);
-    console.log('Filtered posts:', filteredPosts.length);
-    if (isLoadingMore || displayedPosts.length >= filteredPosts.length) {
-      console.log('No more posts to load');
-      return;
-    }
-    setIsLoadingMore(true);
-    setError(null);
+    if (isLoadingMore || displayedPosts.length >= filteredPosts.length) return;
     
+    setIsLoadingMore(true);
     const nextPage = page + 1;
     const startIndex = displayedPosts.length;
     const endIndex = Math.min(startIndex + postsPerPage, filteredPosts.length);
-    const newPosts = filteredPosts.slice(startIndex, endIndex);
     
-    console.log(`Adding ${newPosts.length} new posts`);
-    setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
-    setPage(nextPage);
-    setIsLoadingMore(false);
+    setTimeout(() => {
+      const newPosts = filteredPosts.slice(startIndex, endIndex);
+      setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
+      setPage(nextPage);
+      setIsLoadingMore(false);
+    }, 1000); // Simulate loading delay
   }, [filteredPosts, isLoadingMore, page, postsPerPage, displayedPosts.length]);
 
   useEffect(() => {
@@ -112,7 +102,7 @@ export default function BlogPosts({
           loadMorePosts();
         }
       },
-      { rootMargin: '100px', threshold: 0.1 }
+      { threshold: 1.0 }
     );
 
     if (observerTarget.current) {
@@ -171,7 +161,7 @@ export default function BlogPosts({
           <p className="mb-4 text-base lg:text-lg text-gray-600">Filtered by category: <span className="font-semibold text-indigo-600">{selectedCategory}</span></p>
         )}
         <div className="space-y-6 lg:space-y-10">
-          {displayedPosts.map((post) => (
+          {displayedPosts.map((post, index) => (
             <article key={post.slug} className="bg-white p-4 lg:p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col lg:flex-row items-start lg:items-center">
               <div className="w-full lg:w-[200px] h-[150px] mb-4 lg:mb-0 lg:mr-6 flex-shrink-0">
                 {post.image ? (
@@ -222,6 +212,7 @@ export default function BlogPosts({
                   </Link>
                 </div>
               </div>
+              {index === displayedPosts.length - 1 && <div ref={observerTarget} />}
             </article>
           ))}
         </div>
@@ -229,9 +220,6 @@ export default function BlogPosts({
           <div className="mt-8 text-center" aria-live="polite" aria-busy="true">
             <LoadingSpinner />
           </div>
-        )}
-        {displayedPosts.length < filteredPosts.length && (
-          <div ref={observerTarget} className="h-10 mt-8" aria-hidden="true" />
         )}
       </main>
       <aside className="w-full lg:w-1/3" role="complementary" aria-label="Sidebar">
