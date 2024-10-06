@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
+import remarkGfm from 'remark-gfm';
 import { PostData } from '../../utils/markdown';
 import { getPostData, getSortedPostsData, getAllTags, getAllCategories, getRelatedPosts } from '../../utils/serverUtils';
 import SocialShareButtons from '../../components/SocialShareButtons';
@@ -13,6 +14,10 @@ import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
 import { Node, Element, Text } from 'hast';
 import Script from 'next/script';
+import { ReactNode } from 'react';
+
+// Add type declaration for remark-gfm
+declare module 'remark-gfm';
 
 const TableOfContents = dynamic(() => import('../../components/TableOfContents'), { ssr: false });
 const Comments = dynamic(() => import('../../components/Comments'), { ssr: false });
@@ -32,12 +37,36 @@ const addIdsToHeadings = () => {
         (node as Element).properties = (node as Element).properties || {};
         (node as Element).properties.id = encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
       }
-      if ((node as Element).children) {
-        (node as Element).children.forEach(visit);
+      if ('children' in node) {
+        (node.children as Node[]).forEach(visit);
       }
     };
     visit(tree);
   };
+};
+
+interface MarkdownComponentProps {
+  children: ReactNode;
+}
+
+// Custom components for ReactMarkdown
+const MarkdownComponents: Record<string, React.FC<MarkdownComponentProps>> = {
+  table: ({ children }: MarkdownComponentProps) => (
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200">{children}</table>
+    </div>
+  ),
+  thead: ({ children }: MarkdownComponentProps) => <thead className="bg-gray-50">{children}</thead>,
+  th: ({ children }: MarkdownComponentProps) => (
+    <th
+      scope="col"
+      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+    >
+      {children}
+    </th>
+  ),
+  td: ({ children }: MarkdownComponentProps) => <td className="px-6 py-4 whitespace-nowrap">{children}</td>,
+  tr: ({ children }: MarkdownComponentProps) => <tr className="bg-white even:bg-gray-50">{children}</tr>,
 };
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -134,7 +163,9 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             </div>
             <div className="markdown-body prose lg:prose-lg xl:prose-xl mb-6 lg:mb-8">
               <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight, addIdsToHeadings]}
+                components={MarkdownComponents}
               >
                 {post.content}
               </ReactMarkdown>

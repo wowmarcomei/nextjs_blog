@@ -7,10 +7,12 @@ import { PostData } from './markdown';
 
 let cachedPosts: PostData[] | null = null;
 let cachedViews: Record<string, number> | null = null;
+let cachedTags: string[] | null = null;
+let cachedCategories: string[] | null = null;
 
 const viewsFile = path.join(process.cwd(), 'data', 'views.json');
 
-async function getViews(): Promise<Record<string, number>> {
+const getViews = cache(async (): Promise<Record<string, number>> => {
   if (cachedViews) {
     return cachedViews;
   }
@@ -24,7 +26,7 @@ async function getViews(): Promise<Record<string, number>> {
   }
 
   return cachedViews || {};
-}
+});
 
 function generateDefaultMetadata(fileName: string, content: string): Partial<PostData> {
   const title = fileName.replace(/\.md$/, '').replace(/-/g, ' ');
@@ -47,80 +49,77 @@ export const getSortedPostsData = cache(async (): Promise<PostData[]> => {
   }
 
   const postsDirectory = path.join(process.cwd(), 'src/content/posts');
-  const fileNames = await fs.readdir(postsDirectory);
   
-  const allPostsData = await Promise.all(fileNames.map(async (fileName) => {
-    const slug = fileName.replace(/\s+/g, '-').replace(/\.md$/, '');
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = await fs.readFile(fullPath, 'utf8');
-    const matterResult = matter(fileContents);
-
-    const defaultMetadata = generateDefaultMetadata(fileName, matterResult.content);
-    const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
+  try {
+    const fileNames = await fs.readdir(postsDirectory);
+    console.log('Files in posts directory:', fileNames);
     
-    const updatedPostData: PostData = {
-      ...postData,
-      slug,
-      image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
-      content: matterResult.content,
-      keywords: postData.keywords || '',
-      categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
-      tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
-      description: postData.description || matterResult.content.substring(0, 25),
-      pinned: postData.pinned || false,
-    };
-    return updatedPostData;
-  }));
+    const allPostsData = await Promise.all(fileNames.map(async (fileName) => {
+      const slug = fileName.replace(/\s+/g, '-').replace(/\.md$/, '');
+      const fullPath = path.join(postsDirectory, fileName);
+      
+      try {
+        const fileContents = await fs.readFile(fullPath, 'utf8');
+        const matterResult = matter(fileContents);
 
-  cachedPosts = allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
-  return cachedPosts;
+        const defaultMetadata = generateDefaultMetadata(fileName, matterResult.content);
+        const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
+        
+        const updatedPostData: PostData = {
+          ...postData,
+          slug,
+          image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
+          content: matterResult.content,
+          keywords: postData.keywords || '',
+          categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
+          tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
+          description: postData.description || matterResult.content.substring(0, 25),
+          pinned: postData.pinned || false,
+        };
+        return updatedPostData;
+      } catch (error) {
+        console.error(`Error processing file ${fileName}:`, error);
+        return null;
+      }
+    }));
+
+    cachedPosts = allPostsData.filter((post): post is PostData => post !== null).sort((a, b) => (a.date < b.date ? 1 : -1));
+    return cachedPosts;
+  } catch (error) {
+    console.error('Error reading posts directory:', error);
+    return [];
+  }
 });
 
 export const getPostData = cache(async (slug: string): Promise<PostData> => {
-  const postsDirectory = path.join(process.cwd(), 'src/content/posts');
-  
-  const files = await fs.readdir(postsDirectory);
-  
-  const matchingFile = files.find(file => file.replace(/\s+/g, '-').replace(/\.md$/, '') === slug);
-  
-  if (!matchingFile) {
+  const posts = await getSortedPostsData();
+  const post = posts.find(p => p.slug === slug);
+  if (!post) {
     throw new Error(`No matching file found for slug: ${slug}`);
   }
-  
-  const fullPath = path.join(postsDirectory, matchingFile);
-  const fileContents = await fs.readFile(fullPath, 'utf8');
-  const matterResult = matter(fileContents);
-
-  const defaultMetadata = generateDefaultMetadata(matchingFile, matterResult.content);
-  const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
-  
-  const updatedPostData: PostData = {
-    ...postData,
-    slug,
-    image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
-    content: matterResult.content,
-    keywords: postData.keywords || '',
-    categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
-    tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
-    description: postData.description || matterResult.content.substring(0, 25),
-    pinned: postData.pinned || false,
-  };
-
-  return updatedPostData;
+  return post;
 });
 
 export const getAllTags = cache(async (): Promise<string[]> => {
+  if (cachedTags) {
+    return cachedTags;
+  }
   const posts = await getSortedPostsData();
   const tags = new Set<string>();
   posts.forEach(post => post.tags?.forEach(tag => tags.add(tag)));
-  return Array.from(tags);
+  cachedTags = Array.from(tags);
+  return cachedTags;
 });
 
 export const getAllCategories = cache(async (): Promise<string[]> => {
+  if (cachedCategories) {
+    return cachedCategories;
+  }
   const posts = await getSortedPostsData();
   const categories = new Set<string>();
   posts.forEach(post => post.categories?.forEach(category => categories.add(category)));
-  return Array.from(categories);
+  cachedCategories = Array.from(categories);
+  return cachedCategories;
 });
 
 export const getPostsByYear = cache(async (): Promise<Record<string, PostData[]>> => {

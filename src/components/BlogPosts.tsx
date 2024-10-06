@@ -11,18 +11,28 @@ import { useRouter } from 'next/navigation';
 
 interface BlogPostsProps {
   initialPosts: PostData[];
-  allTags: string[];
-  allCategories: string[];
+  totalPosts: number;
+  currentPage: number;
   searchParams: { [key: string]: string | string[] | undefined };
   searchPosts: (query: string) => Promise<PostData[]>;
+  allTags: string[];
+  allCategories: string[];
 }
 
-export default function BlogPosts({ initialPosts, allTags, allCategories, searchParams, searchPosts }: BlogPostsProps) {
+export default function BlogPosts({ 
+  initialPosts, 
+  totalPosts, 
+  currentPage, 
+  searchParams, 
+  searchPosts,
+  allTags,
+  allCategories 
+}: BlogPostsProps) {
   const [posts, setPosts] = useState<PostData[]>(initialPosts);
   const [displayedPosts, setDisplayedPosts] = useState<PostData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(currentPage);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const observerTarget = useRef(null);
@@ -35,9 +45,9 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
 
   useEffect(() => {
     setPosts(initialPosts);
-    setDisplayedPosts(initialPosts.slice(0, postsPerPage));
-    setPage(1);
-  }, [initialPosts]);
+    setDisplayedPosts(initialPosts);
+    setPage(currentPage);
+  }, [initialPosts, currentPage]);
 
   useEffect(() => {
     async function performSearch() {
@@ -69,12 +79,11 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
   );
 
   useEffect(() => {
-    setDisplayedPosts(filteredPosts.slice(0, postsPerPage));
-    setPage(1);
-  }, [filteredPosts]);
+    setDisplayedPosts(filteredPosts.slice(0, page * postsPerPage));
+  }, [filteredPosts, page]);
 
   const loadMorePosts = useCallback(() => {
-    if (isLoadingMore) return;
+    if (isLoadingMore || displayedPosts.length >= totalPosts) return;
     setIsLoadingMore(true);
     setError(null);
     try {
@@ -93,12 +102,12 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
       setError('An error occurred while loading more posts. Please try again.');
       setIsLoadingMore(false);
     }
-  }, [filteredPosts, isLoadingMore, page, postsPerPage]);
+  }, [filteredPosts, isLoadingMore, page, postsPerPage, totalPosts, displayedPosts.length]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && displayedPosts.length < filteredPosts.length && !isLoadingMore) {
+        if (entries[0].isIntersecting && displayedPosts.length < totalPosts && !isLoadingMore) {
           loadMorePosts();
         }
       },
@@ -114,7 +123,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
         observer.unobserve(observerTarget.current);
       }
     };
-  }, [displayedPosts.length, filteredPosts.length, loadMorePosts, isLoadingMore]);
+  }, [displayedPosts.length, totalPosts, loadMorePosts, isLoadingMore]);
 
   const clearSearch = () => {
     router.push('/');
@@ -216,7 +225,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
             <LoadingSpinner />
           </div>
         )}
-        {displayedPosts.length < filteredPosts.length && (
+        {displayedPosts.length < totalPosts && (
           <div ref={observerTarget} className="h-10 mt-8" aria-hidden="true" />
         )}
       </main>

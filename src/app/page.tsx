@@ -5,11 +5,10 @@ import Hero from '../components/Hero';
 
 export const revalidate = 3600; // revalidate every hour
 
-async function getData() {
+async function getPosts(page = 1, limit = 10) {
   const posts = await getSortedPostsData();
-  const allTags = await getAllTags();
-  const allCategories = await getAllCategories();
-  return { posts, allTags, allCategories };
+  const paginatedPosts = posts.slice((page - 1) * limit, page * limit);
+  return { posts: paginatedPosts, total: posts.length };
 }
 
 async function searchPostsWrapper(query: string) {
@@ -22,7 +21,10 @@ export default async function Home({
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const { posts, allTags, allCategories } = await getData();
+  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
+  const { posts, total } = await getPosts(page);
+  const allTags = await getAllTags();
+  const allCategories = await getAllCategories();
 
   return (
     <>
@@ -31,10 +33,12 @@ export default async function Home({
         <Suspense fallback={<div>Loading...</div>}>
           <BlogPosts 
             initialPosts={posts} 
-            allTags={allTags} 
-            allCategories={allCategories} 
+            totalPosts={total}
+            currentPage={page}
             searchParams={searchParams} 
             searchPosts={searchPostsWrapper}
+            allTags={allTags}
+            allCategories={allCategories}
           />
         </Suspense>
       </div>
