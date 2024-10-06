@@ -43,12 +43,20 @@ export default function BlogPosts({
 
   const postsPerPage = 10;
 
+  const filteredPosts = useMemo(() => 
+    posts.filter(post => 
+      (!selectedTag || post.tags.includes(selectedTag)) &&
+      (!selectedCategory || post.categories.includes(selectedCategory))
+    ),
+    [posts, selectedTag, selectedCategory]
+  );
+
   useEffect(() => {
     console.log('Initial posts:', initialPosts.length);
     console.log('Total posts:', totalPosts);
     setPosts(initialPosts);
-    setDisplayedPosts(initialPosts.slice(0, postsPerPage));
-  }, [initialPosts, totalPosts]);
+    setDisplayedPosts(filteredPosts.slice(0, postsPerPage));
+  }, [initialPosts, totalPosts, filteredPosts]);
 
   useEffect(() => {
     async function performSearch() {
@@ -70,14 +78,6 @@ export default function BlogPosts({
     }
     performSearch();
   }, [searchQuery, searchPosts]);
-
-  const filteredPosts = useMemo(() => 
-    posts.filter(post => 
-      (!selectedTag || post.tags.includes(selectedTag)) &&
-      (!selectedCategory || post.categories.includes(selectedCategory))
-    ),
-    [posts, selectedTag, selectedCategory]
-  );
 
   const loadMorePosts = useCallback(() => {
     if (isLoadingMore || displayedPosts.length >= filteredPosts.length) return;
