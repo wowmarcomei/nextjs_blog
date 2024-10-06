@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 const Hero: React.FC = () => {
   return (
-    <div className="bg-gradient-to-r from-blue-100 to-purple-100 text-gray-800 py-12 sm:py-16 md:py-24 mb-8 sm:mb-12">
-      <div className="container mx-auto px-4 text-center">
+    <div className="bg-gradient-to-r from-blue-100 to-purple-100 text-gray-800 w-full">
+      <div className="container mx-auto px-4 py-16 sm:py-24 md:py-32 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 animate-fade-in-down">
           欢迎来到我的博客
         </h1>

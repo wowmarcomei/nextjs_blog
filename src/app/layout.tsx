@@ -78,7 +78,7 @@ export default function RootLayout({
             </ul>
           </nav>
         </header>
-        <main className="flex-grow container mx-auto px-4 py-8 mt-16">
+        <main className="flex-grow">
           {children}
         </main>
         <footer className="bg-white text-gray-600 p-4 text-center">

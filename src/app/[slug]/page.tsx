@@ -54,7 +54,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   const relatedPosts = await getRelatedPosts(post, 9);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
       <div className="flex flex-col lg:flex-row gap-8">
         <article className="w-full lg:w-2/3 bg-white p-6 lg:p-8 rounded-xl shadow-md">
           <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
@@ -107,7 +107,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
           <RelatedPosts posts={relatedPosts} initialLimit={3} />
         </article>
         <div className="w-full lg:w-1/3">
-          <div className="sticky top-4">
+          <div className="sticky top-20">
             <Sidebar allTags={allTags} allCategories={allCategories} />
           </div>
         </div>
