@@ -10,10 +10,9 @@ const BlogPosts = dynamic(() => import('../components/BlogPosts'), {
 
 export const revalidate = 3600; // revalidate every hour
 
-async function getPosts(page = 1, limit = 10) {
+async function getPosts() {
   const posts = await getSortedPostsData();
-  const paginatedPosts = posts.slice((page - 1) * limit, page * limit);
-  return { posts: paginatedPosts, total: posts.length };
+  return { posts, total: posts.length };
 }
 
 async function searchPostsWrapper(query: string) {
@@ -27,9 +26,11 @@ export default async function Home({
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
-  const { posts, total } = await getPosts(page);
+  const { posts, total } = await getPosts();
   const allTags = await getAllTags();
   const allCategories = await getAllCategories();
+
+  console.log(`Home page rendered with ${posts.length} posts, total: ${total}`);
 
   return (
     <>

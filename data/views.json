@@ -1,18 +1,20 @@
 {
-  "mastering-tailwind-css": 64,
+  "mastering-tailwind-css": 68,
   "how-to-inject-host-info-to-container": 4,
-  "add-https-for-hugo": 8,
+  "add-https-for-hugo": 14,
   "how-to-export-heap-dump-outside-of-k8s": 4,
   "save-sensitive-info-within-k8s-with-sealed-secret": 16,
   "adding-multiple-accounts-connect-to-github": 6,
   "deploy-k8s-cluster": 4,
-  "getting-started-with-nextjs": 18,
+  "getting-started-with-nextjs": 20,
   "how-to-use-sed-in-linux": 2,
   "how-to-use-screen-in-linux": 2,
   "how-to-authority-users-with-RBAC-in-k8s": 4,
   "push-docker-images-to-github-registry": 4,
-  "auto-sync-repository-to-gitee-from-github": 8,
+  "auto-sync-repository-to-gitee-from-github": 10,
   "how-to-use-grep-and-regular-expressions": 2,
-  "deploy-harbor-in-centos": 12,
-  "hugo-site": 2
+  "deploy-harbor-in-centos": 14,
+  "hugo-site": 2,
+  "build-local-repository-in-centos": 2,
+  "the-numbers-in-linux-shell": 2
 }

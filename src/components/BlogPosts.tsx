@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostData } from '../utils/markdown';
@@ -29,7 +29,7 @@ export default function BlogPosts({
   allCategories 
 }: BlogPostsProps) {
   const [posts, setPosts] = useState<PostData[]>(initialPosts);
-  const [displayedPosts, setDisplayedPosts] = useState<PostData[]>(initialPosts);
+  const [displayedPosts, setDisplayedPosts] = useState<PostData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(currentPage);
@@ -44,10 +44,11 @@ export default function BlogPosts({
   const postsPerPage = 10;
 
   useEffect(() => {
-    console.log('Initial posts:', initialPosts);
+    console.log('Initial posts:', initialPosts.length);
+    console.log('Total posts:', totalPosts);
     setPosts(initialPosts);
-    setDisplayedPosts(initialPosts);
-  }, [initialPosts]);
+    setDisplayedPosts(initialPosts.slice(0, postsPerPage));
+  }, [initialPosts, totalPosts]);
 
   useEffect(() => {
     async function performSearch() {
@@ -83,35 +84,35 @@ export default function BlogPosts({
   }, [filteredPosts, page]);
 
   const loadMorePosts = useCallback(() => {
-    if (isLoadingMore || displayedPosts.length >= totalPosts) return;
+    console.log('Loading more posts...');
+    console.log('Current displayed posts:', displayedPosts.length);
+    console.log('Filtered posts:', filteredPosts.length);
+    if (isLoadingMore || displayedPosts.length >= filteredPosts.length) {
+      console.log('No more posts to load');
+      return;
+    }
     setIsLoadingMore(true);
     setError(null);
-    try {
-      const nextPage = page + 1;
-      const startIndex = (nextPage - 1) * postsPerPage;
-      const endIndex = startIndex + postsPerPage;
-      const newPosts = filteredPosts.slice(startIndex, endIndex);
-      
-      setTimeout(() => {
-        setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
-        setPage(nextPage);
-        setIsLoadingMore(false);
-      }, 500); // Simulate network delay
-    } catch (error) {
-      console.error('Error loading more posts:', error);
-      setError('An error occurred while loading more posts. Please try again.');
-      setIsLoadingMore(false);
-    }
-  }, [filteredPosts, isLoadingMore, page, postsPerPage, totalPosts, displayedPosts.length]);
+    
+    const nextPage = page + 1;
+    const startIndex = displayedPosts.length;
+    const endIndex = Math.min(startIndex + postsPerPage, filteredPosts.length);
+    const newPosts = filteredPosts.slice(startIndex, endIndex);
+    
+    console.log(`Adding ${newPosts.length} new posts`);
+    setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
+    setPage(nextPage);
+    setIsLoadingMore(false);
+  }, [filteredPosts, isLoadingMore, page, postsPerPage, displayedPosts.length]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && displayedPosts.length < totalPosts && !isLoadingMore) {
+        if (entries[0].isIntersecting && !isLoadingMore && displayedPosts.length < filteredPosts.length) {
           loadMorePosts();
         }
       },
-      { threshold: 0.1 }
+      { rootMargin: '100px', threshold: 0.1 }
     );
 
     if (observerTarget.current) {
@@ -123,14 +124,18 @@ export default function BlogPosts({
         observer.unobserve(observerTarget.current);
       }
     };
-  }, [displayedPosts.length, totalPosts, loadMorePosts, isLoadingMore]);
+  }, [loadMorePosts, isLoadingMore, displayedPosts.length, filteredPosts.length]);
 
   const clearSearch = () => {
     router.push('/');
   };
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
@@ -225,7 +230,7 @@ export default function BlogPosts({
             <LoadingSpinner />
           </div>
         )}
-        {displayedPosts.length < totalPosts && (
+        {displayedPosts.length < filteredPosts.length && (
           <div ref={observerTarget} className="h-10 mt-8" aria-hidden="true" />
         )}
       </main>
