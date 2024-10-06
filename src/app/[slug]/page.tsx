@@ -37,8 +37,8 @@ const addIdsToHeadings = () => {
         (node as Element).properties = (node as Element).properties || {};
         (node as Element).properties.id = encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
       }
-      if ('children' in node) {
-        (node.children as Node[]).forEach(visit);
+      if ('children' in node && Array.isArray(node.children)) {
+        node.children.forEach(visit);
       }
     };
     visit(tree);
@@ -52,7 +52,7 @@ interface MarkdownComponentProps {
 // Custom components for ReactMarkdown
 const MarkdownComponents: Record<string, React.FC<MarkdownComponentProps>> = {
   table: ({ children }: MarkdownComponentProps) => (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto my-8">
       <table className="min-w-full divide-y divide-gray-200">{children}</table>
     </div>
   ),
