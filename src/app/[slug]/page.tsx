@@ -15,6 +15,7 @@ import { Node, Element, Text } from 'hast';
 import Script from 'next/script';
 
 const TableOfContents = dynamic(() => import('../../components/TableOfContents'), { ssr: false });
+const Comments = dynamic(() => import('../../components/Comments'), { ssr: false });
 
 // Custom rehype plugin to add IDs to headings
 const addIdsToHeadings = () => {
@@ -152,6 +153,15 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               </Link>
             </div>
             <RelatedPosts posts={relatedPosts} initialLimit={3} />
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">Comments</h2>
+              <Comments 
+                repo={process.env.NEXT_PUBLIC_GISCUS_REPO || ''}
+                repoId={process.env.NEXT_PUBLIC_GISCUS_REPO_ID || ''}
+                category={process.env.NEXT_PUBLIC_GISCUS_CATEGORY || ''}
+                categoryId={process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || ''}
+              />
+            </div>
           </article>
           <div className="w-full lg:w-1/3">
             <div className="sticky top-20">

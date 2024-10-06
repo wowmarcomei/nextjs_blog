@@ -9,7 +9,9 @@
   "getting-started-with-nextjs": 10,
   "how-to-use-sed-in-linux": 2,
   "how-to-use-screen-in-linux": 2,
-  "how-to-authority-users-with-RBAC-in-k8s": 2,
+  "how-to-authority-users-with-RBAC-in-k8s": 4,
   "push-docker-images-to-github-registry": 2,
-  "auto-sync-repository-to-gitee-from-github": 4
+  "auto-sync-repository-to-gitee-from-github": 8,
+  "how-to-use-grep-and-regular-expressions": 2,
+  "deploy-harbor-in-centos": 4
 }
