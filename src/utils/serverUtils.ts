@@ -11,6 +11,7 @@ let cachedTags: string[] | null = null;
 let cachedCategories: string[] | null = null;
 
 const viewsFile = path.join(process.cwd(), 'data', 'views.json');
+const postsDirectory = path.join(process.cwd(), 'src/content/posts');
 
 const getViews = cache(async (): Promise<Record<string, number>> => {
   if (cachedViews) {
@@ -43,47 +44,49 @@ function generateDefaultMetadata(fileName: string, content: string): Partial<Pos
   };
 }
 
+async function processPostFile(fileName: string): Promise<PostData | null> {
+  const slug = fileName.replace(/\.md$/, '');
+  const fullPath = path.join(postsDirectory, fileName);
+  
+  try {
+    const fileContents = await fs.readFile(fullPath, 'utf8');
+    const matterResult = matter(fileContents);
+
+    const defaultMetadata = generateDefaultMetadata(fileName, matterResult.content);
+    const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
+    
+    return {
+      ...postData,
+      slug,
+      image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
+      content: matterResult.content,
+      keywords: postData.keywords || '',
+      categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
+      tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
+      description: postData.description || matterResult.content.substring(0, 25),
+      pinned: postData.pinned || false,
+    };
+  } catch (error) {
+    console.error(`Error processing file ${fileName}:`, error);
+    return null;
+  }
+}
+
 export const getSortedPostsData = cache(async (): Promise<PostData[]> => {
   if (cachedPosts) {
     return cachedPosts;
   }
 
-  const postsDirectory = path.join(process.cwd(), 'src/content/posts');
-  
   try {
     const fileNames = await fs.readdir(postsDirectory);
-    console.log('Files in posts directory:', fileNames);
-    
-    const allPostsData = await Promise.all(fileNames.map(async (fileName) => {
-      const slug = fileName.replace(/\s+/g, '-').replace(/\.md$/, '');
-      const fullPath = path.join(postsDirectory, fileName);
-      
-      try {
-        const fileContents = await fs.readFile(fullPath, 'utf8');
-        const matterResult = matter(fileContents);
+    const allPostsData = await Promise.all(
+      fileNames
+        .filter(fileName => fileName.endsWith('.md'))
+        .map(processPostFile)
+    );
 
-        const defaultMetadata = generateDefaultMetadata(fileName, matterResult.content);
-        const postData = { ...defaultMetadata, ...matterResult.data } as PostData;
-        
-        const updatedPostData: PostData = {
-          ...postData,
-          slug,
-          image: postData.image ? (postData.image.startsWith('/images/') ? postData.image : `/images/${postData.image}`) : null,
-          content: matterResult.content,
-          keywords: postData.keywords || '',
-          categories: Array.isArray(postData.categories) ? postData.categories : [postData.categories || 'Uncategorized'],
-          tags: Array.isArray(postData.tags) ? postData.tags : [postData.tags || 'common'],
-          description: postData.description || matterResult.content.substring(0, 25),
-          pinned: postData.pinned || false,
-        };
-        return updatedPostData;
-      } catch (error) {
-        console.error(`Error processing file ${fileName}:`, error);
-        return null;
-      }
-    }));
-
-    cachedPosts = allPostsData.filter((post): post is PostData => post !== null).sort((a, b) => (a.date < b.date ? 1 : -1));
+    cachedPosts = allPostsData.filter((post): post is PostData => post !== null)
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
     return cachedPosts;
   } catch (error) {
     console.error('Error reading posts directory:', error);

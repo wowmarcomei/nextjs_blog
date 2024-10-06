@@ -1,7 +1,12 @@
 import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { getSortedPostsData, getAllTags, getAllCategories, searchPosts } from '../utils/serverUtils';
-import BlogPosts from '../components/BlogPosts';
 import Hero from '../components/Hero';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+const BlogPosts = dynamic(() => import('../components/BlogPosts'), {
+  loading: () => <LoadingSpinner />,
+});
 
 export const revalidate = 3600; // revalidate every hour
 
@@ -30,7 +35,7 @@ export default async function Home({
     <>
       <Hero />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <BlogPosts 
             initialPosts={posts} 
             totalPosts={total}
