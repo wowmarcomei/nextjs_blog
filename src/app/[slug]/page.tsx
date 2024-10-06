@@ -4,6 +4,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
+import 'highlight.js/styles/github.css';
 import { PostData } from '../../utils/markdown';
 import { getPostData, getSortedPostsData, getAllTags, getAllCategories, getRelatedPosts } from '../../utils/serverUtils';
 import SocialShareButtons from '../../components/SocialShareButtons';
@@ -47,6 +48,9 @@ const addIdsToHeadings = () => {
 
 interface MarkdownComponentProps {
   children: ReactNode;
+  className?: string;
+  inline?: boolean;
+  [key: string]: unknown;
 }
 
 // Custom components for ReactMarkdown
@@ -67,6 +71,21 @@ const MarkdownComponents: Record<string, React.FC<MarkdownComponentProps>> = {
   ),
   td: ({ children }: MarkdownComponentProps) => <td className="px-6 py-4 whitespace-nowrap">{children}</td>,
   tr: ({ children }: MarkdownComponentProps) => <tr className="bg-white even:bg-gray-50">{children}</tr>,
+  pre: ({ children }: MarkdownComponentProps) => (
+    <pre className="bg-gray-100 rounded-md p-4 overflow-x-auto">{children}</pre>
+  ),
+  code: ({ inline, className, children, ...props }: MarkdownComponentProps) => {
+    const match = /language-(\w+)/.exec(className || '');
+    return !inline && match ? (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    ) : (
+      <code className="bg-gray-100 rounded px-1 py-0.5" {...props}>
+        {children}
+      </code>
+    );
+  },
 };
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
@@ -161,10 +180,10 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <div className="bg-gray-100 p-4 rounded-lg mb-6">
               <TableOfContents content={post.content} />
             </div>
-            <div className="markdown-body prose lg:prose-lg xl:prose-xl mb-6 lg:mb-8">
+            <div className="markdown-body prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none mb-6 lg:mb-8">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight, addIdsToHeadings]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize, [rehypeHighlight, { ignoreMissing: true }], addIdsToHeadings]}
                 components={MarkdownComponents}
               >
                 {post.content}

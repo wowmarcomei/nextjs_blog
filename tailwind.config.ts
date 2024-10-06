@@ -37,10 +37,44 @@ const config: Config = {
       animation: {
         'fade-in-down': 'fade-in-down 0.5s ease-out',
         'fade-in-up': 'fade-in-up 0.5s ease-out',
-      }
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+            'code': {
+              backgroundColor: '#f0f0f0',
+              padding: '0.2em 0.4em',
+              borderRadius: '0.25rem',
+              fontWeight: '400',
+            },
+            'pre': {
+              backgroundColor: '#f0f0f0',
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              marginTop: '1em',
+              marginBottom: '1em',
+            },
+            'pre code': {
+              backgroundColor: 'transparent',
+              padding: '0',
+              borderRadius: '0',
+              fontWeight: '400',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };
 
 export default config;

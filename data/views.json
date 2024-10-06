@@ -1,5 +1,5 @@
 {
-  "mastering-tailwind-css": 68,
+  "mastering-tailwind-css": 72,
   "how-to-inject-host-info-to-container": 4,
   "add-https-for-hugo": 14,
   "how-to-export-heap-dump-outside-of-k8s": 4,
@@ -9,12 +9,14 @@
   "getting-started-with-nextjs": 20,
   "how-to-use-sed-in-linux": 2,
   "how-to-use-screen-in-linux": 2,
-  "how-to-authority-users-with-RBAC-in-k8s": 4,
-  "push-docker-images-to-github-registry": 4,
-  "auto-sync-repository-to-gitee-from-github": 10,
+  "how-to-authority-users-with-RBAC-in-k8s": 8,
+  "push-docker-images-to-github-registry": 6,
+  "auto-sync-repository-to-gitee-from-github": 18,
   "how-to-use-grep-and-regular-expressions": 2,
-  "deploy-harbor-in-centos": 16,
-  "hugo-site": 2,
+  "deploy-harbor-in-centos": 22,
+  "hugo-site": 4,
   "build-local-repository-in-centos": 2,
-  "the-numbers-in-linux-shell": 2
+  "the-numbers-in-linux-shell": 2,
+  "kindle-international": 6,
+  "pull-images-from-private-repository": 2
 }
