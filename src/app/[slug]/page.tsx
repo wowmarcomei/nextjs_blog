@@ -3,13 +3,17 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeSlug from 'rehype-slug';
 import { PostData } from '../../utils/markdown';
 import { getPostData, getSortedPostsData, getAllTags, getAllCategories, getRelatedPosts } from '../../utils/serverUtils';
 import SocialShareButtons from '../../components/SocialShareButtons';
 import RelatedPosts from '../../components/RelatedPosts';
 import ViewCounter from '../../components/ViewCounter';
 import Sidebar from '../../components/Sidebar';
+import dynamic from 'next/dynamic';
 import { Metadata } from 'next';
+
+const TableOfContents = dynamic(() => import('../../components/TableOfContents'), { ssr: false });
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPostData(params.slug);
@@ -84,9 +88,12 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               </span>
             ))}
           </div>
+          <div className="bg-gray-100 p-4 rounded-lg mb-6">
+            <TableOfContents content={post.content} />
+          </div>
           <div className="markdown-body prose lg:prose-lg xl:prose-xl mb-6 lg:mb-8">
             <ReactMarkdown
-              rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
+              rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight, rehypeSlug]}
             >
               {post.content}
             </ReactMarkdown>
