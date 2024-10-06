@@ -1,9 +1,11 @@
 {
-  "mastering-tailwind-css": 36,
+  "mastering-tailwind-css": 40,
   "how-to-inject-host-info-to-container": 2,
-  "add-https-for-hugo": 4,
+  "add-https-for-hugo": 6,
   "how-to-export-heap-dump-outside-of-k8s": 2,
-  "save-sensitive-info-within-k8s-with-sealed-secret": 6,
-  "adding-multiple-accounts-connect-to-github": 2,
-  "deploy-k8s-cluster": 2
+  "save-sensitive-info-within-k8s-with-sealed-secret": 10,
+  "adding-multiple-accounts-connect-to-github": 6,
+  "deploy-k8s-cluster": 2,
+  "getting-started-with-nextjs": 6,
+  "how-to-use-sed-in-linux": 2
 }

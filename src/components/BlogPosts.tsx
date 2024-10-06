@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PostData } from '../utils/markdown';
@@ -23,6 +23,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const observerTarget = useRef(null);
 
@@ -33,9 +34,16 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
   const postsPerPage = 10;
 
   useEffect(() => {
+    setPosts(initialPosts);
+    setDisplayedPosts(initialPosts.slice(0, postsPerPage));
+    setPage(1);
+  }, [initialPosts]);
+
+  useEffect(() => {
     async function performSearch() {
       if (searchQuery) {
         setIsLoading(true);
+        setError(null);
         try {
           const searchResults = await searchPosts(searchQuery);
           setPosts(searchResults);
@@ -43,47 +51,58 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
           setPage(1);
         } catch (error) {
           console.error('Error searching posts:', error);
+          setError('An error occurred while searching for posts. Please try again.');
         } finally {
           setIsLoading(false);
         }
-      } else {
-        setPosts(initialPosts);
-        setDisplayedPosts(initialPosts.slice(0, postsPerPage));
-        setPage(1);
       }
     }
     performSearch();
-  }, [searchQuery, initialPosts, searchPosts]);
+  }, [searchQuery, searchPosts]);
 
-  const filteredPosts = posts.filter(post => 
-    (!selectedTag || post.tags.includes(selectedTag)) &&
-    (!selectedCategory || post.categories.includes(selectedCategory))
+  const filteredPosts = useMemo(() => 
+    posts.filter(post => 
+      (!selectedTag || post.tags.includes(selectedTag)) &&
+      (!selectedCategory || post.categories.includes(selectedCategory))
+    ),
+    [posts, selectedTag, selectedCategory]
   );
 
-  const loadMorePosts = useCallback(async () => {
+  useEffect(() => {
+    setDisplayedPosts(filteredPosts.slice(0, postsPerPage));
+    setPage(1);
+  }, [filteredPosts]);
+
+  const loadMorePosts = useCallback(() => {
     if (isLoadingMore) return;
     setIsLoadingMore(true);
-    const nextPage = page + 1;
-    const startIndex = (nextPage - 1) * postsPerPage;
-    const endIndex = startIndex + postsPerPage;
-    const newPosts = filteredPosts.slice(startIndex, endIndex);
-    
-    // Simulate a delay to show loading state (remove in production)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
-    setPage(nextPage);
-    setIsLoadingMore(false);
+    setError(null);
+    try {
+      const nextPage = page + 1;
+      const startIndex = (nextPage - 1) * postsPerPage;
+      const endIndex = startIndex + postsPerPage;
+      const newPosts = filteredPosts.slice(startIndex, endIndex);
+      
+      setTimeout(() => {
+        setDisplayedPosts(prevPosts => [...prevPosts, ...newPosts]);
+        setPage(nextPage);
+        setIsLoadingMore(false);
+      }, 500); // Simulate network delay
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+      setError('An error occurred while loading more posts. Please try again.');
+      setIsLoadingMore(false);
+    }
   }, [filteredPosts, isLoadingMore, page, postsPerPage]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && displayedPosts.length < filteredPosts.length) {
+        if (entries[0].isIntersecting && displayedPosts.length < filteredPosts.length && !isLoadingMore) {
           loadMorePosts();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0.1 }
     );
 
     if (observerTarget.current) {
@@ -95,7 +114,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
         observer.unobserve(observerTarget.current);
       }
     };
-  }, [displayedPosts.length, filteredPosts.length, loadMorePosts]);
+  }, [displayedPosts.length, filteredPosts.length, loadMorePosts, isLoadingMore]);
 
   const clearSearch = () => {
     router.push('/');
@@ -103,7 +122,13 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
-      <div className="w-full lg:w-2/3">
+      <main className="w-full lg:w-2/3" role="main" aria-label="Blog posts">
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong className="font-bold">Error: </strong>
+            <span className="block sm:inline">{error}</span>
+          </div>
+        )}
         {searchQuery && (
           <div className="mb-6">
             <p className="text-base lg:text-lg text-gray-600">
@@ -115,6 +140,7 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
             <button
               onClick={clearSearch}
               className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 transition-colors duration-300"
+              aria-label="Clear search"
             >
               Clear search
             </button>
@@ -131,12 +157,12 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
         ) : (
           <div className="space-y-6 lg:space-y-10">
             {displayedPosts.map((post) => (
-              <div key={post.slug} className="bg-white p-4 lg:p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col lg:flex-row items-start lg:items-center">
+              <article key={post.slug} className="bg-white p-4 lg:p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col lg:flex-row items-start lg:items-center">
                 <div className="w-full lg:w-[200px] h-[150px] mb-4 lg:mb-0 lg:mr-6 flex-shrink-0">
                   {post.image ? (
                     <Image
                       src={post.image}
-                      alt={post.title}
+                      alt={`Featured image for ${post.title}`}
                       width={200}
                       height={150}
                       className="rounded-lg object-cover w-full h-full"
@@ -155,14 +181,14 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
                     </Link>
                   </h2>
                   <p className="text-gray-600 mb-4 lg:mb-6 text-base lg:text-lg">{post.description}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-4" aria-label="Tags">
                     {post.tags.map(tag => (
                       <Link key={tag} href={`/?tag=${tag}`} className="text-xs lg:text-sm bg-indigo-100 text-indigo-800 rounded-full px-2 py-1 lg:px-3 lg:py-1 font-medium hover:bg-indigo-200 transition-colors duration-300">
                         {tag}
                       </Link>
                     ))}
                   </div>
-                  <div className="flex flex-wrap gap-2 mb-4 lg:mb-6">
+                  <div className="flex flex-wrap gap-2 mb-4 lg:mb-6" aria-label="Categories">
                     {post.categories.map(category => (
                       <Link key={category} href={`/?category=${category}`} className="text-xs lg:text-sm bg-green-100 text-green-800 rounded-full px-2 py-1 lg:px-3 lg:py-1 font-medium hover:bg-green-200 transition-colors duration-300">
                         {category}
@@ -174,32 +200,34 @@ export default function BlogPosts({ initialPosts, allTags, allCategories, search
                       {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                       {post.author && ` | By ${post.author}`}
                     </span>
-                    <Link href={`/${post.slug}`} className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center text-sm lg:text-base">
-                      Read more <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 lg:h-5 lg:w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <Link href={`/${post.slug}`} className="text-indigo-600 hover:text-indigo-800 font-semibold flex items-center text-sm lg:text-base" aria-label={`Read more about ${post.title}`}>
+                      Read more <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 lg:h-5 lg:w-5 ml-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </Link>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}
         {isLoadingMore && (
-          <div className="mt-8 text-center">
+          <div className="mt-8 text-center" aria-live="polite" aria-busy="true">
             <LoadingSpinner />
           </div>
         )}
         {displayedPosts.length < filteredPosts.length && (
-          <div ref={observerTarget} className="h-10 mt-8" />
+          <div ref={observerTarget} className="h-10 mt-8" aria-hidden="true" />
         )}
-      </div>
-      <div className="w-full lg:w-1/3">
-        <div className="sticky top-4">
+      </main>
+      <aside className="w-full lg:w-1/3" role="complementary" aria-label="Sidebar">
+        <div className="sticky top-4 space-y-4">
           <Sidebar allTags={allTags} allCategories={allCategories} />
+          <div className="flex justify-center">
+            <ScrollToTopButton />
+          </div>
         </div>
-      </div>
-      <ScrollToTopButton />
+      </aside>
     </div>
   );
 }
