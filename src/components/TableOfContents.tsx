@@ -17,7 +17,7 @@ const TableOfContents: React.FC<{ content: string }> = ({ content }) => {
     const tocItems = headings.map((heading) => {
       const level = heading.match(/^#+/)?.[0].length || 0;
       const title = heading.replace(/^#+\s/, '');
-      const id = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      const id = encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
       return { id, title, level };
     });
     setToc(tocItems);

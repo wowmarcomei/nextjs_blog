@@ -1,13 +1,15 @@
 {
-  "mastering-tailwind-css": 46,
+  "mastering-tailwind-css": 56,
   "how-to-inject-host-info-to-container": 4,
   "add-https-for-hugo": 8,
   "how-to-export-heap-dump-outside-of-k8s": 2,
-  "save-sensitive-info-within-k8s-with-sealed-secret": 14,
+  "save-sensitive-info-within-k8s-with-sealed-secret": 16,
   "adding-multiple-accounts-connect-to-github": 6,
-  "deploy-k8s-cluster": 2,
-  "getting-started-with-nextjs": 8,
+  "deploy-k8s-cluster": 4,
+  "getting-started-with-nextjs": 10,
   "how-to-use-sed-in-linux": 2,
   "how-to-use-screen-in-linux": 2,
-  "how-to-authority-users-with-RBAC-in-k8s": 2
+  "how-to-authority-users-with-RBAC-in-k8s": 2,
+  "push-docker-images-to-github-registry": 2,
+  "auto-sync-repository-to-gitee-from-github": 4
 }
