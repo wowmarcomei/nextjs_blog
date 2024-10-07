@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface CommentsProps {
   repo: string;
@@ -11,6 +11,7 @@ interface CommentsProps {
 
 const Comments: React.FC<CommentsProps> = ({ repo, repoId, category, categoryId }) => {
   const commentsRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -29,9 +30,15 @@ const Comments: React.FC<CommentsProps> = ({ repo, repoId, category, categoryId 
     script.setAttribute('crossorigin', 'anonymous');
     script.async = true;
 
+    script.onerror = () => {
+      setError('Failed to load Giscus script');
+    };
+
     if (commentsRef.current) {
       commentsRef.current.appendChild(script);
     }
+
+    console.log('Giscus config:', { repo, repoId, category, categoryId });
 
     return () => {
       if (commentsRef.current) {
@@ -39,6 +46,10 @@ const Comments: React.FC<CommentsProps> = ({ repo, repoId, category, categoryId 
       }
     };
   }, [repo, repoId, category, categoryId]);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return <div ref={commentsRef} />;
 };
