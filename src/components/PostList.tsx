@@ -60,6 +60,8 @@ const PostItem: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
   </li>
 ));
 
+PostItem.displayName = 'PostItem';
+
 const PostList: React.FC<PostListProps> = React.memo(({ posts }) => {
   const [displayCount, setDisplayCount] = useState(6);
   const loadMoreRef = useRef(null);

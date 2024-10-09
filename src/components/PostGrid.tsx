@@ -52,6 +52,8 @@ const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
   </div>
 ));
 
+PostCard.displayName = 'PostCard';
+
 const PostGrid: React.FC<PostGridProps> = React.memo(({ posts }) => {
   const [displayCount, setDisplayCount] = useState(6);
   const loadMoreRef = useRef(null);

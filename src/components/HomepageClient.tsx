@@ -6,7 +6,7 @@ import Hero from '@/components/Hero';
 import FeaturedPosts from '@/components/FeaturedPosts';
 import PostFilter from '@/components/PostFilter';
 import Footer from '@/components/Footer';
-import SearchBar from '@/components/SearchBar';  // 导入 SearchBar 组件
+import SearchBar from '@/components/SearchBar';
 import { PostData } from '@/utils/markdown';
 
 const PostGrid = lazy(() => import('@/components/PostGrid'));
@@ -25,7 +25,7 @@ const MemoizedFeaturedPosts = React.memo(FeaturedPosts);
 const MemoizedPostFilter = React.memo(PostFilter);
 
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
-  const [hasError, setHasError] = React.useState(false);
+  const [hasError] = React.useState(false);
 
   React.useEffect(() => {
     if (hasError) {
@@ -76,7 +76,7 @@ export default function HomepageClient({ initialPosts, initialCategories, initia
   return (
     <ErrorBoundary>
       <div className="flex flex-col min-h-screen bg-gray-100">
-        <MemoizedHeader SearchBar={SearchBar} />  {/* 传递 SearchBar 组件 */}
+        <MemoizedHeader SearchBar={SearchBar} />
         <main className="flex-grow">
           <MemoizedHero />
           <div className="w-full px-4 md:px-0 md:w-[80%] lg:w-[64%] mx-auto py-12">

@@ -63,6 +63,8 @@ const DropdownMenu: React.FC<{
   </Menu>
 ));
 
+DropdownMenu.displayName = 'DropdownMenu';
+
 const PostFilter: React.FC<PostFilterProps> = React.memo(({ 
   categories, 
   tags, 
@@ -114,5 +116,7 @@ const PostFilter: React.FC<PostFilterProps> = React.memo(({
     </div>
   );
 });
+
+PostFilter.displayName = 'PostFilter';
 
 export default PostFilter;

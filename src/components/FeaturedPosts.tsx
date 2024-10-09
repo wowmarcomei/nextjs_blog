@@ -36,6 +36,8 @@ const FeaturedPostCard: React.FC<{ post: PostData; priority: boolean }> = React.
   </div>
 ));
 
+FeaturedPostCard.displayName = 'FeaturedPostCard';
+
 const FeaturedPosts: React.FC<FeaturedPostsProps> = React.memo(({ posts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
