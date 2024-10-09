@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaComment } from 'react-icons/fa';
+import { ClockIcon, ChatBubbleLeftIcon } from '@heroicons/react/20/solid';
 
 interface Post {
   id: number;
@@ -58,13 +58,15 @@ const PostGrid: React.FC<PostGridProps> = ({ category }) => {
               </div>
               <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded self-start mb-2">{post.category}</span>
               <Link href={`/posts/${post.slug}`} className="block text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">{post.title}</Link>
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="text-sm text-gray-500">{post.readTime}</span>
-                <span className="text-sm text-gray-500">•</span>
-                <div className="flex items-center text-sm text-gray-500">
-                  <FaComment className="mr-1" />
-                  <span>{post.commentCount}</span>
-                </div>
+              <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
+                <span className="flex items-center">
+                  <ClockIcon className="h-4 w-4 mr-1" />
+                  {post.readTime}
+                </span>
+                <span className="flex items-center">
+                  <ChatBubbleLeftIcon className="h-4 w-4 mr-1" />
+                  {post.commentCount} comments
+                </span>
               </div>
               <p className="text-gray-600 mb-4 flex-grow line-clamp-3">{post.excerpt}</p>
               <div className="flex justify-between items-center mt-auto">
@@ -75,7 +77,7 @@ const PostGrid: React.FC<PostGridProps> = ({ category }) => {
           </div>
         ))}
       </div>
-      {!loading && (
+      {!loading && posts.length > 0 && (
         <div className="mt-8 text-center">
           <button
             onClick={loadPosts}
