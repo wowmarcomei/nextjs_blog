@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaStar, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -10,7 +10,29 @@ interface FeaturedPostsProps {
   posts: PostData[];
 }
 
-const FeaturedPosts: React.FC<FeaturedPostsProps> = ({ posts }) => {
+const FeaturedPostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ post, priority }) => (
+  <div className="bg-white shadow-md overflow-hidden w-full sm:w-auto sm:max-w-[394px]">
+    <div className="flex flex-col h-full p-8">
+      <div className="relative flex-shrink-0 w-full h-[190px] mb-4">
+        <Image 
+          src={post.image || '/images/default-post-image.jpg'} 
+          alt={post.title} 
+          layout="fill" 
+          objectFit="cover" 
+          priority={priority}
+        />
+      </div>
+      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded self-start mb-2">
+        {post.categories[0]}
+      </span>
+      <Link href={`/${post.slug}`} className="block text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">
+        <h3 className="line-clamp-2">{post.title}</h3>
+      </Link>
+    </div>
+  </div>
+));
+
+const FeaturedPosts: React.FC<FeaturedPostsProps> = React.memo(({ posts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -21,23 +43,23 @@ const FeaturedPosts: React.FC<FeaturedPostsProps> = ({ posts }) => {
     return () => clearInterval(timer);
   }, [posts.length]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
-  };
+  }, [posts.length]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % posts.length);
-  };
+  }, [posts.length]);
 
-  const getPostsToShow = (): PostData[] => {
+  const postsToShow = useMemo(() => {
     if (posts.length === 0) return [];
-    const postsToShow = [];
+    const result = [];
     for (let i = 0; i < 3; i++) {
       const index = (currentIndex + i) % posts.length;
-      postsToShow.push(posts[index]);
+      result.push(posts[index]);
     }
-    return postsToShow;
-  };
+    return result;
+  }, [posts, currentIndex]);
 
   return (
     <div className="w-full bg-gray-50">
@@ -61,23 +83,13 @@ const FeaturedPosts: React.FC<FeaturedPostsProps> = ({ posts }) => {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {getPostsToShow().map((post) => (
-            <div key={post.slug} className="bg-white shadow-md overflow-hidden w-full sm:w-auto sm:max-w-[394px]">
-              <div className="flex flex-col h-full p-8">
-                <div className="relative flex-shrink-0 w-full h-[190px] mb-4">
-                  <Image src={post.image || '/images/default-post-image.jpg'} alt={post.title} layout="fill" objectFit="cover" />
-                </div>
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded self-start mb-2">{post.categories[0]}</span>
-                <Link href={`/${post.slug}`} className="block text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">
-                  <h3 className="line-clamp-2">{post.title}</h3>
-                </Link>
-              </div>
-            </div>
+          {postsToShow.map((post, index) => (
+            <FeaturedPostCard key={post.slug} post={post} priority={index === 0} />
           ))}
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default FeaturedPosts;
