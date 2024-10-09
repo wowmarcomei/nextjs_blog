@@ -17,8 +17,8 @@ const FeaturedPostCard: React.FC<{ post: PostData; priority: boolean }> = React.
         <Image 
           src={post.image || '/images/default-post-image.jpg'} 
           alt={post.title} 
-          layout="fill" 
-          objectFit="cover" 
+          fill
+          className="object-cover"
           priority={priority}
         />
       </div>

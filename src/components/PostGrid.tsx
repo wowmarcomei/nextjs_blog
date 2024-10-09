@@ -17,8 +17,8 @@ const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
         <Image 
           src={post.image || '/images/default-post-image.jpg'} 
           alt={post.title} 
-          layout="fill" 
-          objectFit="cover"
+          fill
+          className="object-cover"
           priority={priority}
         />
       </div>
@@ -33,7 +33,9 @@ const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
       <p className="text-gray-600 mb-4 flex-grow line-clamp-3">{post.description}</p>
       <div className="flex justify-between items-center mt-auto">
         <span className="text-sm text-gray-500">{new Date(post.date).toLocaleDateString()}</span>
-        <Image src="/images/logo.png" alt="Author" width={32} height={32} className="rounded-full" />
+        <div className="relative w-8 h-8">
+          <Image src="/images/logo.png" alt="Author" fill className="rounded-full object-cover" />
+        </div>
       </div>
     </div>
   </div>
