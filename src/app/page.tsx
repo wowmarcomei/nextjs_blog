@@ -18,15 +18,17 @@ export default function Home() {
       <Header />
       <main className="flex-grow">
         <Hero />
-        <div className="w-full px-4 md:px-0 md:w-[64%] mx-auto py-12">
+        <div className="w-full px-4 md:px-0 md:w-[80%] lg:w-[64%] mx-auto py-12">
           <FeaturedPosts />
           <div className="mt-16">
             <h2 className="text-3xl font-bold mb-8 text-center">Latest Articles</h2>
-            <PostFilter 
-              onCategoryChange={setSelectedCategory} 
-              onViewModeChange={setViewMode}
-              currentViewMode={viewMode}
-            />
+            <div className="mb-8">
+              <PostFilter 
+                onCategoryChange={setSelectedCategory} 
+                onViewModeChange={setViewMode}
+                currentViewMode={viewMode}
+              />
+            </div>
             <div className="mt-8">
               {viewMode === 'grid' ? (
                 <PostGrid category={selectedCategory} />
