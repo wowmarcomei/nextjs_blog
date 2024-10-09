@@ -16,10 +16,14 @@ const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
       <div className="relative flex-shrink-0 w-full h-[190px] mb-4">
         <Image 
           src={post.image || '/images/default-post-image.jpg'} 
-          alt={post.title} 
+          alt={`Featured image for ${post.title}`} 
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
           priority={priority}
+          quality={85}
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
         />
       </div>
       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded self-start mb-2">{post.categories[0]}</span>
@@ -34,7 +38,14 @@ const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
       <div className="flex justify-between items-center mt-auto">
         <span className="text-sm text-gray-500">{new Date(post.date).toLocaleDateString()}</span>
         <div className="relative w-8 h-8">
-          <Image src="/images/logo.png" alt="Author" fill className="rounded-full object-cover" />
+          <Image 
+            src="/images/logo.png" 
+            alt="Author avatar" 
+            fill 
+            className="rounded-full object-cover"
+            sizes="32px"
+            quality={85}
+          />
         </div>
       </div>
     </div>
@@ -83,5 +94,7 @@ const PostGrid: React.FC<PostGridProps> = React.memo(({ posts }) => {
     </div>
   );
 });
+
+PostGrid.displayName = 'PostGrid';
 
 export default PostGrid;

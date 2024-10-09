@@ -16,10 +16,14 @@ const FeaturedPostCard: React.FC<{ post: PostData; priority: boolean }> = React.
       <div className="relative flex-shrink-0 w-full h-[190px] mb-4">
         <Image 
           src={post.image || '/images/default-post-image.jpg'} 
-          alt={post.title} 
+          alt={`Featured image for ${post.title}`} 
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
           priority={priority}
+          quality={85}
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
         />
       </div>
       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded self-start mb-2">
@@ -74,10 +78,10 @@ const FeaturedPosts: React.FC<FeaturedPostsProps> = React.memo(({ posts }) => {
             </span>
           </h2>
           <div className="flex space-x-4">
-            <button onClick={handlePrev} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-300">
+            <button onClick={handlePrev} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-300" aria-label="Previous featured post">
               <FaChevronLeft />
             </button>
-            <button onClick={handleNext} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-300">
+            <button onClick={handleNext} className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition duration-300" aria-label="Next featured post">
               <FaChevronRight />
             </button>
           </div>
@@ -91,5 +95,7 @@ const FeaturedPosts: React.FC<FeaturedPostsProps> = React.memo(({ posts }) => {
     </div>
   );
 });
+
+FeaturedPosts.displayName = 'FeaturedPosts';
 
 export default FeaturedPosts;

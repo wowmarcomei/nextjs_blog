@@ -17,10 +17,14 @@ const PostItem: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
         <div className="relative w-full sm:w-[296px] h-[200px]">
           <Image 
             src={post.image || '/images/default-post-image.jpg'} 
-            alt={post.title} 
+            alt={`Featured image for ${post.title}`}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
             priority={priority}
+            quality={85}
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
           />
         </div>
       </div>
@@ -41,7 +45,14 @@ const PostItem: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-500">{new Date(post.date).toLocaleDateString()}</span>
           <div className="relative w-8 h-8">
-            <Image src="/images/logo.png" alt="Author" fill className="rounded-full object-cover" />
+            <Image 
+              src="/images/logo.png" 
+              alt="Author avatar" 
+              fill 
+              className="rounded-full object-cover"
+              sizes="32px"
+              quality={85}
+            />
           </div>
         </div>
       </div>
@@ -91,5 +102,7 @@ const PostList: React.FC<PostListProps> = React.memo(({ posts }) => {
     </div>
   );
 });
+
+PostList.displayName = 'PostList';
 
 export default PostList;
