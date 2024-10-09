@@ -60,6 +60,9 @@ const PostList: React.FC<PostListProps> = ({ category }) => {
               </div>
               <div className="flex flex-col justify-between p-4 sm:p-8 flex-grow">
                 <div>
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded mb-2">
+                    {post.category}
+                  </span>
                   <Link href={`/posts/${post.slug}`} className="block text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">{post.title}</Link>
                   <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
                     <span className="flex items-center">
