@@ -3,7 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig, twitterConfig, faviconConfig, manifestConfig, themeConfig } from "@/config/site";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: 'swap',
+  variable: '--font-inter',
+});
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} - Your Source for Tech Insights`,
@@ -60,7 +64,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={`${inter.variable} font-sans`}>
       <head>
         <link rel="manifest" href={manifestConfig.path} />
         <link rel="apple-touch-icon" href={faviconConfig.apple} />
