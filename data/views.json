@@ -3,7 +3,7 @@
   "how-to-inject-host-info-to-container": 6,
   "add-https-for-hugo": 18,
   "how-to-export-heap-dump-outside-of-k8s": 4,
-  "save-sensitive-info-within-k8s-with-sealed-secret": 22,
+  "save-sensitive-info-within-k8s-with-sealed-secret": 24,
   "adding-multiple-accounts-connect-to-github": 6,
   "deploy-k8s-cluster": 4,
   "getting-started-with-nextjs": 22,
@@ -11,12 +11,12 @@
   "how-to-use-screen-in-linux": 2,
   "how-to-authority-users-with-RBAC-in-k8s": 10,
   "push-docker-images-to-github-registry": 6,
-  "auto-sync-repository-to-gitee-from-github": 22,
+  "auto-sync-repository-to-gitee-from-github": 24,
   "how-to-use-grep-and-regular-expressions": 2,
   "deploy-harbor-in-centos": 24,
   "hugo-site": 6,
   "build-local-repository-in-centos": 2,
   "the-numbers-in-linux-shell": 2,
-  "kindle-international": 6,
+  "kindle-international": 8,
   "pull-images-from-private-repository": 2
 }
