@@ -41,7 +41,7 @@ keywords: kubernetes,k8s,多AZ,高可用,亲和,反亲和,
 
 确保 K8S 纳管节点分布在不同的可用区（至少 2 个可用区）。比如：我们需要4 台节点，则确保2台在 AZ1、另外2台在 AZ2。
 
-![node-location-1](https://laomeinote.com/images/posts/node-location-1.png)
+![node-location-1](node-location-1.png)
 
 节点纳管后可查看其标签信息：
 
@@ -84,11 +84,11 @@ Labels:             beta.kubernetes.io/arch=amd64
 
 创建一个无状态组件，设置反亲和性，这里均采用软约束尽量满足。
 
-![pod-antiaffinity-1](https://laomeinote.com/images/posts/pod-antiaffinity-1.png)
+![pod-antiaffinity-1](pod-antiaffinity-1.png)
 
 创建成功后可见7个实例能分在两个AZ的4个节点上。
 
-![pod-antiaffinity-instance](https://laomeinote.com/images/posts/pod-antiaffinity-instance.png)
+![pod-antiaffinity-instance](pod-antiaffinity-instance.png)
 
 尝试将节点之间的调度用硬约束，AZ之间的约束用软约束，通过定义yaml来实现，定义一个 `pod-antiaffinity.yaml`:
 

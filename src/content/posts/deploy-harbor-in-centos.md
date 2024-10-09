@@ -170,7 +170,7 @@ drwxr-xr-x 3 root root      4096 Aug 24 23:09 common
 ## 4. 操作Harbor
 
 Harbor安装成功后，如下图示。我们可以对齐进行启动、停止、修改、上传镜像、下载镜像等操作。
-![Harbor](https://laomeinote.com/images/posts/harbor.jpg)
+![Harbor](harbor.jpg)
 
 ### 4.1 查看Harbor
 

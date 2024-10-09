@@ -27,21 +27,21 @@ Amazon的Kindle管理不太容易找，可以登录后从左边菜单栏依次�
 对应网址为：
 https://www.amazon.com/hz/mycd/digital-console/alldevices
 
-![kindle-international-1](/images/posts/kindle-international-1.png)
+![kindle-international-1](kindle-international-1.png)
 
 3、点击设备修改邮箱地址
 
-![kindle-international-2](/images/posts/kindle-international-2.png)
+![kindle-international-2](kindle-international-2.png)
 
 修改后缀名为自己易记住的名称即可，后续可以通过gmail等邮箱往该地址发送书籍，就可以在各Kindle与Kindle APP上自动同步阅读了。
 
 当然要想通过邮箱推送书籍至Kindle设备，需要将邮箱地址加入到Kindle白名单，访问上面的**Preference**（https://www.amazon.com/hz/mycd/myx#/home/settings/payment），找到最下面的**Approved Personal Document E-mail List**，添加邮箱地址：
-![kindle-international-2](/images/posts/Approved-Personal-Document-Email-List.png)
+![kindle-international-2](Approved-Personal-Document-Email-List.png)
 
 除了通过邮箱推送以外，还可以直接通过**Send-to-Kindle for Web**服务推送。
 https://www.amazon.com/sendtokindle
 
-![kindle-international-2](/images/posts/Send-to-Kindle-for-Web.png)
+![kindle-international-2](Send-to-Kindle-for-Web.png)
 
 ## 各设备登录与同步
 

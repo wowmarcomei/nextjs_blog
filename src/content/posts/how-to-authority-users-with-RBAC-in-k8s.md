@@ -40,7 +40,7 @@ Kubernetes 所有资源对象都是模型化的 API 对象，允许执行 `CRUD(
 
 **RBAC就是分别定义好subject API对象、角色API对象、角色绑定API对象，然后再将subject与角色通过binding进行绑定**。
 
-![RBAC](https://laomeinote.com/images/posts/RBAC.png)
+![RBAC](RBAC.png)
 
 ## Demo1：只能访问某个 namespace 的普通用户
 
@@ -303,11 +303,11 @@ laomei-sa-token-695h2                            kubernetes.io/service-account-t
 
 使用这里的 token 去 Dashboard 页面进行登录：
 
-![RBAC_SA](https://laomeinote.com/images/posts/RBAC_SA.png)
+![RBAC_SA](RBAC_SA.png)
 
 可以看到上面的提示现在使用的这个 ServiceAccount 没有权限获取当前命名空间下面的资源对象，这是因为登录进来后默认跳转到 default 命名空间，如果切换到 kube-system 命名空间下面就可以了：
 
-![RBAC_SA_dashboard](https://laomeinote.com/images/posts/RBAC_SA_dashboard.png)
+![RBAC_SA_dashboard](RBAC_SA_dashboard.png)
 
 这里看到可以访问 pod 列表了，但也会有一些其他提示：
 

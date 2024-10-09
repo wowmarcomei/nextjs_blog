@@ -33,9 +33,9 @@ GitHub 提供了一个名为 GitHub Container Registry 的服务，可以存储�
 
 - 获取Github的个人访问令牌（PAT），即Personal Access Token，需要确保 PAT 具有 `read:packages` 和 `write:packages` 权限。
 
-  ![push-docker-images-to-github-registry](/images/posts/PAT-1.png)
+  ![push-docker-images-to-github-registry](PAT-1.png)
 
-  ![push-docker-images-to-github-registry](/images/posts/PAT-2.png)
+  ![push-docker-images-to-github-registry](PAT-2.png)
 
 ## 2、推送镜像
 

@@ -21,7 +21,7 @@ keywords: kubernetes,k8s,pod,生命周期,rolling update
 
 一个 Pod 的完整生命周期过程包含 `Init Container`、`Pod Hook`、`健康检查` 三个主要部分，如下图所示。
 
-![pod-loap](https://laomeinote.com/images/posts/pod-loap.jpg)
+![pod-loap](pod-loap.jpg)
 
 - 其中`Init Container`初始化容器是用来做初始化的，比如提前给`main container`主容器准备卷、文件、检测环境等等。main容器只有等初始化容器运行结束后才会启动。
   

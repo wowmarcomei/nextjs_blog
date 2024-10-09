@@ -30,13 +30,13 @@ keywords: Docker,Docker基础
 
  文件系统，每个Linux启动时都会挂载一个可读写的根文件系统，不同的是容器在启动后挂载的是一个空的只读的文件系统，在此基础上再挂载一个读写的文件系统，如下图示。
 
-   ![container-rootfs](https://laomeinote.com/images/posts/container-rootfs.png)
+   ![container-rootfs](container-rootfs.png)
 
 ## 4. 容器引擎
 
  Docker实际是一个*C/S*架构程序，如下图示容器引擎主要有三部分组成：
 
-   ![docker-engine-3components](https://laomeinote.com/images/posts/docker-engine-3components.png)
+   ![docker-engine-3components](docker-engine-3components.png)
 
 - Client：docker CLI，就是命令行客户端
 - REST API：客户端与服务端以API进行通信
@@ -46,6 +46,6 @@ keywords: Docker,Docker基础
 
    以官网的一张示意图说明这几者之间的关系。
 
-   ![docker-engine-explaination](https://laomeinote.com/images/posts/docker-engine-explaination.png)
+   ![docker-engine-explaination](docker-engine-explaination.png)
 
 > 图中的①②③④，就是上文讲到的docker引擎内容，①是client客户端，执行docker命令，②是通过Rest API在③docker daemon守护进程server进行通信，执行最终操作，基于⑤镜像来创建/运行④容器。⑥是镜像仓库Registry，可通过Pull/Push来获取与推送镜像。

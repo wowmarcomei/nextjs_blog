@@ -13,7 +13,7 @@ image: sealed_secret.png
 
 keywords: GitOps,容器,秘钥,SealedSecret,Secret
 ---
-![sealed_secret](/images/posts/sealed_secret.png)
+![sealed_secret](sealed_secret.png)
 
 在 Kubernetes 中，我们使用 Secrets 来保存敏感数据，例如密码、 API 密钥和证书等等。想象一下，Secrets 就像保险箱，用来存放业务不想公开的信息。开发者可以在代码中轻松引用这些 Secrets，而无需直接暴露敏感信息。
 
@@ -30,7 +30,7 @@ keywords: GitOps,容器,秘钥,SealedSecret,Secret
 
    **Sealed Secrets主要架构**：
 
-   ![sealed secret](/images/posts/sealed-secret-arch.png)
+   ![sealed secret](sealed-secret-arch.png)
 2. 工作流程:
 
    - 使用 kubeseal 加密普通的 Kubernetes Secret

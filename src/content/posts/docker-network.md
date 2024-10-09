@@ -67,7 +67,7 @@ keywords: Docker,Docker网络,Flannel,桥接,VXLAN
 
   此时，网桥（**Host主机上的一个软交换机**）上生成一个接口 `vetha2b8732`，网桥的地址为 `172.17.0.1/16`，容器内生成一个接口 ` eth0@if22`，地址为 ` 172.17.0.2/16`。其详细拓扑类似于下图示。
 
-  ![Docker_Network_br1](https://laomeinote.com/images/posts/Docker_Network_br1.png)
+  ![Docker_Network_br1](Docker_Network_br1.png)
 
   `docker0`网桥是在Docker安装完成后已经生成的，其默认地址为 `172.17.0.1/16`。启动bubybox容器且默认使用桥接网络时，docker会给这个容器生成一个端口 `eth0`，如上图中的 `eth0@if22`,容器默认从 `172.17.0.0/16`网段里分配一个IP给该端口，如本示例中分配的 `172.17.0.2/16`;同时生成一个 `veth`，如上图中的 `vetha2b8732`。`veth`是一个键值对，连接网桥与容器端口。**容器的网络流量均将通过这个网桥转给Host主机**。
 - User-defined网络：用户自定义网络，也是桥接网络的一种，通过桥转发。用法分两步：1）创建一个桥接网络network，如my_net；2）指定网络为自定义的桥接网络 `--network=my_net`。如下示例：
@@ -145,7 +145,7 @@ keywords: Docker,Docker网络,Flannel,桥接,VXLAN
 
   可见创建了一个名为 `br-af0983622432`的、`network`名为 `my_net`的桥接网络，其子网IP为 `172.18.0.0/16`，网关IP为 `172.18.0.1/16`，网关在网桥自身上。且Docker为容器 `busybox_2`分配了一个接口 `eth0@if27`对应IP为 `172.18.0.2/16`;键值对为 `veth9c4e5f0`，连接容器与网桥，其网络架构如下图示。
 
-  ![Docker_Network_br_user-defined_1](https://laomeinote.com/images/posts/Docker_Network_br_user-defined_1.png)
+  ![Docker_Network_br_user-defined_1](Docker_Network_br_user-defined_1.png)
 
   上面的示例中自定义网桥没有指定网段，默认使用 `172.18.0.0/16`网段，也可指定特定网段如 `172.19.0.0/16`.
 
@@ -217,7 +217,7 @@ keywords: Docker,Docker网络,Flannel,桥接,VXLAN
 
   可见在主机上创建了一个 `my_net2`的自定义网络，网桥名为 `my_net2`，指定容器以该网桥启动后，Docker生成了一个键值对 `veth9d6f750`，整个网络的地址段为 `172.19.0.0/16`，整体网络架构如下图示。
 
-  ![Docker_Network_br_user-defined_2](https://laomeinote.com/images/posts/Docker_Network_br_user-defined_2.png)
+  ![Docker_Network_br_user-defined_2](Docker_Network_br_user-defined_2.png)
 
   显然这三个容器不在同一个网桥上是互相隔离，无法互通的，如果需要互通怎么办，比如讲容器2与容器3打通网络？可为容器 `busybox_2`再加一个 `my_net2`的网卡即可，可使用命令 `docker network connect [network]  [container name/id] `将容器2连接到网桥2上来。
 
@@ -254,11 +254,11 @@ keywords: Docker,Docker网络,Flannel,桥接,VXLAN
 
   这里可见已经新生产一个veth键值对，容器端的端口为 `eth1@if36`，地址为 `172.19.0.3/16`。此时的网络架构如下：
 
-  ![Docker_Network_br_user-defined_3](https://laomeinote.com/images/posts/Docker_Network_br_user-defined_3.png)
+  ![Docker_Network_br_user-defined_3](Docker_Network_br_user-defined_3.png)
 
   从容器 `busybox_2`中往容器 `busybox_3`做ping测：
 
-  ![docker_network_br_userdefine_ping_test](https://laomeinote.com/images/posts/docker_network_br_userdefine_ping_test.png)
+  ![docker_network_br_userdefine_ping_test](docker_network_br_userdefine_ping_test.png)
 
 ## 2.容器通信
 
@@ -323,7 +323,7 @@ keywords: Docker,Docker网络,Flannel,桥接,VXLAN
 
 Docker跨Host有包括原生的**overlay**和**macvlan**方案和多种第三方方案，如下图所示。
 
-![docker_multi_host_network](https://laomeinote.com/images/posts/docker_multi_host_network.png)
+![docker_multi_host_network](docker_multi_host_network.png)
 
 其中原生方案中用的较多的是**overlay**方案，其基本原理是在本端隧道起点 `VTEP 1`将二层网络数据封装在三层UDP数据中通过隧道技术传输，在对端隧道终点 `VTEP 2`上解封装，通过三层路由来打通二层网络，与GRE隧道类似，形成大二层网络。
 
@@ -335,7 +335,7 @@ Docker跨Host有包括原生的**overlay**和**macvlan**方案和多种第三方
 
 **flannel**是CoreOS公司开发的跨主机通信网络解决方案，它会为每个host分配一个 `subnet`，容器从这个 `subnet`中获取 `IP`地址，这个 `IP`地址在各个host主机组成的集群中是**全局唯一**的，其框架如下：
 
-![docker_flannel_network_1](https://laomeinote.com/images/posts/docker_flannel_network_1.png)
+![docker_flannel_network_1](docker_flannel_network_1.png)
 
 - 每个节点上有一个叫 `flanneld`的agent，负责为每个主机分配和管理子网；
 - 全局的网络配置存储 `etcd`负责存储主机容器子网的映射关系；
@@ -351,7 +351,7 @@ VXLAN模式是Flannel默认和推荐的模式，使用VXLAN模式时，它会为
 
 来看看跨节点Node1和Node2之间的容器互通式如何通信的？
 
-![docker_flannel_network_vxlan_2](https://laomeinote.com/images/posts/docker_flannel_network_vxlan_2.png)
+![docker_flannel_network_vxlan_2](docker_flannel_network_vxlan_2.png)
 
 - 发送端Node1：在Node1的PodA（假设含一个容器）中发起对Node2的PodB（假设含一个容器）的ping测 `ping 10.244.1.21` ，`ICMP` 报文经过 `cni0` 网桥后交由 `flannel.1` 设备处理。 `flannel.1` 设备是一个VXLAN类型的设备，负责VXLAN封包解包。 因此，在发送端，`flannel.1` 将原始L2报文封装成VXLAN UDP报文，然后从 `eth0` 发送。
 - 接收端：Node2收到UDP报文，发现是一个VXLAN类型报文，交由 `flannel.1` 进行解包。根据解包后得到的原始报文中的目的IP，将原始报文经由 `cni0` 网桥发送给PodB。
@@ -397,7 +397,7 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
 
   有了上面的信息， `flannel.1` 就可以构造出内层的2层以太网帧：
 
-![docker_flannel_network_vxlan_layer2_frame](https://laomeinote.com/images/posts/docker_flannel_network_vxlan_layer2_frame.png)
+![docker_flannel_network_vxlan_layer2_frame](docker_flannel_network_vxlan_layer2_frame.png)
 
 - **外层VXLAN UDP报文**
 
@@ -428,7 +428,7 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
 
   至此， `flannel.1` 已经得到了所有完成VXLAN封包所需的信息，最终通过 `eth0` 发送一个VXLAN UDP报文：
 
-  ![docker_flannel_network_vxlan_package](https://laomeinote.com/images/posts/docker_flannel_network_vxlan_package.png)
+  ![docker_flannel_network_vxlan_package](docker_flannel_network_vxlan_package.png)
 
   **即：把原始L2数据包封装在了UDP报文中，外层IP可二层直通，二层互通以后再VTEP端点进行VXLAN解封装后进行交互。**
 
@@ -454,7 +454,7 @@ VXLAN的封包是将**二层以太网帧**封装到**四层UDP报文**中的过�
 
 host-gw模式下的通信过程如下图所示：
 
-![docker_flannel_network_host-gw](https://laomeinote.com/images/posts/docker_flannel_network_host-gw.png)
+![docker_flannel_network_host-gw](docker_flannel_network_host-gw.png)
 
 在host-gw模式下，由于不涉及VXLAN的封包解包，不再需要 `flannel.1`虚机网卡。 `flanneld` 负责为各节点设置路由 ，将对应节点Pod子网的下一跳地址指向对应的节点的IP，如图中路由表①所示。
 
@@ -524,7 +524,7 @@ weave          		      8000.5e0a88e58f54        no                              
 
 可见容器生成了，`eth0@if46`和 `ethwe@if48`，且除了默认docker0网桥以外，多出了 `weave`网桥。其网络模型如下截图示：
 
-![docker_network_weave_1](https://laomeinote.com/images/posts/docker_network_weave_1.png)
+![docker_network_weave_1](docker_network_weave_1.png)
 
 weave 网络包含两个虚拟交换机：Linux bridge `weave` 和 Open vSwitch `datapath`，veth pair `vethwe-bridge` 和 `vethwe-datapath` 将二者连接在一起。
 
@@ -581,7 +581,7 @@ weave                           8000.5e0a88e58f54        no                   ve
 
 可见 `docker0`网桥上新生成了接口 `veth265cf07`,`weave`网桥上新生成了 `vethwepl12236`，对应组br网架构如下图：
 
-![docker_network_weave_2](https://laomeinote.com/images/posts/docker_network_weave_2.png)
+![docker_network_weave_2](docker_network_weave_2.png)
 
 从容器 `bubybox_weave`往容器 `bubybox_weave2`和Host主机端口 `eth0`做ping测试试：
 
@@ -717,7 +717,7 @@ weave在多主机之间通过vxlan传输数据，VTEP起始点分别由主机的
 
    主机2容器 `busybox_weave_host2_1`分配到的地址为 `10.44.0.0/12`，跟主机1的容器地址 `10.32.0.1/12`同属于同一个子网段 `10.32.0.1/12-10.47.255.255/12`,通过host1与host2直接的vxlan隧道，三个容器逻辑上在同一个大二层网络中，所以能够互通，对应网络架构图如下。
 
-   ![docker_network_weave_3](https://laomeinote.com/images/posts/docker_network_weave_3.png)
+   ![docker_network_weave_3](docker_network_weave_3.png)
 
 **Weave网络隔离**
 

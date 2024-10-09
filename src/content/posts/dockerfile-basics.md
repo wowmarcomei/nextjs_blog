@@ -58,7 +58,7 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
 
 关于这些基本指令先来看一则网上的示意图，将大部分指令形象化描述出来了。
 
-![dockerfile-layer](https://laomeinote.com/images/posts/dockerfile-layer.png)
+![dockerfile-layer](dockerfile-layer.png)
 
 *图 1 Dockerfile指令 - 图片来自网络*
 
@@ -233,7 +233,7 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
 
   启动后访问主机IP，可直接通过 `curl`命令访问，也可通过浏览器访问，由于http协议默认端口为80所以无需加端口号访问，如下图示。
 
-  ![day1-docker-nginx](https://laomeinote.com/images/posts/day1-docker-nginx.png)
+  ![day1-docker-nginx](day1-docker-nginx.png)
 
   上面是通过 `nginx`镜像直接生成的，一般应用中 `nginx`大多是当成中间件的，base镜像选择的一般是操作系统。
 

@@ -636,7 +636,7 @@ pvc-cdfbbd11-a22e-4f72-96cd-064e228eb730   20Gi       RWO            Delete     
 
 登录ceph dashboard查看创建的images
 
-![ceph-block](https://laomeinote.com/images/posts/ceph-block.png)
+![ceph-block](ceph-block.png)
 
 
 
@@ -705,7 +705,7 @@ kubernetes-dashboard        NodePort    10.1.221.14    <none>        443:31712/T
 
 其中NodePort为31712，随意组合一个Node节点IP即可访问。https://NodeIP:31712, 由于在华为云外网无法直接访问VPC内部IP地址，所以需要使用外部EIP访问，EIP会隐射到内部Node节点IP上去。
 
-![huaweicloud-k8s-dashboard](https://laomeinote.com/images/posts/huaweicloud-k8s-dashboard.png)
+![huaweicloud-k8s-dashboard](huaweicloud-k8s-dashboard.png)
 
 
 
@@ -754,7 +754,7 @@ kubectl config use-context dashboard-admin@kubernetes --kubeconfig=/root/dashbor
 
 生成的`dashbord-admin.conf`即可用于登录**Dashboard**。
 
-![kubernetes_dashboard_2](https://laomeinote.com/images/posts/kubernetes_dashboard_2.4.png)
+![kubernetes_dashboard_2](kubernetes_dashboard_2.4.png)
 
 --------
 

@@ -1,53 +1,43 @@
-import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
-import { getSortedPostsData, getAllTags, getAllCategories, searchPosts } from '../utils/serverUtils';
-import Hero from '../components/Hero';
-import LoadingSpinner from '../components/LoadingSpinner';
+'use client';
 
-const BlogPosts = dynamic(() => import('../components/BlogPosts'), {
-  loading: () => <LoadingSpinner />,
-});
+import { useState } from 'react';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import FeaturedPosts from '@/components/FeaturedPosts';
+import PostFilter from '@/components/PostFilter';
+import PostGrid from '@/components/PostGrid';
+import PostList from '@/components/PostList';
+import Footer from '@/components/Footer';
 
-export const revalidate = 3600; // revalidate every hour
-
-async function getPosts() {
-  const posts = await getSortedPostsData();
-  return { posts, total: posts.length };
-}
-
-async function searchPostsWrapper(query: string) {
-  'use server';
-  return searchPosts(query);
-}
-
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
-  const page = typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1;
-  const { posts, total } = await getPosts();
-  const allTags = await getAllTags();
-  const allCategories = await getAllCategories();
-
-  console.log(`Home page rendered with ${posts.length} posts, total: ${total}`);
+export default function Home() {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   return (
-    <>
-      <Hero />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
-        <Suspense fallback={<LoadingSpinner />}>
-          <BlogPosts 
-            initialPosts={posts} 
-            totalPosts={total}
-            currentPage={page}
-            searchParams={searchParams} 
-            searchPosts={searchPostsWrapper}
-            allTags={allTags}
-            allCategories={allCategories}
-          />
-        </Suspense>
-      </div>
-    </>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <Header />
+      <main className="flex-grow">
+        <Hero />
+        <div className="w-full px-4 md:px-0 md:w-[64%] mx-auto py-12">
+          <FeaturedPosts />
+          <div className="mt-16">
+            <h2 className="text-3xl font-bold mb-8 text-center">Latest Articles</h2>
+            <PostFilter 
+              onCategoryChange={setSelectedCategory} 
+              onViewModeChange={setViewMode}
+              currentViewMode={viewMode}
+            />
+            <div className="mt-8">
+              {viewMode === 'grid' ? (
+                <PostGrid category={selectedCategory} />
+              ) : (
+                <PostList category={selectedCategory} />
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
   );
 }
