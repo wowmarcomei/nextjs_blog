@@ -14,7 +14,7 @@ tags:
   - Gitee
   - Sync
 
-image: github-actions-post.png
+image: /images/github-actions-post.png
 keywords: Github Actions, Github, Gitee, Sync
 ---
 
@@ -30,7 +30,7 @@ Github被微软收购以后，财大气粗的开放了Private仓库限制了，G
 登录Gitee后点击右上角选择**从Github/Gitlab导入仓库**，选中Github对应仓库导入即可。
 
 如：
-![sync2gitee](sync2gitee-1.png)
+![sync2gitee](/images/sync2gitee-1.png)
 
 ## 生成Gitee的ssh秘钥
 
@@ -38,7 +38,7 @@ Github被微软收购以后，财大气粗的开放了Private仓库限制了，G
 参考[Gitee SSH 公钥设置](https://help.gitee.com/base/account/SSH%E5%85%AC%E9%92%A5%E8%AE%BE%E7%BD%AE)生成ssh key，并添加到gitee全局配置中。
 
 如：
-![sync2gitee](sync2gitee-2.png)
+![sync2gitee](/images/sync2gitee-2.png)
 
 
 
@@ -50,14 +50,14 @@ Github被微软收购以后，财大气粗的开放了Private仓库限制了，G
 
 将本地生成的用于Gitee的公钥 Public key填入到github的ssh keys中。
 
-![ssh key](sync2gitee-3.png)
+![ssh key](/images/sync2gitee-3.png)
 
 
 ### 添加Private Key
 
 将本地生成的用于Gitee的私钥 Private key填入到项目的secret秘钥中。
 
-![ssh key](sync2gitee-4.png)
+![ssh key](/images/sync2gitee-4.png)
 
 
 

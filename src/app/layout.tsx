@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig, twitterConfig, faviconConfig, manifestConfig, themeConfig } from "@/config/site";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SearchBar from "@/components/SearchBar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,7 +52,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: faviconConfig,
+  icons: {
+    ...faviconConfig,
+    apple: faviconConfig.apple,
+  },
+  manifest: manifestConfig.path,
 };
 
 export const viewport: Viewport = {
@@ -65,14 +72,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} font-sans`}>
-      <head>
-        <link rel="manifest" href={manifestConfig.path} />
-        <link rel="apple-touch-icon" href={faviconConfig.apple} />
-      </head>
-      <body>
-        <main>
+      <body className="flex flex-col min-h-screen bg-gray-100">
+        <Header SearchBar={SearchBar} />
+        <main className="flex-grow">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );
