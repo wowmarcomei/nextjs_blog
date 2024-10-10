@@ -16,16 +16,13 @@ import { Metadata } from 'next';
 import { Node, Element, Text } from 'hast';
 import Script from 'next/script';
 import { ReactNode } from 'react';
-// import ImageWithZoom from '../../components/ImageWithZoom';
 const ImageWithZoom = dynamic(() => import('../../components/ImageWithZoom'), { ssr: false });
 
-// Add type declaration for remark-gfm
 declare module 'remark-gfm';
 
 const TableOfContents = dynamic(() => import('../../components/TableOfContents'), { ssr: false });
 const Comments = dynamic(() => import('../../components/Comments'), { ssr: false });
 
-// Custom rehype plugin to add IDs to headings
 const addIdsToHeadings = () => {
   return (tree: Node) => {
     const visit = (node: Node) => {
@@ -57,7 +54,6 @@ interface MarkdownComponentProps {
   [key: string]: unknown;
 }
 
-// Custom components for ReactMarkdown
 const MarkdownComponents: Record<string, React.FC<MarkdownComponentProps>> = {
   table: ({ children }: MarkdownComponentProps) => (
     <div className="overflow-x-auto my-8">
@@ -76,16 +72,16 @@ const MarkdownComponents: Record<string, React.FC<MarkdownComponentProps>> = {
   td: ({ children }: MarkdownComponentProps) => <td className="px-6 py-4 whitespace-nowrap">{children}</td>,
   tr: ({ children }: MarkdownComponentProps) => <tr className="bg-white even:bg-gray-50">{children}</tr>,
   pre: ({ children }: MarkdownComponentProps) => (
-    <pre className="bg-gray-100 rounded-md p-4 overflow-x-auto">{children}</pre>
+    <pre className="!bg-gray-100 !p-0 !m-0 !rounded-none overflow-x-auto">{children}</pre>
   ),
   code: ({ inline, className, children, ...props }: MarkdownComponentProps) => {
     const match = /language-(\w+)/.exec(className || '');
     return !inline && match ? (
-      <code className={className} {...props}>
+      <code className={`${className} !bg-gray-100 !p-4 block`} {...props}>
         {children}
       </code>
     ) : (
-      <code className="bg-gray-100 rounded px-1 py-0.5" {...props}>
+      <code className="!bg-gray-100 !px-1 !py-0.5 !rounded" {...props}>
         {children}
       </code>
     );
@@ -159,7 +155,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
       `}</Script>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          <article className="w-full lg:w-2/3 bg-white p-6 lg:p-8 rounded-xl shadow-md">
+          <article className="w-full lg:w-2/3 bg-white p-6 lg:p-8 shadow-md">
             <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
             <div className="text-gray-600 mb-4 lg:mb-6 text-base lg:text-lg flex justify-between items-center">
               <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -187,7 +183,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                 </span>
               ))}
             </div>
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
+            <div className="bg-gray-100 p-4 mb-6">
               <TableOfContents content={post.content} />
             </div>
             <div className="markdown-body prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none mb-6 lg:mb-8">
