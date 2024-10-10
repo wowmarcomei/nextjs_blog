@@ -16,7 +16,8 @@ import { Metadata } from 'next';
 import { Node, Element, Text } from 'hast';
 import Script from 'next/script';
 import { ReactNode } from 'react';
-import ImageWithZoom from '../../components/ImageWithZoom';
+// import ImageWithZoom from '../../components/ImageWithZoom';
+const ImageWithZoom = dynamic(() => import('../../components/ImageWithZoom'), { ssr: false });
 
 // Add type declaration for remark-gfm
 declare module 'remark-gfm';

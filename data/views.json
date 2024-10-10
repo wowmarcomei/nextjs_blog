@@ -11,7 +11,7 @@
   "how-to-use-screen-in-linux": 2,
   "how-to-authority-users-with-RBAC-in-k8s": 10,
   "push-docker-images-to-github-registry": 6,
-  "auto-sync-repository-to-gitee-from-github": 44,
+  "auto-sync-repository-to-gitee-from-github": 46,
   "how-to-use-grep-and-regular-expressions": 2,
   "deploy-harbor-in-centos": 24,
   "hugo-site": 6,
