@@ -16,6 +16,7 @@ import { Metadata } from 'next';
 import { Node, Element, Text } from 'hast';
 import Script from 'next/script';
 import { ReactNode } from 'react';
+import ImageWithZoom from '../../components/ImageWithZoom';
 
 // Add type declaration for remark-gfm
 declare module 'remark-gfm';
@@ -50,6 +51,8 @@ interface MarkdownComponentProps {
   children: ReactNode;
   className?: string;
   inline?: boolean;
+  src?: string;
+  alt?: string;
   [key: string]: unknown;
 }
 
@@ -85,6 +88,12 @@ const MarkdownComponents: Record<string, React.FC<MarkdownComponentProps>> = {
         {children}
       </code>
     );
+  },
+  img: ({ src, alt, ...props }: MarkdownComponentProps) => {
+    if (typeof src === 'string' && typeof alt === 'string') {
+      return <ImageWithZoom src={src} alt={alt} width={800} height={600} />;
+    }
+    return <img src={src} alt={alt} {...props} />;
   },
 };
 
