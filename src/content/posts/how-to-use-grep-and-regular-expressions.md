@@ -11,7 +11,7 @@ tags:
   - Shell
 
 keywords: linux,grep,shell
-image: Linux_logo.png
+image: /images/Linux_logo.png
 ---
 **grep**：global  regular expressions print，全局正则表达式打印。主要用于在一个或者多个文件中，查找特定的单个字符、字符串、单词或句子，并打印出来。这个特定的字符(字符串)就是通过**正则表达式**(regular expressions print)来描述。
 

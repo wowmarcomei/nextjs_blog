@@ -1,7 +1,7 @@
 {
   "mastering-tailwind-css": 80,
   "how-to-inject-host-info-to-container": 6,
-  "add-https-for-hugo": 18,
+  "add-https-for-hugo": 24,
   "how-to-export-heap-dump-outside-of-k8s": 4,
   "save-sensitive-info-within-k8s-with-sealed-secret": 28,
   "adding-multiple-accounts-connect-to-github": 6,
@@ -11,7 +11,7 @@
   "how-to-use-screen-in-linux": 2,
   "how-to-authority-users-with-RBAC-in-k8s": 10,
   "push-docker-images-to-github-registry": 6,
-  "auto-sync-repository-to-gitee-from-github": 46,
+  "auto-sync-repository-to-gitee-from-github": 50,
   "how-to-use-grep-and-regular-expressions": 2,
   "deploy-harbor-in-centos": 24,
   "hugo-site": 6,

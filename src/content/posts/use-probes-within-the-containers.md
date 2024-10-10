@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,probe,startup,readiness,liveness,
 ---
 > 场景与需求：

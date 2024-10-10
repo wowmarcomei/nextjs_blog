@@ -8,7 +8,7 @@ categories:
 tags: 
   - Docker
   - Docker-Compose
-image: docker-logo.png
+image: /images/docker-logo.png
 
 keywords: Docker,Docker-Compose
 ---
@@ -65,10 +65,10 @@ $ sudo rm /usr/local/bin/docker-compose
 
   ```python
   import time
-
+  
   import redis
   from flask import Flask
-
+  
   app = Flask(__name__)
   cache = redis.Redis(host='redis', port=6379)
 
@@ -101,23 +101,23 @@ $ sudo rm /usr/local/bin/docker-compose
   ```dockerfile
   #设置base镜像
   FROM python:3.7-alpine
-
+  
   #设置容器的工作目录
   WORKDIR /code
-
+  
   #设置环境变量
   ENV FLASK_APP app.py
   ENV FLASK_RUN_HOST 0.0.0.0
-
+  
   #将当期目录下的python依赖文件copy至容器文件系统中
   COPY requirements.txt requirements.txt
   COPY . .
-
+  
   #设置镜像源，安装gcc,musl-dev和linux-headers
   RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories \
     && apk add --no-cache gcc musl-dev linux-headers\
     && pip install -r requirements.txt
-
+  
   CMD ["flask", "run"]
   ```
 
@@ -169,7 +169,7 @@ $ sudo rm /usr/local/bin/docker-compose
   Removing intermediate container d3b237395dea
   Step 7/8 : RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories   && apk add --no-cache gcc musl-dev linux-headers  && pip install -r requirements.txt
    ---> Running in 0e6c2354c9d2
-
+  
   fetch https://mirrors.ustc.edu.cn/alpine/v3.14/main/x86_64/APKINDEX.tar.gz
   fetch https://mirrors.ustc.edu.cn/alpine/v3.14/community/x86_64/APKINDEX.tar.gz
   (1/13) Installing libgcc (10.3.1_git20210424-r2)

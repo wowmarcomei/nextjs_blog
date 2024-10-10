@@ -11,7 +11,7 @@ tags:
   - Shell
 
 keywords: linux,awk,shell
-image: Linux_logo.png
+image: /images/Linux_logo.png
 ---
 awk是一个强大的文本分析工具，相对于grep的查找，sed的编辑，awk在其对数据分析并生成报告时，显得尤为强大。简单来说awk就是把文件逐行的读入，以空格为默认分隔符将每行切片，切开的部分再进行各种分析处理。
 

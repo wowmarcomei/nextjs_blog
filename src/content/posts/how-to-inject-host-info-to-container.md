@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,downward api,环境变量,hostname
 ---
 > 需求背景：一些自研插件通过sidecar容器提供服务，容器需要获取到当前所在节点的IP与hostname作为环境变量传递给应用。

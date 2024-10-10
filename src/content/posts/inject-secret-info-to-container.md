@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,Secret,
 ---
 一般ConfigMap用于保存通用配置信息，属于明文信息，不能保存密钥，如果要保存密钥等加密信息，Kubernetes提供Secret对象进行Base64转码。

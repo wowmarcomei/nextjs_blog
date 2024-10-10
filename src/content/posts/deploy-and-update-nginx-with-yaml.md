@@ -10,7 +10,7 @@ tags:
   - Kubernetes
   - CloudNative
 
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,nginx,yaml
 ---
 
@@ -132,7 +132,7 @@ spec:
 
 上面提到的POD、ReplicaSet、Deployment是什么关系呢？可以用下图来说明：
 
-![k8s-deployment](k8s-deployment.png)
+![k8s-deployment](/images/k8s-deployment.png)
 
 如上图所示，Deployment控制Replicaset，Replicaset控制POD，三者是层层控制的，Deployment 通过管理 ReplicaSet 的数量和属性来实现`水平扩展/收缩`以及`滚动更新`两个功能的；ReplicaSet 通过`replicas: 3`来保证 Pod 的个数始终保存为3。
 
@@ -454,7 +454,7 @@ Events:
     而且因为设置的策略`maxSurge=1`，所以在升级过程中是允许比原先设置多出1个 Pod ，即4个POD，两个新的 Pod，两个旧的 Pod，如下图示意：
     
 
-![deployment-rollupdate](deployment-rollupdate.png)
+![deployment-rollupdate](/images/deployment-rollupdate.png)
 
 使用`kubectl rollout resume`来恢复滚动更新：
 

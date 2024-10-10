@@ -9,11 +9,11 @@ tags:
   - 腾讯云
   - cdn
   - github action
-image: hugo.png
+image: /images/hugo.png
 
 keywords: hugo,腾讯云,cdn, github action, serverless
 ---
-![qclouod-ssl](hugo.png)
+![qclouod-ssl](/images/hugo.png)
 
 ## 1.整体思路
 
@@ -24,7 +24,7 @@ keywords: hugo,腾讯云,cdn, github action, serverless
 
 使用hugo构建站点只需简单的几步即可完成，但如何将其部署上线稍微麻烦些，有人习惯部署到自己的服务器，但serverless时代了能不用服务器就不用，能托管就托管。github，vercel，netlify都是很好的托管平台，唯一不足的地方是在国内几乎都会存在DNS污染问题。为解决这个问题，咱们可以选择OBS文件存储进行托管，并通过CDN进行加速。各大厂(阿里、腾讯、华为等)都有成熟的OBS服务，综合比较下来腾讯的[COS](https://cloud.tencent.com/document/product/436)最便宜，所以这里介绍的都是基于腾讯服务部署的，整体流程如下图。
 
-![build_hugo](build_site_with_hugo.png)
+![build_hugo](/images/build_site_with_hugo.png)
 
 > 注意： 使用腾讯CDN在国内进行CDN加速时，需要到工信部备案域名，海外加速时无需备案。
 
@@ -142,14 +142,14 @@ EOL
 
 COS开启静态网站后，默认会有一个cos的域名访问，但该域名比较长，而且COS访问成本相对CDN而言会贵一些，开启CDN不仅可在各地加速，整体成本也相对更低，何乐而不为？给腾讯云COS开启CDN很方便，在COS桶列表中选择 `域名与传输管理`，选择 `自定义CDN加速域名`，添加对应的域名。
 
-![cdn_domain](cdn_domain.png)
+![cdn_domain](/images/cdn_domain.png)
 
 如果域名是在腾讯云购买的，可以一站式完成DNS解析，如果是在其他网站注册，可在域名托管处修改DNS解析，添加CNAME解析。
 
 完成CDN配置后即可正常通过CDN访问托管的网站了，但还有一个问题，每次COS内容更新时，可能由于CDN缓存刷新的慢，导致不能马上看到更新的内容，腾讯云COS支持serverless自动刷新缓存。
-![update_cdn_cache](update_cdn_cache.png)
+![update_cdn_cache](/images/update_cdn_cache.png)
 添加函数时按照提示选择全部部署&全部删除时刷新CDN缓存，这样每次在COS文件内容有更新时都会刷新CDN。
-![cdn_domain](refresh_cdn_2.png)
+![cdn_domain](/images/refresh_cdn_2.png)
 
 完成这项配置后正常访问**http**域名即可正常访问上述配置的hugo站点，如果想要为托管在COS上的hugo静态网站加上https证书该如何处理呢？查看[为Hugo配置https证书](add-https-for-hugo).
 

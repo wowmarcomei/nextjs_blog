@@ -12,11 +12,11 @@ tags:
   - CloudNative
 
 keywords: kubernetes,k8s,HPA,metrics,prometheus,customized metrics
-image: kubernetes.png
+image: /images/kubernetes.png
 ---
 除了基于 CPU 和内存来进行自动扩缩容之外，有些业务需要基于自定义指标进行HPA弹性伸缩，通用做法是结合prometheus能力。
 
-![prometheus-hpa-service-metrics-1](prometheus-hpa-service-metrics-1.png)
+![prometheus-hpa-service-metrics-1](/images/prometheus-hpa-service-metrics-1.png)
 
 如上图示，基于自定义指标进行HPA弹性的核心原理为：
 
@@ -257,11 +257,11 @@ Hello World!
 
 因为服务的类型设置为NodePort了，所以我们在集群外部也可以通过NodeIP:NodePort来访问：
 
-![prometheus-hpa-service](prometheus-hpa-service.png)
+![prometheus-hpa-service](/images/prometheus-hpa-service.png)
 
 通过 `/metrics`来查看业务指标：
 
-![prometheus-hpa-service-metrics](prometheus-hpa-service-metrics.png)
+![prometheus-hpa-service-metrics](/images/prometheus-hpa-service-metrics.png)
 
 ### 2.2 通过Prometheus查看业务指标
 
@@ -269,11 +269,11 @@ prometheus安装完成后，可修改对应服务为NodePort类型，然后通�
 
 在prometheus中可见服务指标已经上报，如下图。
 
-![prometheus-hpa-service-pod](prometheus-hpa-service-pod.png)
+![prometheus-hpa-service-pod](/images/prometheus-hpa-service-pod.png)
 
 也可用PromQL语句聚合查看指标：
 
-![prometheus-hpa-service-promql](prometheus-hpa-service-promql.png)
+![prometheus-hpa-service-promql](/images/prometheus-hpa-service-promql.png)
 
 ### 2.3 修改Prometheus Adapter自定义HPA指标
 
@@ -442,7 +442,7 @@ sample-httpserver   Deployment/sample-httpserver   66m/500m         1         10
 
 对应在prometheus使用PromQL语句 `sum(rate(http_requests_total[30s])) by (pod)`上可观测到业务指标变化：
 
-![prometheus-hpa-service-test](prometheus-hpa-service-test.png)
+![prometheus-hpa-service-test](/images/prometheus-hpa-service-test.png)
 
 OK，正式测试，使用RPS为1000测试1分钟看看。
 

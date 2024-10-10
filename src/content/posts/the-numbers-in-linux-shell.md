@@ -11,7 +11,7 @@ tags:
   - Shell
 
 keywords: linux,shell,数字,number
-image: Linux_shell.png
+image: /images/Linux_shell.png
 
 ---
 在Shell脚本中经常看到数字0,1,2，到底是什么意思，又有什么用处呢？其实Shell脚本的数字分为两种，一种是文本描述，一种是命令参数，两者用法和场景不同。这篇文章简单归纳总结。

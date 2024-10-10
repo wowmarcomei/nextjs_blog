@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 
 keywords: kubernetes,k8s,多AZ,高可用,亲和,反亲和,
 ---
@@ -84,11 +84,11 @@ Labels:             beta.kubernetes.io/arch=amd64
 
 创建一个无状态组件，设置反亲和性，这里均采用软约束尽量满足。
 
-![pod-antiaffinity-1](pod-antiaffinity-1.png)
+![pod-antiaffinity-1](/images/pod-antiaffinity-1.png)
 
 创建成功后可见7个实例能分在两个AZ的4个节点上。
 
-![pod-antiaffinity-instance](pod-antiaffinity-instance.png)
+![pod-antiaffinity-instance](/images/pod-antiaffinity-instance.png)
 
 尝试将节点之间的调度用硬约束，AZ之间的约束用软约束，通过定义yaml来实现，定义一个 `pod-antiaffinity.yaml`:
 

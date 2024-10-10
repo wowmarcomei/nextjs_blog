@@ -9,7 +9,7 @@ categories:
   - 技术笔记
 tags: 
   - Docker
-image: docker-logo.png
+image: /images/docker-logo.png
 keywords: Docker,Docker基础
 ---
 ## 1.安装Docker

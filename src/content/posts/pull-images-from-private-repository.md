@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,private repository,image,docker,secret
 ---
 本文介绍如何使用 [Secret](https://kubernetes.io/zh/docs/concepts/configuration/secret/) 从私有镜像仓库或代码仓库拉取镜像来创建 Pod。

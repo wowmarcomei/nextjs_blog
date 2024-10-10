@@ -11,8 +11,7 @@ tags:
   - Shell
 
 keywords: linux,sed,shell,
-image: Linux_logo.png
-
+image: /images/Linux_logo.png
 ---
 sed（stream editor）流编辑器也是linux中的一条命令，通过sed可在shell中实现非交互式修改文件内容。sed处理文本是按行处理，也就是读一行处理一行。
 sed命令基本格式是：

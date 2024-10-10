@@ -10,7 +10,7 @@ categories:
 tags: 
   - Docker
   - Dockefile
-image: docker-logo.png
+image: /images/docker-logo.png
 keywords: Docker,Docker基础,Dockerfile,华为云,
 ---
 Dockerfile是用来干什么的？答案是制作镜像。那么了解Dockerfile之前，首先需要理解几个简单概念。
@@ -58,7 +58,7 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
 
 关于这些基本指令先来看一则网上的示意图，将大部分指令形象化描述出来了。
 
-![dockerfile-layer](dockerfile-layer.png)
+![dockerfile-layer](/images/dockerfile-layer.png)
 
 *图 1 Dockerfile指令 - 图片来自网络*
 
@@ -86,7 +86,7 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
   WORKDIR b
   WORKDIR c
   RUN pwd
-
+  
   #RUN的结果是/a/b/c
   ```
 
@@ -112,7 +112,7 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
 
   ```dockerfile
   ENV NODE_VERSION 7.2.0
-
+  
   RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
     && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc"
   ```
@@ -186,16 +186,16 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
   ```dockerfile
   # 设置Base镜像为dockerhub最新nginx镜像
   FROM nginx
-
+  
   # 设置容器的工作目录
   WORKDIR "/tmp"
-
+  
   # 表示对外期望暴露的端口
   EXPOSE 80
-
+  
   # 设置容器的匿名卷 /usr/local/tmp
   VOLUME /usr/local/tmp
-
+  
   # 启动nginx，指定参数 -g `daemon off`将nginx设置为前台运行
   CMD ["nginx", "-g", "daemon off;"]
   ```
@@ -233,7 +233,7 @@ $ docker build -f Dockerfile -t hello-app:1.0 docker
 
   启动后访问主机IP，可直接通过 `curl`命令访问，也可通过浏览器访问，由于http协议默认端口为80所以无需加端口号访问，如下图示。
 
-  ![day1-docker-nginx](day1-docker-nginx.png)
+  ![day1-docker-nginx](/images/day1-docker-nginx.png)
 
   上面是通过 `nginx`镜像直接生成的，一般应用中 `nginx`大多是当成中间件的，base镜像选择的一般是操作系统。
 

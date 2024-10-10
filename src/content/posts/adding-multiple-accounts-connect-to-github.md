@@ -4,7 +4,7 @@ date: '2021-03-20'
 tags: ['github', 'git', 'version control', 'css', 'nextjs']
 categories: 
     - Development Tools
-image:  github-actions-post.png 
+image:  /images/github-actions-post.png 
 ---
 1. 在WSL2中安装git
 

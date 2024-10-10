@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,持久化,存储,数据
 ---
 通常容器的生命周期是不固定的、甚至是比较短的，但是它生成的数据可能是有价值的需要长期保存的，即持久化存储。在Kubernetes中持久化存储主要通过PV与PVC来实现。

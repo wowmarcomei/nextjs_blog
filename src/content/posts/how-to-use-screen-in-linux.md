@@ -11,7 +11,7 @@ tags:
   - Shell
 
 keywords: linux,screen,shell
-image: Linux_logo.png
+image: /images/Linux_logo.png
 ---
 Linux 的 screen工具是终端复用器，可在一个终端窗口中运行多个终端会话，并可进行跨窗口和会话切换，而不必担心丢失连接和状态。我们可将其用于离线作业场景。
 

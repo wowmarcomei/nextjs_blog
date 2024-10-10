@@ -10,12 +10,12 @@ categories:
 tags: 
   - Docker
   - 存储
-image: docker-logo.png
+image: /images/docker-logo.png
 keywords: Docker,Docker基础,Docker存储
 ---
 Docker提供两种数据存储资源，一种是基于storage driver提供的镜像层和容器层，一种是基于data volume提供的持久化存储。
 
-![Docker_Storage](Docker_Storage.png)
+![Docker_Storage](/images/Docker_Storage.png)
 
 *图1 Docker存储框架*
 
@@ -25,7 +25,7 @@ Docker提供两种数据存储资源，一种是基于storage driver提供的镜
 
 我们知道容器镜像是按照多个层级来分层叠加的，如下图2示意，容器包含最上层的读写层与下面多个只读镜像层，当需要修改容器数据的时候，会将只读层数据**COPY**至容器层进行修改，修改后数据保存在容器层，镜像层不变，即使用了linux的**Copy on write**特性。
 
-![docker-container-images](docker-container-images.png)
+![docker-container-images](/images/docker-container-images.png)
 
 *图2 存储：镜像层与容器层-图片出自网络*
 

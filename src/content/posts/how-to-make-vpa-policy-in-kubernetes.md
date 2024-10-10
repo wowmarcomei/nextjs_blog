@@ -10,7 +10,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,VHA,metrics
 ---
 相对于HPA横向弹性伸缩POD数量，VPA垂直弹性会在现有POD基础上对POD的CPU与内存进行弹性，它根据容器资源使用率自动设置 CPU 和 内存 的requests，从而允许在节点上进行适当的调度，以便为每个 Pod 提供适当的资源。VPA既可以缩小过度请求资源的容器，也可以根据其使用情况随时提升资源不足的容量。

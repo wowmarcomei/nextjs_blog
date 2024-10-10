@@ -12,9 +12,8 @@ tags:
   - CloudNative
 
 keywords: kubernetes,k8s,HPA,metrics
-series:
-  - K8s
-image: kubernetes.png
+
+image: /images/kubernetes.png
 ---
 Kubernetes中弹性伸缩最主要的就是使用HPA（Horizontal Pod Autoscaling）和CA（Cluster AutoScaling）两种弹性伸缩策略，HPA负责工作负载弹性伸缩，也就是应用层面的弹性伸缩，CA负责节点弹性伸缩，也就是资源层面的弹性伸缩。
 

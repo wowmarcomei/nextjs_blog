@@ -10,11 +10,11 @@ tags:
   - cdn
   - github action
   - ssl
-image: qcloud-ssl.png
+image: /images/qcloud-ssl.png
 
 keywords: hugo,腾讯云,cdn, github action, serverless, let's encrypt
 ---
-![qclouod-ssl](qcloud-ssl.png)
+![qclouod-ssl](/images/qcloud-ssl.png)
 网站启用https需要配置证书，`let's encrypt`提供免费https证书，不过需要90天重新更新一次证书，如果每次都采用手工上传证书会非常麻烦，也有可能忘记上传证书导致https访问异常。
 为解决这个问题[acme.sh](https://acme.sh)提供了一键脚本，90天到期后自动续签证书。但是因为我们的站点[使用hugo快速建站并托管在腾讯云cos](./hugo-site)，并没有服务器可以部署该脚本，所以最好能生成https证书后上传到cdn。
 
@@ -82,9 +82,9 @@ jobs:
           WORK_DIR: .
         run: sh ./docker/update.sh
 
-   ```
+```
 这里有两个动作会触发github action动作上传证书到cdn，一个是main分支有更新的时候，一种是85天定时触发。正常触发后可在腾讯云cdn上看到证书记录。
-![upload_cert_to_cdn](upload_cert_to_cdn.png)
+![upload_cert_to_cdn](/images/upload_cert_to_cdn.png)
 
 ---
 全文完。

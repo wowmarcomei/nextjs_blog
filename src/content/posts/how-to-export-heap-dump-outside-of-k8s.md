@@ -9,7 +9,7 @@ tags:
   - K8s
   - Kubernetes
   - CloudNative
-image: kubernetes.png
+image: /images/kubernetes.png
 keywords: kubernetes,k8s,heap dump,java,jvm
 ---
 > 场景：应用基于Kubernetes部署，应用开发者受限登陆集群节点下载文件。当Java（或者其他）应用出现OOM异常需要生成heap dump二进制文件。
