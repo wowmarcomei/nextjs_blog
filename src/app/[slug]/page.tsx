@@ -134,7 +134,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   const post = await getPostData(params.slug);
   const allTags = await getAllTags();
   const allCategories = await getAllCategories();
-  const relatedPosts = await getRelatedPosts(post, 9);
+  const relatedPosts = await getRelatedPosts(post, 4);  // Changed from 9 to 4
 
   return (
     <>
@@ -156,7 +156,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
           <article className="w-full lg:w-2/3 bg-white p-6 lg:p-8 shadow-md">
-            <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
+          <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
             <div className="text-gray-600 mb-4 lg:mb-6 text-base lg:text-lg flex justify-between items-center">
               <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               <ViewCounter slug={post.slug} />
@@ -208,7 +208,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
                 Back to Home
               </Link>
             </div>
-            <RelatedPosts posts={relatedPosts} initialLimit={3} />
+            <RelatedPosts posts={relatedPosts} />
             <div className="mt-8">
               <h2 className="text-2xl font-bold mb-4">Comments</h2>
               <Comments 

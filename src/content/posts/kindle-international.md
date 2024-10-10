@@ -41,7 +41,7 @@ https://www.amazon.com/hz/mycd/digital-console/alldevices
 除了通过邮箱推送以外，还可以直接通过**Send-to-Kindle for Web**服务推送。
 https://www.amazon.com/sendtokindle
 
-![kindle-international-2](/images/Send-to-Kindle-for-Web.png)
+![-to-Kindle-for-Web](/images/Send-to-Kindle-for-Web.png)
 
 ## 各设备登录与同步
 

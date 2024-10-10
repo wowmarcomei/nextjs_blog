@@ -17,6 +17,8 @@
   "hugo-site": 6,
   "build-local-repository-in-centos": 2,
   "the-numbers-in-linux-shell": 2,
-  "kindle-international": 8,
-  "pull-images-from-private-repository": 2
+  "kindle-international": 12,
+  "pull-images-from-private-repository": 2,
+  "persistent-storage-for-services-in-k8s": 6,
+  "start-a-docker-container": 2
 }
