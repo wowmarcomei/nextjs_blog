@@ -6,6 +6,8 @@ export const siteConfig = {
   links: {
     twitter: "https://twitter.com/wowmarcomei",
     github: "https://github.com/wowmarcomei",
+    instagram: "https://www.instagram.com/wowmarcomei",
+    linkedin: "https://www.linkedin.com/in/wowmarcomei",
   },
   author: {
     name: "Marco",

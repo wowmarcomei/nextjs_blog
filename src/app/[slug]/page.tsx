@@ -155,7 +155,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
       `}</Script>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          <article className="w-full lg:w-2/3 bg-white p-6 lg:p-8 shadow-md">
+          <article className="w-full lg:w-3/4 bg-white p-6 lg:p-8 shadow-md">
           <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 lg:mb-6">{post.title}</h1>
             <div className="text-gray-600 mb-4 lg:mb-6 text-base lg:text-lg flex justify-between items-center">
               <span>Published on {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -219,7 +219,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
               />
             </div>
           </article>
-          <div className="w-full lg:w-1/3">
+          <div className="w-full lg:w-1/4">
             <div className="sticky top-20">
               <Sidebar allTags={allTags} allCategories={allCategories} />
             </div>

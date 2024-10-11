@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import SearchBar from './SearchBar';
+import Image from 'next/image';
+import { FaGithub, FaLinkedin, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { siteConfig } from '../config/site';
 
 interface SidebarProps {
   allTags: string[];
@@ -9,21 +11,46 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ allTags, allCategories }) => {
   return (
     <div className="w-full space-y-6">
-      <div className="bg-white p-4 rounded-xl shadow-md">
-        <h2 className="text-xl font-bold mb-3 text-gray-900">Search</h2>
-        <SearchBar />
-      </div>
-      <div className="bg-white p-4 rounded-xl shadow-md">
-        <h2 className="text-xl font-bold mb-3 text-gray-900">Profile</h2>
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold">JD</div>
-          <div>
-            <h3 className="font-semibold text-base">John Doe</h3>
-            <p className="text-gray-600 text-sm">Web Developer</p>
+      <div className="bg-white p-4 shadow-md">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-[200px] h-[200px] rounded-full overflow-hidden">
+            <Image
+              src="/images/avatar.jpg"
+              alt="wowmarcomei"
+              width={200}
+              height={200}
+              objectFit="cover"
+              className="rounded-full"
+            />
+          </div>
+          <h3 className="font-bold text-xl">Marco Mei</h3>
+          <p className="text-gray-600 text-sm text-center">A Lifelong Learner</p>
+          <div className="flex space-x-5">
+            {siteConfig.links.twitter && (
+              <Link href={siteConfig.links.twitter} aria-label="Twitter" target="_blank" rel="noopener noreferrer">
+                <FaTwitter className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+              </Link>
+            )}
+            {siteConfig.links.instagram && (
+              <Link href={siteConfig.links.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                <FaInstagram className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+              </Link>
+            )}
+            {siteConfig.links.github && (
+              <Link href={siteConfig.links.github} aria-label="GitHub" target="_blank" rel="noopener noreferrer">
+                <FaGithub className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+              </Link>
+            )}
+            {siteConfig.links.linkedin && (
+              <Link href={siteConfig.links.linkedin} aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                <FaLinkedin className="w-6 h-6 text-gray-600 hover:text-gray-800" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
-      <div className="bg-white p-4 rounded-xl shadow-md">
+
+      <div className="bg-white p-4 shadow-md">
         <Link href="/tags" className="block text-xl font-bold mb-3 text-gray-900 hover:text-indigo-600 transition-colors duration-300">Tags</Link>
         <div className="flex flex-wrap gap-2">
           {allTags.slice(0, 10).map((tag: string) => (
@@ -32,13 +59,9 @@ const Sidebar: React.FC<SidebarProps> = ({ allTags, allCategories }) => {
             </Link>
           ))}
         </div>
-        {allTags.length > 10 && (
-          <Link href="/tags" className="block mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors duration-300">
-            View all tags...
-          </Link>
-        )}
       </div>
-      <div className="bg-white p-4 rounded-xl shadow-md">
+      
+      <div className="bg-white p-4 shadow-md">
         <Link href="/categories" className="block text-xl font-bold mb-3 text-gray-900 hover:text-indigo-600 transition-colors duration-300">Categories</Link>
         <ul className="space-y-1">
           {allCategories.slice(0, 5).map((category: string) => (

@@ -4,7 +4,7 @@ date: 2024-05-01T18:28:17+08:00
 description: kindle退出中国后，国内的kindle无法再使用了，不过国际账号依然可用。本文主要讲解如何使用国际版Kindle进行阅读与同步，包括Kindle设备与Kindle APP（Android版）。
 categories: 
 
-  - 阅读
+  - 阅读笔记
 tags: 
   - kindle
 image: /images/kindle.jpg
