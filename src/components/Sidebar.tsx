@@ -52,7 +52,9 @@ const Sidebar: React.FC<SidebarProps> = ({ allTags, allCategories }) => {
 
       <div className="bg-white p-4 shadow-md">
         <Link href="/tags" className="block text-xl font-bold mb-3 text-gray-900 hover:text-indigo-600 transition-colors duration-300">Tags</Link>
-        <div className="flex flex-wrap gap-2">
+        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #F4F5F9 0%, #6F58EB 20%, #DF7038 25%,#E0BDAC 35%,#E3DFDF 45%, #F6F7F9 50%,#F6F7F9 50%, #F6F7F9 100%)' }}></div>
+
+        <div className="flex flex-wrap gap-2 mt-3">
           {allTags.slice(0, 10).map((tag: string) => (
             <Link key={tag} href={`/?tag=${encodeURIComponent(tag)}`} className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-medium hover:bg-indigo-200 transition-colors duration-300">
               {tag}
@@ -63,7 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ allTags, allCategories }) => {
       
       <div className="bg-white p-4 shadow-md">
         <Link href="/categories" className="block text-xl font-bold mb-3 text-gray-900 hover:text-indigo-600 transition-colors duration-300">Categories</Link>
-        <ul className="space-y-1">
+        <div className="h-1 w-full " style={{ background: 'linear-gradient(90deg, #F4F5F9 0%, #6F58EB 20%, #DF7038 25%,#E0BDAC 35%,#E3DFDF 45%, #F6F7F9 50%,#F6F7F9 50%, #F6F7F9 100%)' }}></div>
+        
+        <ul className="space-y-1 mt-4">
           {allCategories.slice(0, 5).map((category: string) => (
             <li key={category}>
               <Link href={`/?category=${encodeURIComponent(category)}`} className="block py-1 px-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-colors duration-300">
@@ -72,6 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ allTags, allCategories }) => {
             </li>
           ))}
         </ul>
+
         {allCategories.length > 5 && (
           <Link href="/categories" className="block mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors duration-300">
             View all categories...
