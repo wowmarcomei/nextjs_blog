@@ -11,6 +11,8 @@ interface PostFilterProps {
   onTagChange: (tag: string) => void;
   onViewModeChange: (mode: 'grid' | 'list') => void;
   currentViewMode: 'grid' | 'list';
+  selectedCategory: string;
+  selectedTag: string;
 }
 
 // Dropdown menu component
@@ -18,12 +20,13 @@ const DropdownMenu: React.FC<{
   items: string[];
   onItemClick: (item: string) => void;
   buttonText: string;
-}> = React.memo(({ items, onItemClick, buttonText }) => (
+  selectedItem: string;
+}> = React.memo(({ items, onItemClick, buttonText, selectedItem }) => (
   <Menu as="div" className="relative inline-block text-left">
     <div>
       <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
         <FunnelIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-        {buttonText}
+        {buttonText}: {selectedItem}
         <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
       </Menu.Button>
     </div>
@@ -46,7 +49,7 @@ const DropdownMenu: React.FC<{
                   href="#"
                   className={`${
                     active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                  } block px-4 py-2 text-sm`}
+                  } block px-4 py-2 text-sm ${selectedItem === item ? 'font-bold' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     onItemClick(item);
@@ -71,7 +74,9 @@ const PostFilter: React.FC<PostFilterProps> = React.memo(({
   onCategoryChange, 
   onTagChange, 
   onViewModeChange, 
-  currentViewMode 
+  currentViewMode,
+  selectedCategory,
+  selectedTag
 }) => {
   // Memoize callback functions
   const handleCategoryChange = useCallback((category: string) => {
@@ -86,11 +91,24 @@ const PostFilter: React.FC<PostFilterProps> = React.memo(({
     onViewModeChange(mode);
   }, [onViewModeChange]);
 
+  const allCategories = ['ALL', ...categories];
+  const allTags = ['ALL', ...tags];
+
   return (
     <div className="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0">
       <div className="flex space-x-4">
-        <DropdownMenu items={categories} onItemClick={handleCategoryChange} buttonText="Categories" />
-        <DropdownMenu items={tags} onItemClick={handleTagChange} buttonText="Tags" />
+        <DropdownMenu 
+          items={allCategories} 
+          onItemClick={handleCategoryChange} 
+          buttonText="Categories" 
+          selectedItem={selectedCategory}
+        />
+        <DropdownMenu 
+          items={allTags} 
+          onItemClick={handleTagChange} 
+          buttonText="Tags" 
+          selectedItem={selectedTag}
+        />
       </div>
 
       <div className="flex space-x-2">

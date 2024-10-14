@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, Suspense, lazy } from 'react';
+import React, { useState, useMemo, useCallback, Suspense, lazy, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Hero from '@/components/Hero';
 import FeaturedPosts from '@/components/FeaturedPosts';
 import PostFilter from '@/components/PostFilter';
@@ -36,32 +37,61 @@ function ErrorBoundary({ children }: { children: React.ReactNode }) {
 }
 
 export default function HomepageClient({ initialPosts, initialCategories, initialTags }: HomepageClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedTag, setSelectedTag] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'ALL');
+  const [selectedTag, setSelectedTag] = useState(searchParams.get('tag') || 'ALL');
   const [posts] = useState<PostData[]>(initialPosts);
-  const [categories] = useState<string[]>(initialCategories);
-  const [tags] = useState<string[]>(initialTags);
+  const [categories] = useState<string[]>(initialCategories.filter(cat => cat.toLowerCase() !== 'all'));
+  const [tags] = useState<string[]>(initialTags.filter(tag => tag.toLowerCase() !== 'all'));
 
   const filteredPosts = useMemo(() => 
     posts.filter(post => 
-      (selectedCategory === 'all' || post.categories.includes(selectedCategory)) &&
-      (selectedTag === 'all' || post.tags.includes(selectedTag))
+      (selectedCategory === 'ALL' || post.categories.includes(selectedCategory)) &&
+      (selectedTag === 'ALL' || post.tags.includes(selectedTag))
     ),
     [posts, selectedCategory, selectedTag]
   );
 
+  const updateURL = useCallback((params: URLSearchParams) => {
+    const newURL = `/?${params.toString()}`;
+    router.push(newURL, { scroll: false });
+  }, [router]);
+
   const handleCategoryChange = useCallback((category: string) => {
     setSelectedCategory(category);
-  }, []);
+    const params = new URLSearchParams(searchParams);
+    if (category === 'ALL') {
+      params.delete('category');
+    } else {
+      params.set('category', category);
+    }
+    updateURL(params);
+  }, [searchParams, updateURL]);
 
   const handleTagChange = useCallback((tag: string) => {
     setSelectedTag(tag);
-  }, []);
+    const params = new URLSearchParams(searchParams);
+    if (tag === 'ALL') {
+      params.delete('tag');
+    } else {
+      params.set('tag', tag);
+    }
+    updateURL(params);
+  }, [searchParams, updateURL]);
 
   const handleViewModeChange = useCallback((mode: 'grid' | 'list') => {
     setViewMode(mode);
   }, []);
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    const tag = searchParams.get('tag');
+    if (category) setSelectedCategory(category);
+    if (tag) setSelectedTag(tag);
+  }, [searchParams]);
 
   return (
     <ErrorBoundary>
@@ -78,6 +108,8 @@ export default function HomepageClient({ initialPosts, initialCategories, initia
               onTagChange={handleTagChange}
               onViewModeChange={handleViewModeChange}
               currentViewMode={viewMode}
+              selectedCategory={selectedCategory}
+              selectedTag={selectedTag}
             />
           </div>
           <div className="mt-8">

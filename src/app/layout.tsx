@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { siteConfig, twitterConfig, faviconConfig, manifestConfig, themeConfig } from "@/config/site";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import SearchBar from "@/components/SearchBar";
+import { siteConfig, twitterConfig, faviconConfig, manifestConfig, themeConfig } from "../config/site";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import SearchBar from "../components/SearchBar";
+import { getAllCategories } from "../utils/markdown"; // Assume this function exists
 
 const inter = Inter({
   subsets: ["latin"],
@@ -65,15 +66,22 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+async function getCategories() {
+  const categories = await getAllCategories();
+  return categories;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categories = await getCategories();
+
   return (
     <html lang="en" className={`${inter.variable} font-sans`}>
       <body className="flex flex-col min-h-screen bg-gray-100">
-        <Header SearchBar={SearchBar} />
+        <Header SearchBar={SearchBar} categories={categories} />
         <main className="flex-grow">
           {children}
         </main>
