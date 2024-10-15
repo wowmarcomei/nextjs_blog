@@ -5,7 +5,8 @@ import { siteConfig, twitterConfig, faviconConfig, manifestConfig, themeConfig }
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
-import { getAllCategories } from "../utils/markdown"; // Assume this function exists
+import { getAllCategories } from "../utils/markdown";
+import Script from 'next/script';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -58,6 +59,9 @@ export const metadata: Metadata = {
     apple: faviconConfig.apple,
   },
   manifest: manifestConfig.path,
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 export const viewport: Viewport = {
@@ -80,6 +84,20 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={`${inter.variable} font-sans`}>
+      <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
+          `}
+        </Script>
+      </head>
       <body className="flex flex-col min-h-screen bg-gray-100">
         <Header SearchBar={SearchBar} categories={categories} />
         <main className="flex-grow">

@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://laomeinote.com
+
+# Sitemaps
+Sitemap: https://laomeinote.com/sitemap.xml

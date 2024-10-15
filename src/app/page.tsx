@@ -1,6 +1,7 @@
-import { getSortedPostsData, getAllCategories, getAllTags } from '@/utils/serverUtils';
-import HomepageClient from '@/components/HomepageClient';
-import { PostData } from '@/utils/markdown';
+import { Suspense } from 'react';
+import { getSortedPostsData, getAllCategories, getAllTags } from '../utils/serverUtils';
+import HomepageClient from '../components/HomepageClient';
+import { PostData } from '../utils/markdown';
 
 export const revalidate = 3600; // 重新验证时间，单位为秒（这里设置为1小时）
 
@@ -29,10 +30,12 @@ export default async function Home() {
   }
 
   return (
-    <HomepageClient 
-      initialPosts={posts} 
-      initialCategories={['all', ...categories]} 
-      initialTags={['all', ...tags]} 
-    />
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomepageClient 
+        initialPosts={posts} 
+        initialCategories={['all', ...categories]} 
+        initialTags={['all', ...tags]} 
+      />
+    </Suspense>
   );
 }
