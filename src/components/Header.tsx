@@ -56,15 +56,18 @@ const Header: React.FC<HeaderProps> = React.memo(({
   );
 
   const renderCategoriesDropdown = () => (
-    <div className="relative" onMouseEnter={handleCategoriesMouseEnter} onMouseLeave={handleCategoriesMouseLeave}>
+    <div className="relative group" onMouseEnter={handleCategoriesMouseEnter} onMouseLeave={handleCategoriesMouseLeave}>
       <button className="flex items-center hover:text-blue-600 transition duration-300">
         Categories <FaCaretDown className="ml-1" />
       </button>
       {isCategoriesOpen && (
-        <ul className="absolute top-full right-0 bg-white shadow-lg rounded-md p-2 space-y-2">
+        <ul className="absolute top-full left-0 md:left-1/2 bg-white shadow-lg rounded-md py-1 w-full md:w-max md:min-w-[170px] md:max-w-[250px] md:transform md:-translate-x-1/2">
           {categories.map((category) => (
             <li key={category}>
-              <Link href={`/?category=${encodeURIComponent(category)}`} className="block hover:text-blue-600">
+              <Link 
+                href={`/?category=${encodeURIComponent(category)}`} 
+                className="block hover:text-blue-600 whitespace-nowrap overflow-hidden text-ellipsis px-3 py-1.5 text-center transition duration-300"
+              >
                 {category}
               </Link>
             </li>
