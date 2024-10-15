@@ -10,7 +10,7 @@
   "how-to-use-sed-in-linux": 2,
   "how-to-use-screen-in-linux": 2,
   "how-to-authority-users-with-RBAC-in-k8s": 10,
-  "push-docker-images-to-github-registry": 6,
+  "push-docker-images-to-github-registry": 10,
   "auto-sync-repository-to-gitee-from-github": 92,
   "how-to-use-grep-and-regular-expressions": 2,
   "deploy-harbor-in-centos": 28,

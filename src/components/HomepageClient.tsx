@@ -2,13 +2,13 @@
 
 import React, { useState, useMemo, useCallback, Suspense, lazy, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Hero from '@/components/Hero';
-import FeaturedPosts from '@/components/FeaturedPosts';
-import PostFilter from '@/components/PostFilter';
-import { PostData } from '@/utils/markdown';
+import Hero from './Hero';
+import FeaturedPosts from './FeaturedPosts';
+import PostFilter from './PostFilter';
+import { PostData } from '../utils/markdown';
 
-const PostGrid = lazy(() => import('@/components/PostGrid'));
-const PostList = lazy(() => import('@/components/PostList'));
+const PostGrid = lazy(() => import('./PostGrid'));
+const PostList = lazy(() => import('./PostList'));
 
 interface HomepageClientProps {
   initialPosts: PostData[];
@@ -96,10 +96,9 @@ export default function HomepageClient({ initialPosts, initialCategories, initia
   return (
     <ErrorBoundary>
       <MemoizedHero />
-      <div className="w-full px-4 md:px-0 md:w-[95%] lg:w-[64%] mx-auto py-10">
+      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 max-w-7xl mx-auto py-10">
         <MemoizedFeaturedPosts posts={posts.slice(0, 3)} />
         <div className="mt-8">
-          {/* <h2 className="text-3xl font-bold mb-8 text-left">Latest Articles</h2> */}
           <div className="mb-8">
             <MemoizedPostFilter 
               categories={categories}
