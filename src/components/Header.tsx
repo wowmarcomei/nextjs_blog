@@ -45,19 +45,12 @@ const Header: React.FC<HeaderProps> = React.memo(({
 
   const renderNavItems = (items: NavItem[]) => (
     <ul className="flex flex-col md:flex-row md:space-x-4">
-      {items.map((item, index) => (
-        <React.Fragment key={item.href}>
-          <li>
-            <Link href={item.href} className="block md:inline-block hover:text-blue-600 transition duration-300">
-              {item.label}
-            </Link>
-          </li>
-          {index === 0 && (
-            <li className="md:relative">
-              {renderCategoriesDropdown()}
-            </li>
-          )}
-        </React.Fragment>
+      {items.map((item) => (
+        <li key={item.href}>
+          <Link href={item.href} className="block md:inline-block hover:text-blue-600 transition duration-300">
+            {item.label}
+          </Link>
+        </li>
       ))}
     </ul>
   );
@@ -94,6 +87,7 @@ const Header: React.FC<HeaderProps> = React.memo(({
             </Link>
             <div className="hidden md:flex items-center space-x-4">
               <nav>{renderNavItems(memoizedNavItems)}</nav>
+              {renderCategoriesDropdown()}
               <SearchBar />
             </div>
             <button
@@ -110,6 +104,7 @@ const Header: React.FC<HeaderProps> = React.memo(({
         <div className="fixed top-[73px] left-0 right-0 bg-white shadow-md md:hidden z-40">
           <nav className="px-4 pt-2 pb-4">
             {renderNavItems(memoizedNavItems)}
+            {renderCategoriesDropdown()}
           </nav>
           <div className="px-4 pb-4">
             <SearchBar />

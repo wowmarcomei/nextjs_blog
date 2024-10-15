@@ -30,7 +30,7 @@ const FeaturedPostCard: React.FC<{ post: PostData; priority: boolean }> = React.
         {post.categories[0]}
       </span>
       <Link href={`/${post.slug}`} className="block text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">
-        <h3 className="line-clamp-2">{post.title}</h3>
+        <h4 className="line-clamp-2">{post.title}</h4>
       </Link>
     </div>
   </div>
