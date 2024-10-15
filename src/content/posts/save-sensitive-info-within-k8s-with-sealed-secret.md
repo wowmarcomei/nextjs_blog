@@ -122,7 +122,7 @@ stringData:
 
 显然这里的用户名密码都是显性的，即使是做了base64编码之后也可以轻易解码，都不能直接上传到Git仓库。
 
-## 步骤 4: 使用 kubeseal 加密 Secret
+### 步骤 4: 使用 kubeseal 加密 Secret
 
 运行以下命令加密 Secret：
 
@@ -155,7 +155,7 @@ spec:
     type: Opaque
 ```
 
-## 步骤 5: 创建SealedSecret对象
+### 步骤 5: 创建SealedSecret对象
 
 运行以下命令创建SealedSecret对象：
 
@@ -216,7 +216,7 @@ supersecret
 
 意味着我们创建SealedSecret对象时，经过controller处理后，最终生产了可用的secret对象。
 
-## 步骤 6: pod引用secret对象
+### 步骤 6: pod引用secret对象
 
 K8s其他资源对象可使用最终的原生secret对象，以pod为例。
 
@@ -261,6 +261,6 @@ Username: admin
 Password: supersecret
 ```
 
-## 总结
+## Sealed Secrets总结
 
 通过Sealed Secrets，采用RSA 非对称加密算法，使用2048位的RSA密钥对，对一些敏感数据进行加密处理，之后就能将其保存在Git仓库，不用单独再手工创建secret填入系统中了，既安全又丝滑无比。
