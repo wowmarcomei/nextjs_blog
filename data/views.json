@@ -8,7 +8,7 @@
   "deploy-k8s-cluster": 4,
   "getting-started-with-nextjs": 22,
   "how-to-use-sed-in-linux": 2,
-  "how-to-use-screen-in-linux": 2,
+  "how-to-use-screen-in-linux": 4,
   "how-to-authority-users-with-RBAC-in-k8s": 10,
   "push-docker-images-to-github-registry": 10,
   "auto-sync-repository-to-gitee-from-github": 92,

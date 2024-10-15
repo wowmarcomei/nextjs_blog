@@ -13,7 +13,7 @@ interface PostGridProps {
 const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ post, priority }) => (
   <div className="bg-white shadow-md overflow-hidden w-full h-full">
     <div className="flex flex-col h-full p-4 sm:p-6">
-      <div className="relative flex-shrink-0 w-full h-[160px] sm:h-[190px] mb-4">
+      <div className="relative flex-shrink-0 w-full h-0 pb-[56.25%] mb-4">
         <Image 
           src={post.image || '/images/default-post-image.jpg'} 
           alt={`Featured image for ${post.title}`} 
@@ -27,7 +27,7 @@ const PostCard: React.FC<{ post: PostData; priority: boolean }> = React.memo(({ 
         />
       </div>
       <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded self-start mb-2">{post.categories[0]}</span>
-      <Link href={`/${post.slug}`} className="block text-lg sm:text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">
+      <Link href={`/${post.slug}`} className="block text-base sm:text-lg md:text-xl font-semibold text-gray-900 hover:text-blue-600 mb-2">
         <h3 className="line-clamp-2">{post.title}</h3>
       </Link>
       <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
