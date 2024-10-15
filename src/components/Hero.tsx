@@ -14,7 +14,7 @@ const Hero: React.FC<HeroProps> = React.memo(({
   title = "Welcome to TechBlog",
   subtitle = "Discover the latest in technology, programming, and digital innovation.",
   ctaText = "Explore Articles",
-  ctaLink = "/posts",
+  ctaLink = "/archive",
   backgroundImage
 }) => {
   return (

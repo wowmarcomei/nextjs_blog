@@ -96,10 +96,10 @@ export default function HomepageClient({ initialPosts, initialCategories, initia
   return (
     <ErrorBoundary>
       <MemoizedHero />
-      <div className="w-full px-4 md:px-0 md:w-[95%] lg:w-[64%] mx-auto py-12">
+      <div className="w-full px-4 md:px-0 md:w-[95%] lg:w-[64%] mx-auto py-10">
         <MemoizedFeaturedPosts posts={posts.slice(0, 3)} />
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-8 text-center">Latest Articles</h2>
+        <div className="mt-8">
+          {/* <h2 className="text-3xl font-bold mb-8 text-left">Latest Articles</h2> */}
           <div className="mb-8">
             <MemoizedPostFilter 
               categories={categories}
